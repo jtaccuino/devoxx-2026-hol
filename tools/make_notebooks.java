@@ -334,7 +334,7 @@ of the footer — the values never leave the trailer. They arrive as raw bytes a
 // Read inclination's min and max from the footer statistics of row group 0.
 //
 // hint: every column chunk keeps a min and a max. Find the *inclination* chunk,
-//       then turn its raw statistics into numbers.
+//       then decode its raw statistics with StatisticsDecoder.
 """,
                     """
 var chunk = meta.rowGroups().get(0);
@@ -1032,6 +1032,13 @@ import java.util.List;
 import java.util.Map;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import static org.dflib.Exp.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
@@ -1087,9 +1094,8 @@ var plotKinds = new ArrayList<String>();
 // For each row with TLE lines, propagate to `now` and append the position
 // (km) and its labels to the lists above. Skip objects that will not propagate.
 //
-// hint: per row, build a TLE from its two lines and propagate it to `now`; read the
-//       position in km. Which propagator, and which coordinates? Catch and skip
-//       the ones that fail.
+// hint: build a TLE from its two lines, then ask a TLEPropagator to propagate it to
+//       `now`; read the position x/y/z in km. Catch and skip the ones that fail.
 """,
                     """
 for (int i = 0; i < df.height(); i++) {
@@ -1176,6 +1182,94 @@ var top = Ggplot.ggplot(cloud,
     .theme(Theme.theme_dark());
 display(top);
 save(top, "orbits-now-topdown.svg");
+"""),
+            md("""
+## ★ Bonus — make it move
+
+A static cloud is a picture; motion is a plot. Precompute each object's position
+at a series of instants, then play the frames back as a flip-book.
+
+We keep it to **LEO** and a few hundred objects so it stays smooth — that is the
+same "focus on LEO" idea as limiting the axes, done as a **filter on the data**
+rather than a change to the plot.
+"""),
+            code("""
+// ── ★ BONUS ───────────────────────────────────────────────────────────
+// Precompute a trajectory: for each frame, where every object is.
+var leo = df.rows($str("orbit_class").eq("LEO")).select();
+var leoL1 = leo.getColumn("tle_line1");
+var leoL2 = leo.getColumn("tle_line2");
+
+int fleetSize = 300;           // objects in the animation
+int frames = 48;               // frames per lap
+double secondsPerFrame = 120;  // two minutes of real motion per frame
+
+var fleetL1 = new ArrayList<String>();
+var fleetL2 = new ArrayList<String>();
+for (int i = 0; i < leo.height() && fleetL1.size() < fleetSize; i++) {
+    Object a = leoL1.get(i), b = leoL2.get(i);
+    if (a != null && b != null) {
+        fleetL1.add(a.toString());
+        fleetL2.add(b.toString());
+    }
+}
+
+// trajectory[frame][object] = x, y, z in km
+double[][][] trajectory = new double[frames][fleetL1.size()][3];
+for (int f = 0; f < frames; f++) {
+    var at = now.shiftedBy(f * secondsPerFrame);
+    for (int i = 0; i < fleetL1.size(); i++) {
+        try {
+            var tle = new TLE(fleetL1.get(i), fleetL2.get(i), tai);
+            var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
+                        .getPVCoordinates().getPosition();
+            trajectory[f][i][0] = pos.getX() / 1000.0;
+            trajectory[f][i][1] = pos.getY() / 1000.0;
+            trajectory[f][i][2] = pos.getZ() / 1000.0;
+        } catch (Exception e) {
+            // this object will not propagate - leave it at the origin
+        }
+    }
+}
+println("precomputed %d frames for %s LEO objects", frames, num(fleetL1.size()));
+"""),
+            code("""
+// ── ★ BONUS ───────────────────────────────────────────────────────────
+// Play the frames: a plain JavaFX Pane, Earth in the middle, one dot per
+// satellite. Every tick we project the current frame, move the dots, and slowly
+// turn the view — the same kind of loop an animation needs.
+double scale = 230.0 / 9000.0;      // km -> pixels (LEO reaches ~ 8400 km)
+double cx = 240, cy = 240;
+var view = new Pane();
+view.setPrefSize(480, 480);
+view.getChildren().add(new Circle(cx, cy, 6378.137 * scale, Color.web("#2e7d32")));
+
+var dots = new ArrayList<Circle>();
+for (int i = 0; i < fleetL1.size(); i++) {
+    var dot = new Circle(0, 0, 1.5, Color.web("#ffb454"));
+    dots.add(dot);
+    view.getChildren().add(dot);
+}
+
+var azimuth = new double[]{0.0};
+var frame = new int[]{0};
+var timeline = new Timeline(new KeyFrame(Duration.millis(90), e -> {
+    double cosA = Math.cos(azimuth[0]), sinA = Math.sin(azimuth[0]);
+    int f = frame[0] % frames;
+    for (int i = 0; i < dots.size(); i++) {
+        double x = trajectory[f][i][0], y = trajectory[f][i][1], z = trajectory[f][i][2];
+        double px = x * cosA - y * sinA;
+        double pz = x * sinA + y * cosA;
+        dots.get(i).setCenterX(cx + px * scale);
+        dots.get(i).setCenterY(cy - (z * 0.75 + pz * 0.35) * scale);
+    }
+    azimuth[0] += 0.01;
+    frame[0]++;
+}));
+timeline.setCycleCount(Timeline.INDEFINITE);
+timeline.play();
+display(view);
+println("animating %s satellites — re-run the cell to start a fresh lap", num(dots.size()));
 """),
             code("""
 // ── check ─────────────────────────────────────────────────────────────

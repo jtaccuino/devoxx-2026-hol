@@ -114,7 +114,8 @@ TODO structure, nothing to download.
 object in the catalog from its element-set epoch to the current instant with
 Orekit's SGP4/SDP4, then plots the resulting x/y/z point cloud in 3-D with
 gog4j — plus a top-down payload-vs-debris view. 20,210 objects propagate in
-well under a second.
+well under a second. A final bonus section filters to **LEO**, precomputes a
+trajectory and plays it back as a JavaFX flip-book, so the fleet appears to orbit.
 
 ## Known gog4j issues
 
