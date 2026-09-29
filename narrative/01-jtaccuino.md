@@ -79,6 +79,19 @@ display(earth);
 
 ---
 
+# Print like a notebook
+
+`System.out.println` writes to the JVM's console — **the notebook never shows
+it**. Use the notebook's own builtins:
+
+<div class="grid three">
+  <div class="tile"><b>println(...)</b><span class="d">captured and shown in the cell; a format string plus arguments</span></div>
+  <div class="tile"><b>display(...)</b><span class="d">for anything visual — a JavaFX node, a frame, a plot</span></div>
+  <div class="tile"><b>use("dflib")</b><span class="d">activates the dflib extension, and <code>println(frame)</code> prints a real table</span></div>
+</div>
+
+---
+
 # One rule that will bite you
 
 JShell executes a snippet when the line is **complete**.

@@ -229,6 +229,12 @@ build rather than surfacing only in the IDE.
 > generator keeps the `addDependency(...)` calls first and follows them with a
 > one-line `Class.forName(...)` probe that names any jar which did not land —
 > that is what turns a mystery "cannot find symbol: TLE" into a clear warning.
+>
+> **Output rule.** Notebook code uses the notebook builtins, never
+> `System.out.println` (that writes to the JVM console and the notebook shows
+> nothing): `println(...)` is captured into the cell and `display(...)` draws a
+> node. `use("dflib")` activates the dflib extension, whose
+> `println(DataFrame)` renders a real table.
 
 `tools/package_m2.java` assembles the offline Maven bundle: it seeds the local
 `0.5-SNAPSHOT` artifacts, resolves the closure with Maven (online), verifies it

@@ -182,6 +182,15 @@ for (int i = 0; i < 12; i++) {
 }
 display(fleet);
 """),
+            code("""
+// ── check ─────────────────────────────────────────────────────────────
+var pass = satellites == 21207 && Math.abs(periodMinutes(1.0) - 1440.0) < 0.001 && Math.abs(geoPeriod - 1440.0) < 0.001 && earth != null;
+if (pass) {
+    println("✓ all five TODOs done — cells, a method, and a node to display");
+} else {
+    println("✗ something is off — check the TODOs above");
+}
+"""),
             md("""
 **That is the whole tool.** Cells share state, `println` formats, and
 `display` shows a node. Everything else in this lab is Java, a library, and this
@@ -401,6 +410,9 @@ The catalog is loaded once, in memory, on purpose: 21 207 × 52 is small.
 addDependency("org.dflib:dflib:2.0.0-M7");
 addDependency("org.dflib:dflib-parquet:2.0.0-M7");
 
+// the dflib extension gives us println(DataFrame) - a real table
+use("dflib");
+
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
 import static org.dflib.Exp.*;
@@ -438,7 +450,7 @@ selection back into a frame.
 """,
                     """
 var sel = df.cols("object_name", "orbit_class", "apogee_km").select();
-System.out.println(sel.head(5));
+println(sel.head(5));
 """),
             md("""
 ## 2 · Filter by text
@@ -490,7 +502,7 @@ it in one breath — here the mean gap between apogee and perigee, per orbit cla
 //       average it, name it, then order by it.
 """,
                     """
-System.out.println(
+println(
     df.group("orbit_class").agg(
         $col("orbit_class"),
         $double("apogee_km").sub($double("perigee_km")).avg().as("mean_spread_km"))
@@ -508,7 +520,7 @@ The classic. `group(...)` then `agg(...)` with `$col(...))` and `count()`.
 // hint: one row per class, counting its members — which aggregation counts rows?
 """,
                     """
-System.out.println(
+println(
     df.group("orbit_class").agg($col("orbit_class"), count()).sort("count", false));
 """),
             md("""
@@ -524,7 +536,7 @@ Sort a whole frame by a column, descending, and take the top.
 //       take five.
 """,
                     """
-System.out.println(
+println(
     df.sort("apogee_km", false)
       .cols("object_name", "apogee_km").select()
       .head(5));
@@ -547,7 +559,7 @@ sort, and take the top 10.
 """),
             code("""
 // ── ★ BONUS ───────────────────────────────────────────────────────────
-System.out.println(
+println(
     df.group("satcat_owner").agg($col("satcat_owner"), count())
       .sort("count", false).head(10));
 """),
@@ -782,6 +794,10 @@ for a model.
 // ── given ── turn it into a supervised problem
 addDependency("org.dflib:dflib:2.0.0-M7");
 addDependency("org.dflib:dflib-parquet:2.0.0-M7");
+
+// the dflib extension gives us println(DataFrame) - a real table
+use("dflib");
+
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
 import static org.dflib.Exp.*;
@@ -797,7 +813,7 @@ var labelled = df.rows(
 
 println("labelled %s of %s rows", String.format(java.util.Locale.ROOT, "%,d", labelled.height()),
         String.format(java.util.Locale.ROOT, "%,d", df.height()));
-System.out.println(labelled.group("satcat_object_type").agg($col("satcat_object_type"), count()));
+println(labelled.group("satcat_object_type").agg($col("satcat_object_type"), count()));
 """),
             code("""
 // ── given ── features and a deterministic split
@@ -889,6 +905,9 @@ addDependency("org.jtaccuino:gog4j-data:0.5-SNAPSHOT");
 addDependency("org.dflib:dflib:2.0.0-M7");
 addDependency("org.dflib:dflib-csv:2.0.0-M7");
 
+// the dflib extension gives us println(DataFrame) - a real table
+use("dflib");
+
 import org.dflib.DataFrame;
 import org.jtaccuino.gog.dflib.data.PenguinsDatasets;
 import org.jtaccuino.gog.*;
@@ -959,7 +978,7 @@ println("penguins: %s rows x %d columns", num(df.height()), df.width());
 """,
                     """
 var sel = df.cols("species", "bill_length_mm", "body_mass_g").select();
-System.out.println(sel.head(3));
+println(sel.head(3));
 """),
             md("""
 ## 3 · Filter
@@ -984,7 +1003,7 @@ println("Gentoo: %s birds", num(gentoo.height()));
 // hint: one row per species with the mean body mass — then order by it.
 """,
                     """
-System.out.println(
+println(
     df.group("species").agg(
         $col("species"), $double("body_mass_g").avg().as("mean_mass_g"))
       .sort("mean_mass_g", false));
@@ -1000,7 +1019,7 @@ System.out.println(
 //       those rows before sorting?
 """,
                     """
-System.out.println(
+println(
     df.rows($double("body_mass_g").isNotNull())
       .sort("body_mass_g", false)
       .cols("species", "body_mass_g").select()

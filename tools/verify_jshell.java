@@ -34,7 +34,9 @@ public class verify_jshell {
 
     static final List<String> STUBS = List.of(
             "void addDependency(String gav) { }",
+            "void use(String extension) { }",
             "void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }",
+            "void println(Object value, Object... args) { System.out.println(String.valueOf(value)); }",
             "void display(Object node) { }");
 
     public static void main(String[] args) throws Exception {

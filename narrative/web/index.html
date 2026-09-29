@@ -369,6 +369,15 @@ That is the entire trick.</p>
 display(earth);
 </code></pre>
 </section>
+<section class="slide"><h1>Print like a notebook</h1>
+<p><code>System.out.println</code> writes to the JVM's console — <strong>the notebook never shows
+it</strong>. Use the notebook's own builtins:</p>
+<div class="grid three">
+  <div class="tile"><b>println(...)</b><span class="d">captured and shown in the cell; a format string plus arguments</span></div>
+  <div class="tile"><b>display(...)</b><span class="d">for anything visual — a JavaFX node, a frame, a plot</span></div>
+  <div class="tile"><b>use("dflib")</b><span class="d">activates the dflib extension, and <code>println(frame)</code> prints a real table</span></div>
+</div>
+</section>
 <section class="slide"><h1>One rule that will bite you</h1>
 <p>JShell executes a snippet when the line is <strong>complete</strong>.</p>
 <pre><code class="language-java">// this does NOT work — the first line is already complete
@@ -536,7 +545,7 @@ messy; the labs use the columns that are complete.</p>
 <tbody>
 <tr>
 <td><strong>data</strong></td>
-<td>a <code>HardwoodTable</code>, read straight from the Parquet</td>
+<td>a <code>HardwoodDataFrame</code>, read straight from the Parquet</td>
 </tr>
 <tr>
 <td><strong>aes</strong></td>
@@ -622,8 +631,8 @@ SVG → PDF is one external command away.</p>
   <button id="contents" title="contents (c)">&#9776;</button>
 </footer>
 <div id="toc"><div class="box"><h2>Contents</h2><ol id="tocList"></ol></div></div>
-<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":3},{"t":"Getting set up","i":10},{"t":"Module 1 · JTaccuino","i":14},{"t":"Module 2 · Hardwood + dflib","i":22},{"t":"Module 3 · gog4j","i":34}];
-const meta = [{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"ml","slot":"11:25-12:15"}];
+<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":3},{"t":"Getting set up","i":10},{"t":"Module 1 · JTaccuino","i":14},{"t":"Module 2 · Hardwood + dflib","i":23},{"t":"Module 3 · gog4j","i":35}];
+const meta = [{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"ml","slot":"11:25-12:15"}];
 const slides = [...document.querySelectorAll('.slide')];
 const toc = document.getElementById('toc');
 const streamEl = document.getElementById('stream');

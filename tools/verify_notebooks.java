@@ -49,7 +49,9 @@ public class verify_notebooks {
 
     static final String PREAMBLE = """
             void addDependency(String gav) { System.out.println("[deps] " + gav); }
+            void use(String extension) { System.out.println("[use] " + extension); }
             void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }
+            void println(Object value, Object... args) { System.out.println(String.valueOf(value)); }
             java.nio.file.Path cwd = {{CWD}};
             void display(Object node) { System.out.println("[display] " + (node == null ? "null" : node.getClass().getName())); }
             """;
@@ -61,7 +63,9 @@ public class verify_notebooks {
 
             class NotebookRun {
                 static void addDependency(String gav) { System.out.println("[deps] " + gav); }
+                static void use(String extension) { System.out.println("[use] " + extension); }
                 static void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }
+                static void println(Object value, Object... args) { System.out.println(String.valueOf(value)); }
                 static java.nio.file.Path cwd = {{CWD}};
                 static javafx.scene.layout.Pane __sink;
                 // faithful to JTaccuino: display() marshals to the FX thread and

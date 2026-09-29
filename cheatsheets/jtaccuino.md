@@ -7,10 +7,29 @@ visible in every later cell.
 
 | Call | Does |
 |---|---|
-| `println(str)` / `println(fmt, args)` | print, `fmt` uses `String.formatted` (default locale) |
-| `display(node)` | draw a JavaFX node inline |
-| `addDependency("group:artifact:version")` | resolve a Maven dependency into the session — no quotes needed for the file, no semicolon |
+| `println(str)` / `println(fmt, args)` | print into the cell, `fmt` uses `String.formatted` (default locale) |
+| `println(obj)` | print any object via its `toString` |
+| `display(obj)` | draw a JavaFX node, frame or plot inline |
+| `addDependency("group:artifact:version")` | resolve a Maven dependency for the snippets that follow |
+| `use("dflib")` | activate an on-demand extension (see below) |
 | `cwd` | the working directory as a `java.nio.file.Path` |
+
+## Output: `println` and `display`, never `System.out.println`
+
+`System.out.println` writes to the JVM console — **the notebook shows nothing**.
+The builtins are captured by the notebook's print/display sinks.
+
+Extensions make the output nicer. `use("dflib")` activates the dflib extension,
+which adds (among other things):
+
+```java
+void println(DataFrame df) {
+    println(new TabularPrinter().print(df));
+}
+```
+
+so `println(frame)` renders a **table**. `use("deepnetts")`, `use("file")` and
+`use("langchain4j")` activate the other on-demand extensions.
 
 ## Rules that bite
 
