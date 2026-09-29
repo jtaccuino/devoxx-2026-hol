@@ -1502,14 +1502,58 @@ Back to the [overview](../narrative/00-overview.md).
 
     // ----------------------------------------------------------------------
 
+    // JTaccuino's addDependency(...) calls jshell.addToClasspath under the hood,
+    // and a new classpath entry only applies to snippets evaluated *after* it.
+    // Keeping addDependency(...) in its own cell means the following cell's
+    // imports compile against the updated classpath; sharing a cell makes the
+    // import fail with "cannot find symbol".
+    static List<Cell> expand(Cell c) {
+        if (!c.kind().equals("code") || !c.text().equals(c.sol())) {
+            return List.of(c);
+        }
+        String[] lines = c.text().split("\n", -1);
+        int first = -1;
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith("addDependency(")) {
+                first = i;
+                break;
+            }
+            // only comments and blanks may precede the dependency block
+            if (!lines[i].isBlank() && !lines[i].startsWith("//")) {
+                return List.of(c);
+            }
+        }
+        if (first < 0) {
+            return List.of(c);
+        }
+        int last = first;
+        for (int i = first; i < lines.length; i++) {
+            if (lines[i].startsWith("addDependency(")) {
+                last = i;
+            } else if (!lines[i].isBlank()) {
+                break;
+            }
+        }
+        String deps = String.join("\n", java.util.Arrays.copyOfRange(lines, 0, last + 1)).strip()
+                + "\n\n// the new class path only applies to later cells; give the engine a moment\n"
+                + "try { Thread.sleep(250); } catch (InterruptedException e) { }";
+        String rest = String.join("\n", java.util.Arrays.copyOfRange(lines, last + 1, lines.length)).strip();
+        List<Cell> out = new ArrayList<>();
+        out.add(new Cell("code", deps, deps));
+        if (!rest.isEmpty()) out.add(new Cell("code", rest, rest));
+        return out;
+    }
+
     static String idFor(String seed, int index) {
         return UUID.nameUUIDFromBytes((seed + "#" + index).getBytes(StandardCharsets.UTF_8)).toString();
     }
 
     static Map<String, Object> build(String seed, List<Cell> cells, boolean solution) {
         List<Object> cellArray = new ArrayList<>();
+        List<Cell> expanded = new ArrayList<>();
+        for (Cell c : cells) expanded.addAll(expand(c));
         int index = 0;
-        for (Cell c : cells) {
+        for (Cell c : expanded) {
             Map<String, Object> node = new LinkedHashMap<>();
             if (c.kind().equals("md")) {
                 node.put("cell_type", "markdown");

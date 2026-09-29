@@ -75,3 +75,12 @@ void onFx(Runnable work) {
 - After mutating a plot that is **already displayed**, call `onFx(plot::markDirty)`
   — gog4j's fluent setters do not repaint on their own, so the change would never
   reach the screen.
+
+## addDependency belongs in its own cell
+
+`addDependency(...)` calls `JShell.addToClasspath` underneath, and a new class
+path entry only applies to snippets evaluated **after** it. Keep the calls in
+their own cell and the `import`s in the next one. Sharing a cell makes the
+import fail with `cannot find symbol` — the *"TLE could not be found"* symptom is
+exactly this, when the text below `addDependency("org.orekit…")` imports
+`org.orekit.propagation.analytical.tle.TLE`.

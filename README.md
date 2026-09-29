@@ -201,6 +201,11 @@ build rather than surfacing only in the IDE.
 > JavaFX work must be marshalled: the Python-free notebooks define `onFx(...)`
 > and route `save(...)` through it, and call `onFx(plot::markDirty)` after
 > mutating a plot that is already displayed.
+>
+> **Dependency rule.** `addDependency(...)` ends up in `JShell.addToClasspath`,
+> which only affects *later* snippets — so the generator emits a dedicated
+> `addDependency` cell, then the imports in the next cell. Putting both in one
+> cell is what produces "cannot find symbol: TLE" style failures.
 
 `tools/package_m2.java` assembles the offline Maven bundle: it seeds the local
 `0.5-SNAPSHOT` artifacts, resolves the closure with Maven (online), verifies it
