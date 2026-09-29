@@ -175,21 +175,10 @@ Sven Reimers · Zoran Sevarac</p>
     </div>
   </div>
 </div>
-<p class="note">Every current CelesTrak element set, merged to one row per object and enriched with SATCAT metadata (owner, object type, launch date).</p>
+<p class="note">Every object has a <strong>NORAD catalog number</strong> and a <strong>TLE</strong> (<code>tle_line1</code>/<code>tle_line2</code>) describing its orbit &mdash; a <strong>payload</strong> is a working satellite (PAY), <strong>debris</strong> a fragment (DEB), a <strong>rocket body</strong> a spent stage (R/B). Merged from every current CelesTrak element set and enriched with SATCAT metadata.</p>
 </section>
 <section class="slide lead"><h1>A two-minute space primer</h1>
 <h3>Just enough vocabulary to read the plots</h3>
-</section>
-<section class="slide"><h1>What is in the catalog</h1>
-<div class="grid three">
-  <div class="tile"><b>payload</b><span class="d">a working satellite (PAY)</span></div>
-  <div class="tile"><b>debris</b><span class="d">a fragment, often from a collision or break-up (DEB)</span></div>
-  <div class="tile"><b>rocket body</b><span class="d">the spent upper stage that delivered something (R/B)</span></div>
-</div>
-<p>Every object gets a <strong>NORAD catalog number</strong> — a permanent id. That is the
-<code>norad_cat_id</code> column, and the key everything joins on.</p>
-<p>A <strong>TLE</strong> (Two-Line Element set) is the compact, fixed-width text encoding of an
-object's orbit. <code>tle_line1</code> and <code>tle_line2</code> in our file <em>are</em> those two lines.</p>
 </section>
 <section class="slide"><h1>An orbit is an ellipse</h1>
 <p>Six numbers describe it. Four matter for this lab:</p>
@@ -391,6 +380,13 @@ if (ready) {
 </code></pre>
 <p>Same for long expressions: keep them on <strong>one line</strong>, or open a bracket.</p>
 </section>
+<section class="slide"><h1>★ Bonus</h1>
+<p>Finished early? The notebook has a <strong>★ BONUS</strong> cell: draw a small constellation.</p>
+<div class="grid two">
+  <div class="tile"><b>loop a ring</b><span class="d">place points with <code>Math.cos</code> / <code>Math.sin</code></span></div>
+  <div class="tile"><b>display a group</b><span class="d">hand a whole JavaFX <code>Pane</code> to <code>display(...)</code></span></div>
+</div>
+</section>
 <section class="slide"><h1>Your turn</h1>
 <p>Open <code>01-jtaccuino-basics.ipynb</code>.</p>
 <p><strong>5 TODOs.</strong> At the end you will <code>display</code> a small orbit diagram — the same
@@ -494,10 +490,17 @@ df.sort(&quot;apogee_km&quot;, false);                                   // sort
 <p>The <em>analytic</em> <code>apogee_km</code> / <code>perigee_km</code> are always present. Real data is
 messy; the labs use the columns that are complete.</p>
 </section>
+<section class="slide"><h1>★ Bonus — who owns the sky?</h1>
+<p>Finished early? Group the catalog by <code>satcat_owner</code> and chart the top owners.</p>
+<div class="grid two">
+  <div class="tile"><b>group &amp; count</b><span class="d">104 distinct owners &mdash; who is on top?</span></div>
+  <div class="tile"><b>sort &amp; head</b><span class="d">the same <code>group(...).agg(...).sort(...)</code> you just learned</span></div>
+</div>
+<p>US 12,980 · PRC 3,634 · CIS 1,486 — the rest are a long tail.</p>
+</section>
 <section class="slide"><h1>Your turn</h1>
 <p><code>02-parquet-with-hardwood.ipynb</code> — <strong>5 TODOs.</strong> Climb the three levels.</p>
 <p><code>03-dataframes-with-dflib.ipynb</code> — <strong>6 TODOs.</strong> Select, filter, group, sort.</p>
-<p>Plus a ★ bonus: <strong>who owns the sky?</strong> (US 12,980 · PRC 3,634 · CIS 1,486)</p>
 <p>~10 minutes each.</p>
 <blockquote>
 <p>On to <strong>module 3</strong> — pictures.</p>
@@ -587,17 +590,14 @@ SVG → PDF is one external command away.</p>
 </ul>
 <p><strong>Get it:</strong> <a href="https://www.orekit.org/">https://www.orekit.org/</a></p>
 </section>
-<section class="slide"><h1>★ Bonus rounds</h1>
-<p>Finished early? Here is where to go:</p>
-<ol>
-<li><strong>Pairs plot</strong> — <code>matrixPlot</code> of every feature at once</li>
-<li><strong>3-D orbit cloud</strong> — inclination × period × eccentricity</li>
-<li><strong>The wall chart</strong> — filled density + the GEO belt, dark theme</li>
-<li><em>(module 2)</em> <strong>Top owners</strong> — a bar chart of who launches</li>
-<li><em>(<code>notebooks/bonus/orbits-now-3d.ipynb</code>)</em> <strong>Where is everything right now?</strong>
-— propagate all 21,207 objects to this instant with Orekit, plot the cloud</li>
-</ol>
-<p>Low effort. High wow. Clearly marked.</p>
+<section class="slide"><h1>★ Bonus — for fast finishers</h1>
+<p>Finished early? The notebook has three, plus a standalone one:</p>
+<div class="grid two">
+  <div class="tile"><b>1 · pairs plot</b><span class="d">a scatterplot matrix of every feature at once</span></div>
+  <div class="tile"><b>2 · 3-D orbit cloud</b><span class="d">inclination × period × eccentricity</span></div>
+  <div class="tile"><b>3 · the wall chart</b><span class="d">filled density + the GEO belt, dark theme</span></div>
+  <div class="tile"><b>4 · orbits now</b><span class="d"><code>notebooks/bonus/orbits-now-3d.ipynb</code> &mdash; propagate all 21,207 objects to this instant with Orekit</span></div>
+</div>
 </section>
 <section class="slide lead"><h1>Over to Zoran</h1>
 <h3>A stream of its own</h3>
@@ -617,8 +617,8 @@ SVG → PDF is one external command away.</p>
   <button id="contents" title="contents (c)">&#9776;</button>
 </footer>
 <div id="toc"><div class="box"><h2>Contents</h2><ol id="tocList"></ol></div></div>
-<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":3},{"t":"Getting set up","i":11},{"t":"Module 1 · JTaccuino","i":15},{"t":"Module 2 · Hardwood + dflib","i":22},{"t":"Module 3 · gog4j","i":33}];
-const meta = [{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"ml","slot":"11:25-12:15"}];
+<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":3},{"t":"Getting set up","i":10},{"t":"Module 1 · JTaccuino","i":14},{"t":"Module 2 · Hardwood + dflib","i":22},{"t":"Module 3 · gog4j","i":34}];
+const meta = [{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"ml","slot":"11:25-12:15"}];
 const slides = [...document.querySelectorAll('.slide')];
 const toc = document.getElementById('toc');
 const streamEl = document.getElementById('stream');

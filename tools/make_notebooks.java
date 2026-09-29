@@ -164,6 +164,22 @@ label.setFill(Color.web("#2e7d32"));
 scene.getChildren().addAll(orbit, planet, sat, label);
 display(scene);
 """),
+            code("""
+// ── ★ BONUS ───────────────────────────────────────────────────────────
+// A small constellation: twelve satellites evenly spaced on the orbit ring.
+var fleet = new Pane();
+fleet.setPrefSize(320, 320);
+var ring = new Circle(160, 160, 120);
+ring.setFill(Color.TRANSPARENT);
+ring.setStroke(Color.web("#3a6ea5"));
+fleet.getChildren().add(ring);
+fleet.getChildren().add(new Circle(160, 160, 34, Color.web("#2e7d32")));
+for (int i = 0; i < 12; i++) {
+    double angle = i * 2 * Math.PI / 12;
+    fleet.getChildren().add(new Circle(160 + 120 * Math.cos(angle), 160 + 120 * Math.sin(angle), 5, Color.ORANGE));
+}
+display(fleet);
+"""),
             md("""
 **That is the whole tool.** Cells share state, `println` formats, and
 `display` shows a node. Everything else in this lab is Java, a library, and this

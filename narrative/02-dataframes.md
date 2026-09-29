@@ -158,13 +158,24 @@ messy; the labs use the columns that are complete.
 
 ---
 
+# ★ Bonus — who owns the sky?
+
+Finished early? Group the catalog by `satcat_owner` and chart the top owners.
+
+<div class="grid two">
+  <div class="tile"><b>group &amp; count</b><span class="d">104 distinct owners &mdash; who is on top?</span></div>
+  <div class="tile"><b>sort &amp; head</b><span class="d">the same <code>group(...).agg(...).sort(...)</code> you just learned</span></div>
+</div>
+
+US 12,980 · PRC 3,634 · CIS 1,486 — the rest are a long tail.
+
+---
+
 # Your turn
 
 `02-parquet-with-hardwood.ipynb` — **5 TODOs.** Climb the three levels.
 
 `03-dataframes-with-dflib.ipynb` — **6 TODOs.** Select, filter, group, sort.
-
-Plus a ★ bonus: **who owns the sky?** (US 12,980 · PRC 3,634 · CIS 1,486)
 
 ~10 minutes each.
 

@@ -58,7 +58,7 @@ The running order is:
 2. **Space primer** — just enough vocabulary to read the plots
 3. **Getting set up** — how the notebooks work, and how to get everything
 4. **Module 1 · JTaccuino**, **Module 2 · Hardwood + dflib**, **Module 3 · gog4j**
-   — each opens with a "meet the tool" slide (what it is, where to get it)
+   — each opens with a "meet the tool" slide and closes with a ★ Bonus slide
 5. **Over to Zoran** — a separate stream, left open
 
 The deck has **two visible streams**: Sven's *tooling* (the four tools, modules

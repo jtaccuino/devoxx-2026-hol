@@ -15,22 +15,6 @@ title: Space primer
 
 ---
 
-# What is in the catalog
-
-<div class="grid three">
-  <div class="tile"><b>payload</b><span class="d">a working satellite (PAY)</span></div>
-  <div class="tile"><b>debris</b><span class="d">a fragment, often from a collision or break-up (DEB)</span></div>
-  <div class="tile"><b>rocket body</b><span class="d">the spent upper stage that delivered something (R/B)</span></div>
-</div>
-
-Every object gets a **NORAD catalog number** — a permanent id. That is the
-`norad_cat_id` column, and the key everything joins on.
-
-A **TLE** (Two-Line Element set) is the compact, fixed-width text encoding of an
-object's orbit. `tle_line1` and `tle_line2` in our file *are* those two lines.
-
----
-
 # An orbit is an ellipse
 
 Six numbers describe it. Four matter for this lab:

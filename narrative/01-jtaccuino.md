@@ -102,6 +102,17 @@ Same for long expressions: keep them on **one line**, or open a bracket.
 
 ---
 
+# ★ Bonus
+
+Finished early? The notebook has a **★ BONUS** cell: draw a small constellation.
+
+<div class="grid two">
+  <div class="tile"><b>loop a ring</b><span class="d">place points with <code>Math.cos</code> / <code>Math.sin</code></span></div>
+  <div class="tile"><b>display a group</b><span class="d">hand a whole JavaFX <code>Pane</code> to <code>display(...)</code></span></div>
+</div>
+
+---
+
 # Your turn
 
 Open `01-jtaccuino-basics.ipynb`.

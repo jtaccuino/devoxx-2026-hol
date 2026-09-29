@@ -92,4 +92,4 @@ Sven Reimers · Zoran Sevarac
   </div>
 </div>
 
-<p class="note">Every current CelesTrak element set, merged to one row per object and enriched with SATCAT metadata (owner, object type, launch date).</p>
+<p class="note">Every object has a <strong>NORAD catalog number</strong> and a <strong>TLE</strong> (<code>tle_line1</code>/<code>tle_line2</code>) describing its orbit &mdash; a <strong>payload</strong> is a working satellite (PAY), <strong>debris</strong> a fragment (DEB), a <strong>rocket body</strong> a spent stage (R/B). Merged from every current CelesTrak element set and enriched with SATCAT metadata.</p>

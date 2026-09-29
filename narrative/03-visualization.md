@@ -114,18 +114,16 @@ SVG → PDF is one external command away.
 
 ---
 
-# ★ Bonus rounds
+# ★ Bonus — for fast finishers
 
-Finished early? Here is where to go:
+Finished early? The notebook has three, plus a standalone one:
 
-1. **Pairs plot** — `matrixPlot` of every feature at once
-2. **3-D orbit cloud** — inclination × period × eccentricity
-3. **The wall chart** — filled density + the GEO belt, dark theme
-4. *(module 2)* **Top owners** — a bar chart of who launches
-5. *(`notebooks/bonus/orbits-now-3d.ipynb`)* **Where is everything right now?**
-   — propagate all 21,207 objects to this instant with Orekit, plot the cloud
-
-Low effort. High wow. Clearly marked.
+<div class="grid two">
+  <div class="tile"><b>1 · pairs plot</b><span class="d">a scatterplot matrix of every feature at once</span></div>
+  <div class="tile"><b>2 · 3-D orbit cloud</b><span class="d">inclination × period × eccentricity</span></div>
+  <div class="tile"><b>3 · the wall chart</b><span class="d">filled density + the GEO belt, dark theme</span></div>
+  <div class="tile"><b>4 · orbits now</b><span class="d"><code>notebooks/bonus/orbits-now-3d.ipynb</code> &mdash; propagate all 21,207 objects to this instant with Orekit</span></div>
+</div>
 
 ---
 
