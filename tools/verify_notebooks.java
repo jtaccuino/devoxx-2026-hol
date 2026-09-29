@@ -33,7 +33,7 @@ public class verify_notebooks {
     static final String JAVA_HOME = Path.of(System.getProperty("user.home"),
             ".sdkman/candidates/java/27.0.0+35-zulu").toString();
     static final ObjectMapper OM = new ObjectMapper();
-    static final Pattern METHOD_START = Pattern.compile("^(?:String|double|int|long|boolean|void)\\s+\\w+\\(");
+    static final Pattern METHOD_START = Pattern.compile("^(?:String|double|int|long|boolean|void|Path)\\s+\\w+\\(");
     static final Pattern ADD_DEP = Pattern.compile("(?m)^(\\s*addDependency\\([^;\\n]*\\))\\s*$");
 
     record Job(String label, String file, String holder, String fx) {}
@@ -49,7 +49,7 @@ public class verify_notebooks {
     static final String PREAMBLE = """
             void addDependency(String gav) { System.out.println("[deps] " + gav); }
             void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }
-            java.nio.file.Path cwd = java.nio.file.Path.of(".");
+            java.nio.file.Path cwd = {{CWD}};
             void display(Object node) { System.out.println("[display] " + (node == null ? "null" : node.getClass().getName())); }
             """;
 
@@ -61,7 +61,7 @@ public class verify_notebooks {
             class NotebookRun {
                 static void addDependency(String gav) { System.out.println("[deps] " + gav); }
                 static void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }
-                static java.nio.file.Path cwd = java.nio.file.Path.of(".");
+                static java.nio.file.Path cwd = {{CWD}};
                 static void display(Object node) { System.out.println("[display] " + (node == null ? "null" : node.getClass().getSimpleName())); }
             {{METHODS}}
 
@@ -83,7 +83,7 @@ public class verify_notebooks {
             """;
 
     public static void main(String[] args) throws Exception {
-        List<String> svgBefore = svgsInRoot();
+        List<String> svgBefore = svgs();
         int failures = 0;
         List<Job> jobs = new ArrayList<>();
         for (Job j : JOBS) {
@@ -106,8 +106,8 @@ public class verify_notebooks {
             }
         }
 
-        for (String svg : svgsInRoot()) {
-            if (!svgBefore.contains(svg)) Files.deleteIfExists(ROOT.resolve(svg));
+        for (String svg : svgs()) {
+            if (!svgBefore.contains(svg)) Files.deleteIfExists(Path.of(svg));
         }
         System.exit(failures == 0 ? 0 : 1);
     }
@@ -124,7 +124,7 @@ public class verify_notebooks {
     }
 
     static Result runJShell(Job job, List<String> code) throws Exception {
-        StringBuilder script = new StringBuilder(PREAMBLE);
+        StringBuilder script = new StringBuilder(PREAMBLE.replace("{{CWD}}", cwdExpr(job)));
         for (String c : code) script.append(c).append("\n");
         Path tmp = Files.createTempFile("notebook", ".jsh");
         Files.writeString(tmp, script, StandardCharsets.UTF_8);
@@ -184,6 +184,7 @@ public class verify_notebooks {
         for (String d : fxDeps(job.fx())) deps.append("//DEPS ").append(d).append('\n');
 
         String program = FX_TEMPLATE
+                .replace("{{CWD}}", cwdExpr(job))
                 .replace("{{DEPS}}", deps.toString().strip())
                 .replace("{{IMPORTS}}", String.join("\n", imports))
                 .replace("{{METHODS}}", methods.isEmpty() ? "" : String.join("\n", methods))
@@ -219,6 +220,12 @@ public class verify_notebooks {
         };
     }
 
+    static String cwdExpr(Job job) {
+        // run each notebook from its own folder, exactly as JTaccuino does
+        String dir = Path.of(job.file()).toAbsolutePath().getParent().toString().replace("\\", "\\\\");
+        return "java.nio.file.Path.of(\"" + dir + "\")";
+    }
+
     static String classpath(String holder) throws Exception {
         ProcessBuilder pb = new ProcessBuilder("jbang", "info", "classpath", "tools/cp/" + holder + ".java");
         pb.environment().put("JAVA_HOME", JAVA_HOME);
@@ -252,9 +259,10 @@ public class verify_notebooks {
                 .toList();
     }
 
-    static List<String> svgsInRoot() throws IOException {
-        try (Stream<Path> s = Files.list(ROOT)) {
-            return s.map(p -> p.getFileName().toString())
+    static List<String> svgs() throws IOException {
+        try (Stream<Path> s = Files.walk(ROOT)) {
+            return s.filter(Files::isRegularFile)
+                    .map(Path::toString)
                     .filter(n -> n.endsWith(".svg"))
                     .sorted().toList();
         }

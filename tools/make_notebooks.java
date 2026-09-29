@@ -190,7 +190,7 @@ gives you three levels, cheapest first:
 This notebook climbs those three levels.
 """),
             code("""
-addDependency("dev.hardwood:hardwood-core:1.1.0.Beta1")
+addDependency("dev.hardwood:hardwood-core:1.1.0.Beta1");
 
 import dev.hardwood.InputFile;
 import dev.hardwood.internal.predicate.StatisticsDecoder;
@@ -199,11 +199,23 @@ import dev.hardwood.reader.FilterPredicate;
 import dev.hardwood.reader.ParquetFileReader;
 import dev.hardwood.reader.RowReader;
 import dev.hardwood.schema.ColumnProjection;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 String num(double v) { return String.format(java.util.Locale.ROOT, "%,.0f", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
 
-var catalog = ParquetFileReader.open(InputFile.of(cwd.resolve("data/celestrak_gp_catalog.parquet")));
+// The notebook may live in a sub-folder (exercises/, bonus/, ...), so walk up
+// from the notebook's own folder to find the repository's data/ directory.
+Path dataset() {
+    for (Path p = cwd.toAbsolutePath(); p != null; p = p.getParent()) {
+        Path candidate = p.resolve("data/celestrak_gp_catalog.parquet");
+        if (Files.isRegularFile(candidate)) return candidate;
+    }
+    throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
+}
+
+var catalog = ParquetFileReader.open(InputFile.of(dataset()));
 var meta = catalog.getFileMetaData();
 """),
             md("""
@@ -392,17 +404,29 @@ and it is plain Java.
 The catalog is loaded once, in memory, on purpose: 21 207 × 52 is small.
 """),
             code("""
-addDependency("org.dflib:dflib:2.0.0-M7")
-addDependency("org.dflib:dflib-parquet:2.0.0-M7")
+addDependency("org.dflib:dflib:2.0.0-M7");
+addDependency("org.dflib:dflib-parquet:2.0.0-M7");
 
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
 import static org.dflib.Exp.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 String num(double v) { return String.format(java.util.Locale.ROOT, "%,.0f", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
 
-var df = Parquet.loader().load(cwd.resolve("data/celestrak_gp_catalog.parquet"));
+// The notebook may live in a sub-folder (exercises/, bonus/, ...), so walk up
+// from the notebook's own folder to find the repository's data/ directory.
+Path dataset() {
+    for (Path p = cwd.toAbsolutePath(); p != null; p = p.getParent()) {
+        Path candidate = p.resolve("data/celestrak_gp_catalog.parquet");
+        if (Files.isRegularFile(candidate)) return candidate;
+    }
+    throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
+}
+
+var df = Parquet.loader().load(dataset());
 println("loaded %s rows x %d columns", num(df.height()), df.width());
 """),
             md("""
@@ -562,8 +586,8 @@ Build a plot with `Ggplot.ggplot(...)`, add layers with `.geoms(...)`, then
 either `display(...)` it or export it to SVG.
 """),
             code("""
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT")
-addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT")
+addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
 
 import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
@@ -571,8 +595,19 @@ import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
 import org.jtaccuino.gog.hardwood.HardwoodTable;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
-var full = HardwoodTable.ofFile(cwd.resolve("data/celestrak_gp_catalog.parquet"));
+// The notebook may live in a sub-folder (exercises/, bonus/, ...), so walk up
+// from the notebook's own folder to find the repository's data/ directory.
+Path dataset() {
+    for (Path p = cwd.toAbsolutePath(); p != null; p = p.getParent()) {
+        Path candidate = p.resolve("data/celestrak_gp_catalog.parquet");
+        if (Files.isRegularFile(candidate)) return candidate;
+    }
+    throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
+}
+
+var full = HardwoodTable.ofFile(dataset());
 
 // Project to just the fields this module plots. Reading and keeping only the
 // columns you need is the columnar habit; here it also keeps the frame small.
@@ -727,13 +762,13 @@ and puts a network on top.
 """),
             code("""
 // ── given ── turn it into a supervised problem
-addDependency("org.dflib:dflib:2.0.0-M7")
-addDependency("org.dflib:dflib-parquet:2.0.0-M7")
+addDependency("org.dflib:dflib:2.0.0-M7");
+addDependency("org.dflib:dflib-parquet:2.0.0-M7");
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
 import static org.dflib.Exp.*;
 
-var df = Parquet.loader().load(cwd.resolve("data/celestrak_gp_catalog.parquet"));
+var df = Parquet.loader().load(dataset());
 
 // keep only rows with a usable label
 var labelled = df.rows(
@@ -829,12 +864,12 @@ It is small (344 rows, 8 columns) and does the same jobs: select, filter, group,
 sort, plot. Mirrors the TODOs in modules 2 and 3.
 """),
             code("""
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT")
-addDependency("org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT")
-addDependency("org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT")
-addDependency("org.jtaccuino:gog4j-data:0.5-SNAPSHOT")
-addDependency("org.dflib:dflib:2.0.0-M7")
-addDependency("org.dflib:dflib-csv:2.0.0-M7")
+addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j-data:0.5-SNAPSHOT");
+addDependency("org.dflib:dflib:2.0.0-M7");
+addDependency("org.dflib:dflib-csv:2.0.0-M7");
 
 import org.dflib.DataFrame;
 import org.jtaccuino.gog.dflib.data.PenguinsDatasets;
@@ -1000,11 +1035,11 @@ keep the resulting position.
 not a sample. Then we plot x / y / z in 3-D with gog4j.
 """),
             code("""
-addDependency("org.orekit:orekit:13.0.3")
-addDependency("org.dflib:dflib:2.0.0-M7")
-addDependency("org.dflib:dflib-parquet:2.0.0-M7")
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT")
-addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT")
+addDependency("org.orekit:orekit:13.0.3");
+addDependency("org.dflib:dflib:2.0.0-M7");
+addDependency("org.dflib:dflib-parquet:2.0.0-M7");
+addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
 
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
@@ -1025,11 +1060,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
 
-var df = Parquet.loader().load(cwd.resolve("data/celestrak_gp_catalog.parquet"));
+// The notebook may live in a sub-folder (exercises/, bonus/, ...), so walk up
+// from the notebook's own folder to find the repository's data/ directory.
+Path dataset() {
+    for (Path p = cwd.toAbsolutePath(); p != null; p = p.getParent()) {
+        Path candidate = p.resolve("data/celestrak_gp_catalog.parquet");
+        if (Files.isRegularFile(candidate)) return candidate;
+    }
+    throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
+}
+
+var df = Parquet.loader().load(dataset());
 var tai = DataContext.getDefault().getTimeScales().getTAI();
 var now = new AbsoluteDate(Instant.now(), tai);
 

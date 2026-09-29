@@ -31,8 +31,8 @@ tools/        notebook generator, narrative renderer, verification harness
 
 ## Run order
 
-Open the notebooks **from this directory** (they resolve `data/` relative to the
-working directory):
+Open the notebooks in JTaccuino. Each one locates the dataset by walking up from
+its own folder, so it works wherever the repository sits on disk:
 
 1. `notebooks/exercises/01-jtaccuino-basics.ipynb`
 2. `notebooks/exercises/02-parquet-with-hardwood.ipynb`
@@ -55,8 +55,10 @@ network:
 - arrow keys / space / click to move, `Home` / `End` to jump, `#7` in the URL
 - also print to PDF from the browser
 
-The deck deliberately stops before the machine-learning story and hands off to
-Zoran — that part is left open.
+The deck opens with the tool lineup, a short **space primer** (just enough
+vocabulary to read the plots) and the "getting everything" slide, then walks the
+three modules. It deliberately stops before the machine-learning story and hands
+off to Zoran — that part is left open.
 
 Re-render after editing the markdown:
 

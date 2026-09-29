@@ -52,6 +52,53 @@ Sven Reimers · Zoran Sevarac</p>
 </ol>
 <p>No Python. No context switch. Just the JVM.</p>
 </section>
+<section class="slide"><h1>Meet the stack · JTaccuino</h1>
+<p><em>A notebook for Java — JShell in cells, with pictures.</em></p>
+<ul>
+<li>Java execution by <strong>JShell</strong>; every cell shares one session</li>
+<li><code>display(...)</code> renders any <strong>JavaFX</strong> node inline</li>
+<li>plain JSON notebooks; open from disk</li>
+<li>built for teaching and interactive experimentation</li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a>
+<strong>Source:</strong> <a href="https://github.com/jkost/jtaccuino">https://github.com/jkost/jtaccuino</a></p>
+</section>
+<section class="slide"><h1>Meet the stack · Hardwood</h1>
+<p><em>A Parquet reader for the JVM — fast, small, no ceremony.</em></p>
+<ul>
+<li>read the <strong>footer</strong> for schema, sizes and statistics, without touching data pages</li>
+<li>stream rows through a <strong>filter</strong>, or read whole <strong>column batches</strong> as primitive arrays</li>
+<li>the reader behind this lab's dataset (21,207 rows, 52 columns)</li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://hardwood.dev/">https://hardwood.dev/</a></p>
+</section>
+<section class="slide"><h1>Meet the stack · dflib</h1>
+<p><em>DataFrames in plain Java. Select, filter, derive, group, sort.</em></p>
+<ul>
+<li>a fluent, immutable <code>DataFrame</code> API — no SQL, no Python</li>
+<li>2.0 expressions: <code>$str(...)</code>, <code>$double(...)</code>, <code>count()</code>, <code>avg()</code></li>
+<li>CSV and <strong>Parquet</strong> I/O; reads the catalog straight into a frame</li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://github.com/dflib/dflib">https://github.com/dflib/dflib</a></p>
+</section>
+<section class="slide"><h1>Meet the stack · gog4j</h1>
+<p><em>A grammar of graphics for JavaFX — ggplot2, for Java.</em></p>
+<ul>
+<li><strong>data + aes + geoms</strong>, composed layer by layer</li>
+<li>points, bars, boxes, densities, <strong>facets</strong>, 3-D, scatterplot matrices</li>
+<li>a plot <strong>is</strong> a JavaFX <code>Pane</code>: <code>display(...)</code> it, or export to <strong>SVG</strong></li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://github.com/svenreimers/gog4j">https://github.com/svenreimers/gog4j</a></p>
+</section>
+<section class="slide"><h1>Meet the stack · Orekit</h1>
+<p><em>The space-flight dynamics library — the one the bonus notebook leans on.</em></p>
+<ul>
+<li>reads TLEs and <strong>propagates</strong> them (SGP4/SDP4) to any instant</li>
+<li>positions, velocities, frames, time scales</li>
+<li>used here to place all 21,207 objects where they are <strong>right now</strong></li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://www.orekit.org/">https://www.orekit.org/</a></p>
+</section>
 <section class="slide"><h1>The dataset</h1>
 <p><code>data/celestrak_gp_catalog.parquet</code></p>
 <table>
@@ -159,14 +206,167 @@ Propagate all 21,207 objects to the current instant with <strong>Orekit</strong>
 where they are <em>right now</em>.</p>
 <p>For fast finishers, along with the ★ BONUS cells inside the notebooks.</p>
 </section>
-<section class="slide"><h1>Environment check</h1>
+<section class="slide"><h1>Getting everything</h1>
+<table>
+<thead>
+<tr>
+<th>what</th>
+<th>where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>JDK 26+</strong></td>
+<td>any recent OpenJDK — this lab is verified on <strong>27</strong></td>
+</tr>
+<tr>
+<td><strong>JTaccuino</strong></td>
+<td><a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a></td>
+</tr>
+<tr>
+<td><strong>this lab</strong></td>
+<td><code>git clone &lt;HOL-REPO-URL&gt;</code></td>
+</tr>
+<tr>
+<td><strong>Maven dependencies</strong></td>
+<td><code>&lt;M2-BUNDLE-URL&gt;</code> → unpack into <code>~/.m2/repository</code></td>
+</tr>
+</tbody>
+</table>
+<p>The Maven bundle already contains <strong>every artifact the notebooks resolve</strong> —
+including the <code>0.5-SNAPSHOT</code> builds — so the whole lab runs <strong>offline</strong>.</p>
+<p>Then open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code> and we begin.</p>
+</section>
+<section class="slide lead"><h1>A two-minute space primer</h1>
+<h3>Just enough vocabulary to read the plots</h3>
+</section>
+<section class="slide"><h1>What is in the catalog</h1>
 <ul>
-<li>JDK <strong>26+</strong> (gog4j targets 26; this room runs 27)</li>
-<li>JTaccuino, with a <strong>pre-seeded Maven cache</strong> — everything resolves offline</li>
-<li>everything you need is in this repository</li>
+<li><strong>payload</strong> — a working satellite (PAY)</li>
+<li><strong>debris</strong> — a fragment, often from a collision or break-up (DEB)</li>
+<li><strong>rocket body</strong> — the spent upper stage that delivered something (R/B)</li>
 </ul>
-<p>Open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code> from the <strong>repository
-root</strong>, and we begin.</p>
+<p>Every object gets a <strong>NORAD catalog number</strong> — a permanent id. That is the
+<code>norad_cat_id</code> column, and the key everything joins on.</p>
+<p>A <strong>TLE</strong> (Two-Line Element set) is the compact, fixed-width text encoding of an
+object's orbit. <code>tle_line1</code> and <code>tle_line2</code> in our file <em>are</em> those two lines.</p>
+</section>
+<section class="slide"><h1>An orbit is an ellipse</h1>
+<p>Six numbers describe it. Four matter for this lab:</p>
+<table>
+<thead>
+<tr>
+<th>element</th>
+<th>means</th>
+<th>in our data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>inclination</strong></td>
+<td>tilt of the orbit: 0° equatorial, 90° polar, &gt;90° retrograde</td>
+<td><code>inclination</code></td>
+</tr>
+<tr>
+<td><strong>eccentricity</strong></td>
+<td>0 = perfect circle, near 1 = very stretched</td>
+<td><code>eccentricity</code></td>
+</tr>
+<tr>
+<td><strong>semi-major axis</strong></td>
+<td>the orbit's size — sets the <strong>period</strong></td>
+<td><code>semimajor_axis_km</code></td>
+</tr>
+<tr>
+<td><strong>mean motion</strong></td>
+<td>revolutions per day</td>
+<td><code>mean_motion</code></td>
+</tr>
+</tbody>
+</table>
+<p>The closer the orbit, the faster it goes. That is why <strong>mean motion alone tells
+you the period</strong>: <code>period = 1440 / mean_motion</code> minutes.</p>
+</section>
+<section class="slide"><h1>Near the Earth: altitude</h1>
+<p>Give the size as <strong>altitude above the surface</strong>:</p>
+<ul>
+<li><strong>perigee</strong> — lowest point (<code>perigee_km</code>)</li>
+<li><strong>apogee</strong> — highest point (<code>apogee_km</code>)</li>
+</ul>
+<p>In this file <code>altitude_km</code> is the <em>current</em> height from propagation, and it is
+<code>NaN</code> for ~1,000 decaying objects. <code>apogee_km</code> / <code>perigee_km</code> are always there.</p>
+</section>
+<section class="slide"><h1>The four families</h1>
+<pre><code>LEO   Low Earth Orbit     ~160–2,000 km    period  90–130 min   most of the catalog
+MEO   Medium Earth Orbit  ~2,000–35,786 km period  2–24 h        navigation (GPS, Galileo)
+GEO   Geostationary       ~35,786 km       period  ~24 h         fixed over one spot
+HEO   Highly Elliptical   very stretched   long, slow           science, some comms
+</code></pre>
+<p><strong>35,786 km</strong> is the geostationary belt: at that height the period is exactly one
+day, so a satellite there hovers over a fixed point. One horizontal line on the
+plot and you can <em>see</em> the band.</p>
+</section>
+<section class="slide"><h1>Why debris dominates</h1>
+<p>Three collisions define the debris population in our data:</p>
+<ul>
+<li><strong>Fengyun-1C</strong> (2007) — an anti-satellite test, ~3,000 fragments</li>
+<li><strong>Iridium-33 / Cosmos-2251</strong> (2009) — the first accidental satellite collision</li>
+<li>plus every rocket body left behind</li>
+</ul>
+<p>You can see them as named groups in <code>norad_groups</code>
+(<code>fengyun-1c-debris</code>, <code>cosmos-2251-debris</code>, <code>iridium-33-debris</code>).</p>
+</section>
+<section class="slide"><h1>Propagation: from elements to a position</h1>
+<p>A TLE is a snapshot at an <strong>epoch</strong>. To know <em>where</em> an object is <strong>now</strong>, you
+run it forward — that is <strong>orbit propagation</strong>, and <strong>SGP4/SDP4</strong> is the standard
+model behind it.</p>
+<ul>
+<li>elements + time → position <strong>(x, y, z)</strong> and velocity</li>
+<li>in an <strong>inertial frame</strong> (Earth-centred, not rotating)</li>
+</ul>
+<p>That is the whole trick in the bonus notebook: propagate all 21,207 objects to
+the current instant with <strong>Orekit</strong>, then plot the resulting point cloud in 3D.</p>
+</section>
+<section class="slide"><h1>Vocabulary you can now use</h1>
+<table>
+<thead>
+<tr>
+<th>term</th>
+<th>one line</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TLE / OMM / GP</strong></td>
+<td>ways CelesTrak publishes element sets</td>
+</tr>
+<tr>
+<td><strong>epoch</strong></td>
+<td>the instant a TLE is valid for</td>
+</tr>
+<tr>
+<td><strong>B*</strong> (<code>bstar</code>)</td>
+<td>a drag coefficient — a proxy for &quot;how much air is up there&quot;</td>
+</tr>
+<tr>
+<td><strong>RAAN</strong></td>
+<td>where the orbit plane is rotated around the pole</td>
+</tr>
+<tr>
+<td><strong>propagation</strong></td>
+<td>advancing an orbit in time</td>
+</tr>
+<tr>
+<td><strong>inertial frame</strong></td>
+<td>coordinate axes fixed relative to the stars, not the ground</td>
+</tr>
+<tr>
+<td><strong>LEO/MEO/GEO/HEO</strong></td>
+<td>the four altitude families</td>
+</tr>
+</tbody>
+</table>
+<p>That is everything the notebooks assume.</p>
 </section>
 <section class="slide lead"><h1>Module 1 · JTaccuino</h1>
 <h3>A notebook is a REPL with cells and state</h3>
