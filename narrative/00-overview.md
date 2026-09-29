@@ -16,76 +16,50 @@ Sven Reimers · Zoran Sevarac
 
 ---
 
-# The dataset
+# The big agenda
 
-`data/celestrak_gp_catalog.parquet`
+<div class="cards">
+  <div class="card"><span class="n">10:30</span><span class="l">intro &amp; the data</span><span class="w">Sven</span></div>
+  <div class="card"><span class="n">10:40</span><span class="l">module 1 · JTaccuino</span><span class="w">Sven</span></div>
+  <div class="card"><span class="n">10:55</span><span class="l">module 2 · Hardwood + dflib</span><span class="w">Sven</span></div>
+</div>
 
-| | |
-|---|---|
-| rows | **21,207** objects |
-| columns | **52** |
-| every current CelesTrak GP element set | merged, one row per object |
-| enriched with SATCAT | owner, object type, launch date |
-| format | Parquet, GZIP, one row group, ~5.4 MB |
+<div class="cards">
+  <div class="card"><span class="n">11:10</span><span class="l">module 3 · gog4j</span><span class="w">Sven</span></div>
+  <div class="card"><span class="n">11:25</span><span class="l">the ML pipeline</span><span class="w">Zoran</span></div>
+  <div class="card"><span class="n">12:15</span><span class="l">wrap-up &amp; questions</span><span class="w">both</span></div>
+</div>
 
-A real file, not a toy. And small enough to hold in memory.
-
----
-
-# What is actually in orbit
-
-```
-LEO  19,260   ████████████████████████████████████████
-GEO   1,183   ██
-HEO     558   █
-MEO     206   ▌
-```
-
-```
-payloads  17,110   █████████████████████████████████████
-debris     2,957   ███████
-rocket b.    544   █
-```
-
-`active,starlink` alone is **10,952** objects.
+<p class="note">Every module: a short talk, then <strong>you type</strong>. Solutions are provided.</p>
 
 ---
 
-# The shape of the lab
+# Heads-up: the data
 
-| time | who | what |
-|---|---|---|
-| 10:30 | Sven | intro + dataset (this deck) |
-| 10:40 | Sven | **module 1** — JTaccuino · 5 min talk, 10 min hands-on |
-| 10:55 | Sven | **module 2** — Hardwood + dflib · 5 + 10 |
-| 11:10 | Sven | **module 3** — gog4j · 5 + 10 |
-| 11:25 | Zoran | **ML pipeline** — DeepNetts |
-| 12:15 | both | wrap-up, questions |
+<div class="cards">
+  <div class="card"><span class="n">21,207</span><span class="l">objects in orbit</span></div>
+  <div class="card"><span class="n">52</span><span class="l">columns</span></div>
+  <div class="card"><span class="n">5.4 MB</span><span class="l">one Parquet file</span></div>
+</div>
 
-Every module: **a short talk, then you type.** Solutions are provided.
+<div class="cols">
+  <div>
+    <h3>By orbit class</h3>
+    <div class="bars">
+      <div class="bar"><span class="lab">LEO</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">19,260</span></div>
+      <div class="bar"><span class="lab">GEO</span><span class="track"><span class="fill" style="width:6.1%"></span></span><span class="val">1,183</span></div>
+      <div class="bar"><span class="lab">HEO</span><span class="track"><span class="fill" style="width:2.9%"></span></span><span class="val">558</span></div>
+      <div class="bar"><span class="lab">MEO</span><span class="track"><span class="fill" style="width:1.1%"></span></span><span class="val">206</span></div>
+    </div>
+  </div>
+  <div>
+    <h3>By kind</h3>
+    <div class="bars">
+      <div class="bar"><span class="lab">payload</span><span class="track"><span class="fill warm" style="width:100%"></span></span><span class="val">17,110</span></div>
+      <div class="bar"><span class="lab">debris</span><span class="track"><span class="fill warm" style="width:17.3%"></span></span><span class="val">2,957</span></div>
+      <div class="bar"><span class="lab">rocket b.</span><span class="track"><span class="fill warm" style="width:3.2%"></span></span><span class="val">544</span></div>
+    </div>
+  </div>
+</div>
 
----
-
-# Bonus
-
-**★ A whole-catalog 3-D view** — `notebooks/bonus/orbits-now-3d.ipynb`.
-Propagate all 21,207 objects to the current instant with **Orekit** and plot
-where they are *right now*.
-
-For fast finishers, along with the ★ BONUS cells inside the notebooks.
-
----
-
-# Getting everything
-
-| what | where |
-|---|---|
-| **JDK 26+** | any recent OpenJDK — this lab is verified on **27** |
-| **JTaccuino** | <https://jtaccuino.github.io> |
-| **this lab** | `git clone https://github.com/jtaccuino/devoxx-hol-2026` |
-| **Maven dependencies** | [`devoxx-hol-2026-m2.zip`](https://github.com/jtaccuino/devoxx-hol-2026/releases) → unpack into `~/.m2/repository` |
-
-The Maven bundle already contains **every artifact the notebooks resolve** —
-including the `0.5-SNAPSHOT` builds — so the whole lab runs **offline**.
-
-Then open `notebooks/exercises/01-jtaccuino-basics.ipynb` and we begin.
+<p class="note">Every current CelesTrak element set, merged to one row per object and enriched with SATCAT metadata (owner, object type, launch date).</p>

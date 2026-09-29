@@ -45,6 +45,34 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 #toc li { margin:.4rem 0; }
 #toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
 #toc a:hover { color:var(--accent); }
+.slide .cards { display:flex; gap:1rem; margin:1.1rem 0; }
+.slide .card { flex:1; background:#0f1620; border:1px solid var(--rule);
+  border-radius:12px; padding:1rem 1.1rem; }
+.slide .card .n { display:block; font-size:2rem; font-weight:700; color:var(--accent); line-height:1.1; }
+.slide .card .l { display:block; color:var(--dim); font-size:1rem; margin-top:.3rem; }
+.slide .card .w { display:block; color:#6f8199; font-size:.8rem; margin-top:.45rem;
+  text-transform:uppercase; letter-spacing:.09em; }
+.slide a { color:var(--accent); text-decoration:none; }
+.slide a:hover { text-decoration:underline; }
+.slide .note { color:var(--dim); font-size:1.05rem; margin-top:1rem; }
+.slide .cols { display:flex; gap:2.2rem; margin-top:.4rem; }
+.slide .cols > div { flex:1; }
+.slide .cols h3 { margin:.2rem 0 .7rem; }
+.slide .bars { display:flex; flex-direction:column; gap:.45rem; }
+.slide .bar { display:flex; align-items:center; gap:.6rem; }
+.slide .bar .lab { width:4.6rem; color:var(--dim); font-size:.95rem; }
+.slide .bar .track { flex:1; background:#0b0f14; border:1px solid var(--rule);
+  border-radius:6px; overflow:hidden; height:1.25rem; }
+.slide .bar .fill { display:block; height:100%; min-width:3px;
+  background:linear-gradient(90deg,#2e6ea5,#4aa3df); }
+.slide .bar .fill.warm { background:linear-gradient(90deg,#a5642e,#df9a4a); }
+.slide .bar .val { width:4.5rem; text-align:right; font-size:.95rem; font-variant-numeric:tabular-nums; }
+.slide .pipeline { display:flex; align-items:stretch; gap:.45rem; margin:1.3rem 0; }
+.slide .pipeline .step { flex:1; background:#0f1620; border:1px solid var(--rule);
+  border-radius:10px; padding:.8rem; font-size:.95rem; color:var(--dim); }
+.slide .pipeline .step b { display:block; color:var(--fg); font-size:1.02rem; margin-bottom:.25rem; }
+.slide .pipeline .step.hl { border-color:var(--accent); }
+.slide .pipeline .arrow { align-self:center; color:var(--accent); font-size:1.2rem; }
 @media print {
   .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
   #nav, #bar, #toc { display:none; }
@@ -56,132 +84,45 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 <p><strong>Devoxx Belgium 2026 · hands-on lab</strong>
 Sven Reimers · Zoran Sevarac</p>
 </section>
-<section class="slide"><h1>The dataset</h1>
-<p><code>data/celestrak_gp_catalog.parquet</code></p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>rows</td>
-<td><strong>21,207</strong> objects</td>
-</tr>
-<tr>
-<td>columns</td>
-<td><strong>52</strong></td>
-</tr>
-<tr>
-<td>every current CelesTrak GP element set</td>
-<td>merged, one row per object</td>
-</tr>
-<tr>
-<td>enriched with SATCAT</td>
-<td>owner, object type, launch date</td>
-</tr>
-<tr>
-<td>format</td>
-<td>Parquet, GZIP, one row group, ~5.4 MB</td>
-</tr>
-</tbody>
-</table>
-<p>A real file, not a toy. And small enough to hold in memory.</p>
+<section class="slide"><h1>The big agenda</h1>
+<div class="cards">
+  <div class="card"><span class="n">10:30</span><span class="l">intro &amp; the data</span><span class="w">Sven</span></div>
+  <div class="card"><span class="n">10:40</span><span class="l">module 1 · JTaccuino</span><span class="w">Sven</span></div>
+  <div class="card"><span class="n">10:55</span><span class="l">module 2 · Hardwood + dflib</span><span class="w">Sven</span></div>
+</div>
+<div class="cards">
+  <div class="card"><span class="n">11:10</span><span class="l">module 3 · gog4j</span><span class="w">Sven</span></div>
+  <div class="card"><span class="n">11:25</span><span class="l">the ML pipeline</span><span class="w">Zoran</span></div>
+  <div class="card"><span class="n">12:15</span><span class="l">wrap-up &amp; questions</span><span class="w">both</span></div>
+</div>
+<p class="note">Every module: a short talk, then <strong>you type</strong>. Solutions are provided.</p>
 </section>
-<section class="slide"><h1>What is actually in orbit</h1>
-<pre><code>LEO  19,260   ████████████████████████████████████████
-GEO   1,183   ██
-HEO     558   █
-MEO     206   ▌
-</code></pre>
-<pre><code>payloads  17,110   █████████████████████████████████████
-debris     2,957   ███████
-rocket b.    544   █
-</code></pre>
-<p><code>active,starlink</code> alone is <strong>10,952</strong> objects.</p>
-</section>
-<section class="slide"><h1>The shape of the lab</h1>
-<table>
-<thead>
-<tr>
-<th>time</th>
-<th>who</th>
-<th>what</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>10:30</td>
-<td>Sven</td>
-<td>intro + dataset (this deck)</td>
-</tr>
-<tr>
-<td>10:40</td>
-<td>Sven</td>
-<td><strong>module 1</strong> — JTaccuino · 5 min talk, 10 min hands-on</td>
-</tr>
-<tr>
-<td>10:55</td>
-<td>Sven</td>
-<td><strong>module 2</strong> — Hardwood + dflib · 5 + 10</td>
-</tr>
-<tr>
-<td>11:10</td>
-<td>Sven</td>
-<td><strong>module 3</strong> — gog4j · 5 + 10</td>
-</tr>
-<tr>
-<td>11:25</td>
-<td>Zoran</td>
-<td><strong>ML pipeline</strong> — DeepNetts</td>
-</tr>
-<tr>
-<td>12:15</td>
-<td>both</td>
-<td>wrap-up, questions</td>
-</tr>
-</tbody>
-</table>
-<p>Every module: <strong>a short talk, then you type.</strong> Solutions are provided.</p>
-</section>
-<section class="slide"><h1>Bonus</h1>
-<p><strong>★ A whole-catalog 3-D view</strong> — <code>notebooks/bonus/orbits-now-3d.ipynb</code>.
-Propagate all 21,207 objects to the current instant with <strong>Orekit</strong> and plot
-where they are <em>right now</em>.</p>
-<p>For fast finishers, along with the ★ BONUS cells inside the notebooks.</p>
-</section>
-<section class="slide"><h1>Getting everything</h1>
-<table>
-<thead>
-<tr>
-<th>what</th>
-<th>where</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>JDK 26+</strong></td>
-<td>any recent OpenJDK — this lab is verified on <strong>27</strong></td>
-</tr>
-<tr>
-<td><strong>JTaccuino</strong></td>
-<td><a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a></td>
-</tr>
-<tr>
-<td><strong>this lab</strong></td>
-<td><code>git clone https://github.com/jtaccuino/devoxx-hol-2026</code></td>
-</tr>
-<tr>
-<td><strong>Maven dependencies</strong></td>
-<td><a href="https://github.com/jtaccuino/devoxx-hol-2026/releases"><code>devoxx-hol-2026-m2.zip</code></a> → unpack into <code>~/.m2/repository</code></td>
-</tr>
-</tbody>
-</table>
-<p>The Maven bundle already contains <strong>every artifact the notebooks resolve</strong> —
-including the <code>0.5-SNAPSHOT</code> builds — so the whole lab runs <strong>offline</strong>.</p>
-<p>Then open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code> and we begin.</p>
+<section class="slide"><h1>Heads-up: the data</h1>
+<div class="cards">
+  <div class="card"><span class="n">21,207</span><span class="l">objects in orbit</span></div>
+  <div class="card"><span class="n">52</span><span class="l">columns</span></div>
+  <div class="card"><span class="n">5.4 MB</span><span class="l">one Parquet file</span></div>
+</div>
+<div class="cols">
+  <div>
+    <h3>By orbit class</h3>
+    <div class="bars">
+      <div class="bar"><span class="lab">LEO</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">19,260</span></div>
+      <div class="bar"><span class="lab">GEO</span><span class="track"><span class="fill" style="width:6.1%"></span></span><span class="val">1,183</span></div>
+      <div class="bar"><span class="lab">HEO</span><span class="track"><span class="fill" style="width:2.9%"></span></span><span class="val">558</span></div>
+      <div class="bar"><span class="lab">MEO</span><span class="track"><span class="fill" style="width:1.1%"></span></span><span class="val">206</span></div>
+    </div>
+  </div>
+  <div>
+    <h3>By kind</h3>
+    <div class="bars">
+      <div class="bar"><span class="lab">payload</span><span class="track"><span class="fill warm" style="width:100%"></span></span><span class="val">17,110</span></div>
+      <div class="bar"><span class="lab">debris</span><span class="track"><span class="fill warm" style="width:17.3%"></span></span><span class="val">2,957</span></div>
+      <div class="bar"><span class="lab">rocket b.</span><span class="track"><span class="fill warm" style="width:3.2%"></span></span><span class="val">544</span></div>
+    </div>
+  </div>
+</div>
+<p class="note">Every current CelesTrak element set, merged to one row per object and enriched with SATCAT metadata (owner, object type, launch date).</p>
 </section>
 <section class="slide lead"><h1>A two-minute space primer</h1>
 <h3>Just enough vocabulary to read the plots</h3>
@@ -318,36 +259,39 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 <h3>One small Java program, end to end</h3>
 </section>
 <section class="slide"><h1>What you will build</h1>
-<p>A pipeline over the <strong>CelesTrak satellite catalog</strong>:</p>
-<ol>
-<li><strong>JTaccuino</strong> — a notebook that <em>is</em> a Java REPL</li>
-<li><strong>Hardwood</strong> — read Parquet without reading all of it</li>
-<li><strong>dflib</strong> — shape 21,207 rows with a DataFrame</li>
-<li><strong>gog4j</strong> — a grammar of graphics on JavaFX</li>
-<li><strong>DeepNetts</strong> — predict debris from orbital elements <em>(Zoran)</em></li>
-</ol>
-<p>No Python. No context switch. Just the JVM.</p>
+<div class="pipeline">
+  <div class="step"><b>JTaccuino</b>a Java REPL, in cells</div>
+  <div class="arrow">&#8594;</div>
+  <div class="step"><b>Hardwood</b>read the Parquet</div>
+  <div class="arrow">&#8594;</div>
+  <div class="step"><b>dflib</b>shape the data</div>
+  <div class="arrow">&#8594;</div>
+  <div class="step"><b>gog4j</b>draw it</div>
+  <div class="arrow">&#8594;</div>
+  <div class="step hl"><b>DeepNetts</b>predict it <em>(Zoran)</em></div>
+</div>
+<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>No Python. No context switch. Just the JVM.</strong></p>
 </section>
 <section class="slide"><h1>How this works</h1>
-<p>Each module has a notebook with two kinds of cells:</p>
-<ul>
-<li><strong>TODO</strong> — yours. The scaffold runs; it fails exactly where you haven't
-filled it in yet.</li>
-<li><strong>given</strong> — run it as-is and watch.</li>
-<li><strong>★ BONUS</strong> — for fast finishers. More wow, clearly marked.</li>
-</ul>
-<p>Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one
-gets bored.</p>
+<div class="cards">
+  <div class="card"><span class="n">TODO</span><span class="l">yours &mdash; the scaffold runs and fails exactly where you haven't filled it in</span></div>
+  <div class="card"><span class="n">given</span><span class="l">run it as-is and watch</span></div>
+  <div class="card"><span class="n">&#9733; BONUS</span><span class="l">for fast finishers, more wow, clearly marked</span></div>
+</div>
+<p class="note">Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one gets bored.</p>
 </section>
-<section class="slide"><h1>The plan</h1>
-<ul>
-<li><strong>module 1 · JTaccuino</strong> — the notebook itself</li>
-<li><strong>module 2 · Hardwood + dflib</strong> — read the data, shape the data</li>
-<li><strong>module 3 · gog4j</strong> — draw the data</li>
-<li><strong>then Zoran</strong> — turn it into a model</li>
-</ul>
-<p>Each module opens with a one-slide intro to its tool: what it is and where to
-get it. Everything you need is installed already.</p>
+<section class="slide"><h1>Getting everything</h1>
+<div class="cards">
+  <div class="card"><span class="n">JDK 26+</span><span class="l">any recent OpenJDK &mdash; verified on 27</span></div>
+  <div class="card"><span class="n">JTaccuino</span><span class="l"><a href="https://jtaccuino.github.io">jtaccuino.github.io</a></span></div>
+  <div class="card"><span class="n">the lab</span><span class="l"><code>git clone https://github.com/jtaccuino/devoxx-hol-2026</code></span></div>
+  <div class="card"><span class="n">Maven deps</span><span class="l"><a href="https://github.com/jtaccuino/devoxx-hol-2026/releases">devoxx-hol-2026-m2.zip</a> &rarr; unpack into <code>~/.m2/repository</code></span></div>
+</div>
+<p class="note">The Maven bundle holds every artifact the notebooks resolve &mdash; including the <code>0.5-SNAPSHOT</code> builds &mdash; so the whole lab runs <strong>offline</strong>.</p>
+</section>
+<section class="slide"><h1>Ready?</h1>
+<p>Open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code></p>
+<p>and we begin.</p>
 </section>
 <section class="slide lead"><h1>Module 1 · JTaccuino</h1>
 <h3>A notebook is a REPL with cells and state</h3>
@@ -628,7 +572,7 @@ orbital elements, with a ground-truth label for payload versus debris.</p>
   <button id="contents" title="contents (c)">&#9776; contents</button>
 </nav>
 <div id="toc"><div class="box"><h2>Contents</h2><ol id="tocList"></ol></div></div>
-<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":6},{"t":"Introduction","i":14},{"t":"Module 1 · JTaccuino","i":18},{"t":"Module 2 · Hardwood + dflib","i":25},{"t":"Module 3 · gog4j","i":36}];
+<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":3},{"t":"Introduction","i":11},{"t":"Module 1 · JTaccuino","i":16},{"t":"Module 2 · Hardwood + dflib","i":23},{"t":"Module 3 · gog4j","i":34}];
 const slides = [...document.querySelectorAll('.slide')];
 const toc = document.getElementById('toc');
 const secEl = document.getElementById('sec');

@@ -177,6 +177,34 @@ public class render_narrative {
             #toc li { margin:.4rem 0; }
             #toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
             #toc a:hover { color:var(--accent); }
+            .slide .cards { display:flex; gap:1rem; margin:1.1rem 0; }
+            .slide .card { flex:1; background:#0f1620; border:1px solid var(--rule);
+              border-radius:12px; padding:1rem 1.1rem; }
+            .slide .card .n { display:block; font-size:2rem; font-weight:700; color:var(--accent); line-height:1.1; }
+            .slide .card .l { display:block; color:var(--dim); font-size:1rem; margin-top:.3rem; }
+            .slide .card .w { display:block; color:#6f8199; font-size:.8rem; margin-top:.45rem;
+              text-transform:uppercase; letter-spacing:.09em; }
+            .slide a { color:var(--accent); text-decoration:none; }
+            .slide a:hover { text-decoration:underline; }
+            .slide .note { color:var(--dim); font-size:1.05rem; margin-top:1rem; }
+            .slide .cols { display:flex; gap:2.2rem; margin-top:.4rem; }
+            .slide .cols > div { flex:1; }
+            .slide .cols h3 { margin:.2rem 0 .7rem; }
+            .slide .bars { display:flex; flex-direction:column; gap:.45rem; }
+            .slide .bar { display:flex; align-items:center; gap:.6rem; }
+            .slide .bar .lab { width:4.6rem; color:var(--dim); font-size:.95rem; }
+            .slide .bar .track { flex:1; background:#0b0f14; border:1px solid var(--rule);
+              border-radius:6px; overflow:hidden; height:1.25rem; }
+            .slide .bar .fill { display:block; height:100%; min-width:3px;
+              background:linear-gradient(90deg,#2e6ea5,#4aa3df); }
+            .slide .bar .fill.warm { background:linear-gradient(90deg,#a5642e,#df9a4a); }
+            .slide .bar .val { width:4.5rem; text-align:right; font-size:.95rem; font-variant-numeric:tabular-nums; }
+            .slide .pipeline { display:flex; align-items:stretch; gap:.45rem; margin:1.3rem 0; }
+            .slide .pipeline .step { flex:1; background:#0f1620; border:1px solid var(--rule);
+              border-radius:10px; padding:.8rem; font-size:.95rem; color:var(--dim); }
+            .slide .pipeline .step b { display:block; color:var(--fg); font-size:1.02rem; margin-bottom:.25rem; }
+            .slide .pipeline .step.hl { border-color:var(--accent); }
+            .slide .pipeline .arrow { align-self:center; color:var(--accent); font-size:1.2rem; }
             @media print {
               .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
               #nav, #bar, #toc { display:none; }
