@@ -59,7 +59,7 @@ The running order is:
 3. **Introduction** — what we will be doing, and how the notebooks work
 4. **Module 1 · JTaccuino**, **Module 2 · Hardwood + dflib**, **Module 3 · gog4j**
    — each opens with a "meet the tool" slide (what it is, where to get it)
-5. **Over to Zoran** — the ML story is his, and left open
+5. **Over to Zoran** — a separate stream, left open
 
 Navigation:
 

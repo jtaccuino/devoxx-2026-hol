@@ -15,9 +15,11 @@ title: Space primer
 
 # What is in the catalog
 
-- **payload** — a working satellite (PAY)
-- **debris** — a fragment, often from a collision or break-up (DEB)
-- **rocket body** — the spent upper stage that delivered something (R/B)
+<div class="grid three">
+  <div class="tile"><b>payload</b><span class="d">a working satellite (PAY)</span></div>
+  <div class="tile"><b>debris</b><span class="d">a fragment, often from a collision or break-up (DEB)</span></div>
+  <div class="tile"><b>rocket body</b><span class="d">the spent upper stage that delivered something (R/B)</span></div>
+</div>
 
 Every object gets a **NORAD catalog number** — a permanent id. That is the
 `norad_cat_id` column, and the key everything joins on.
@@ -45,10 +47,10 @@ you the period**: `period = 1440 / mean_motion` minutes.
 
 # Near the Earth: altitude
 
-Give the size as **altitude above the surface**:
-
-- **perigee** — lowest point (`perigee_km`)
-- **apogee** — highest point (`apogee_km`)
+<div class="grid two">
+  <div class="tile"><b>perigee</b><span class="d">the lowest point of the orbit — <code>perigee_km</code></span></div>
+  <div class="tile"><b>apogee</b><span class="d">the highest point of the orbit — <code>apogee_km</code></span></div>
+</div>
 
 In this file `altitude_km` is the *current* height from propagation, and it is
 `NaN` for ~1,000 decaying objects. `apogee_km` / `perigee_km` are always there.
@@ -57,12 +59,12 @@ In this file `altitude_km` is the *current* height from propagation, and it is
 
 # The four families
 
-```
-LEO   Low Earth Orbit     ~160–2,000 km    period  90–130 min   most of the catalog
-MEO   Medium Earth Orbit  ~2,000–35,786 km period  2–24 h        navigation (GPS, Galileo)
-GEO   Geostationary       ~35,786 km       period  ~24 h         fixed over one spot
-HEO   Highly Elliptical   very stretched   long, slow           science, some comms
-```
+<div class="grid two">
+  <div class="tile"><b>LEO · Low Earth Orbit</b><span class="d">~160–2,000 km · period 90–130 min · most of the catalog</span></div>
+  <div class="tile"><b>MEO · Medium Earth Orbit</b><span class="d">~2,000–35,786 km · period 2–24 h · navigation (GPS, Galileo)</span></div>
+  <div class="tile"><b>GEO · Geostationary</b><span class="d">~35,786 km · period ~24 h · fixed over one spot</span></div>
+  <div class="tile"><b>HEO · Highly Elliptical</b><span class="d">very stretched · long, slow orbits · science, some comms</span></div>
+</div>
 
 **35,786 km** is the geostationary belt: at that height the period is exactly one
 day, so a satellite there hovers over a fixed point. One horizontal line on the
@@ -89,8 +91,10 @@ A TLE is a snapshot at an **epoch**. To know *where* an object is **now**, you
 run it forward — that is **orbit propagation**, and **SGP4/SDP4** is the standard
 model behind it.
 
-- elements + time → position **(x, y, z)** and velocity
-- in an **inertial frame** (Earth-centred, not rotating)
+<div class="grid two">
+  <div class="tile"><b>elements + time</b><span class="d">→ a position <strong>(x, y, z)</strong> and velocity</span></div>
+  <div class="tile"><b>in an inertial frame</b><span class="d">Earth-centred, and <em>not</em> rotating with the ground</span></div>
+</div>
 
 That is the whole trick in the bonus notebook: propagate all 21,207 objects to
 the current instant with **Orekit**, then plot the resulting point cloud in 3D.

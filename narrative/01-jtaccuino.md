@@ -19,13 +19,14 @@ title: Module 1 · JTaccuino
 
 *A notebook for Java — JShell in cells, with pictures.*
 
-- Java execution by **JShell**; every cell shares one session
-- `display(...)` renders any **JavaFX** node inline
-- plain JSON notebooks; open from disk
-- built for teaching and interactive experimentation
+<div class="grid two">
+  <div class="tile"><b>one session</b><span class="d">Java execution by <strong>JShell</strong>; every cell shares it</span></div>
+  <div class="tile"><b>pictures inline</b><span class="d"><code>display(...)</code> renders any JavaFX node</span></div>
+  <div class="tile"><b>plain JSON</b><span class="d">notebooks are files you can open from disk</span></div>
+  <div class="tile"><b>built for teaching</b><span class="d">and interactive experimentation</span></div>
+</div>
 
-**Get it:** <https://jtaccuino.github.io>
-**Source:** <https://github.com/jkost/jtaccuino>
+**Get it:** <https://jtaccuino.github.io> · **Source:** <https://github.com/jkost/jtaccuino>
 
 ---
 
@@ -64,14 +65,15 @@ That is the entire trick.
 
 # Two things a REPL does not have
 
-**1 · `display(...)`** — hand it a JavaFX node, it draws it inline.
+<div class="grid two">
+  <div class="tile"><b>1 · display(...)</b><span class="d">hand it a JavaFX node and it draws it inline</span></div>
+  <div class="tile"><b>2 · cells re-run</b><span class="d">change one cell, re-run just that cell</span></div>
+</div>
 
 ```java
 var earth = new Circle(0, 0, 60, Color.ORANGE);
 display(earth);
 ```
-
-**2 · Cells are the unit of re-running.** Change one, re-run one.
 
 ---
 

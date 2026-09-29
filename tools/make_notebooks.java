@@ -757,8 +757,8 @@ orbital elements alone tell debris from a working satellite?
 
 `satcat_object_type` gives the ground truth: `PAY` (payload) or `DEB` / `R/B`
 (debris). The features are the elements — inclination, eccentricity, period, mean
-motion, drag. We stop at the train/test split: **this is where Zoran takes over**
-and puts a network on top.
+motion, drag. We stop at the train/test split — a labelled feature matrix, ready
+for a model.
 """),
             code("""
 // ── given ── turn it into a supervised problem
@@ -795,7 +795,7 @@ println("train %s   test %s   features %d",
         String.format(java.util.Locale.ROOT, "%,d", train.height()),
         String.format(java.util.Locale.ROOT, "%,d", test.height()),
         features.width());
-println("→ hand `train` and `test` (with their labels) to the ML module.");
+println("→ a feature matrix and a labelled split, ready for a model.");
 """),
             md("""
 ## ★ BONUS 1 — Pairs and composition

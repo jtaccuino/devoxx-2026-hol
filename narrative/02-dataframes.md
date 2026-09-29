@@ -20,9 +20,12 @@ title: Module 2 · Hardwood + dflib
 
 *A Parquet reader for the JVM — fast, small, no ceremony.*
 
-- read the **footer** for schema, sizes and statistics, without touching data pages
-- stream rows through a **filter**, or read whole **column batches** as primitive arrays
-- the reader behind this lab's dataset (21,207 rows, 52 columns)
+<div class="grid two">
+  <div class="tile"><b>the footer</b><span class="d">schema, sizes and statistics &mdash; without touching data pages</span></div>
+  <div class="tile"><b>filters &amp; column batches</b><span class="d">stream rows through a predicate, or read whole columns as primitive arrays</span></div>
+  <div class="tile"><b>behind this dataset</b><span class="d">21,207 rows, 52 columns, one 5.4 MB file</span></div>
+  <div class="tile"><b>fast &amp; small</b><span class="d">no ceremony, no heavyweight dependencies</span></div>
+</div>
 
 **Get it:** <https://hardwood.dev/>
 
@@ -32,9 +35,12 @@ title: Module 2 · Hardwood + dflib
 
 *DataFrames in plain Java. Select, filter, derive, group, sort.*
 
-- a fluent, immutable `DataFrame` API — no SQL, no Python
-- 2.0 expressions: `$str(...)`, `$double(...)`, `count()`, `avg()`
-- CSV and **Parquet** I/O; reads the catalog straight into a frame
+<div class="grid two">
+  <div class="tile"><b>fluent DataFrames</b><span class="d">a flat, immutable API &mdash; no SQL, no Python</span></div>
+  <div class="tile"><b>expressions</b><span class="d"><code>$str(...)</code>, <code>$double(...)</code>, <code>count()</code>, <code>avg()</code></span></div>
+  <div class="tile"><b>Parquet &amp; CSV I/O</b><span class="d">reads the catalog straight into a frame</span></div>
+  <div class="tile"><b>2.0</b><span class="d">the <code>group(...).agg(...)</code> API this lab uses</span></div>
+</div>
 
 **Get it:** <https://github.com/dflib/dflib>
 

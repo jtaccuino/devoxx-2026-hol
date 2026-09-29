@@ -19,9 +19,12 @@ title: Module 3 · gog4j
 
 *A grammar of graphics for JavaFX — ggplot2, for Java.*
 
-- **data + aes + geoms**, composed layer by layer
-- points, bars, boxes, densities, **facets**, 3-D, scatterplot matrices
-- a plot **is** a JavaFX `Pane`: `display(...)` it, or export to **SVG**
+<div class="grid two">
+  <div class="tile"><b>data + aes + geoms</b><span class="d">compose a plot layer by layer</span></div>
+  <div class="tile"><b>a full geom set</b><span class="d">points, bars, boxes, densities, facets, 3-D, matrices</span></div>
+  <div class="tile"><b>it is a Node</b><span class="d">a plot is a JavaFX <code>Pane</code> &mdash; <code>display(...)</code> it</span></div>
+  <div class="tile"><b>export</b><span class="d">write publication SVG straight from the plot</span></div>
+</div>
 
 **Get it:** <https://github.com/svenreimers/gog4j>
 
@@ -58,9 +61,11 @@ The same base, refined:
 .facets(Facets.wrap("orbit_class", 2))
 ```
 
-- `labs` — title and axes
-- `theme` — every colour at once
-- `facets` — small multiples, one panel per class
+<div class="grid three">
+  <div class="tile"><b>labs</b><span class="d">title and axes</span></div>
+  <div class="tile"><b>theme</b><span class="d">every colour at once</span></div>
+  <div class="tile"><b>facets</b><span class="d">small multiples, one panel per class</span></div>
+</div>
 
 ---
 
@@ -126,9 +131,8 @@ Low effort. High wow. Clearly marked.
 
 # Over to Zoran
 
-### From table to trained model
+### A stream of its own
 
-The notebooks end with a clean, labelled dataset — every object described by its
-orbital elements, with a ground-truth label for payload versus debris.
+That is the four-tool pipeline over the CelesTrak catalog, done.
 
-**What happens next is Zoran's part of the story.**
+**What comes next is Zoran's part.**

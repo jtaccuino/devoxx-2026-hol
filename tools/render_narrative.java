@@ -177,19 +177,21 @@ public class render_narrative {
             #toc li { margin:.4rem 0; }
             #toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
             #toc a:hover { color:var(--accent); }
-            .slide .cards { display:flex; gap:1rem; margin:1.1rem 0; }
-            .slide .card { flex:1; background:#0f1620; border:1px solid var(--rule);
+            .slide .grid { display:grid; gap:.8rem; margin:.9rem 0; }
+            .slide .grid.two { grid-template-columns:1fr 1fr; }
+            .slide .grid.three { grid-template-columns:repeat(3,1fr); }
+            .slide .card { background:#0f1620; border:1px solid var(--rule);
               border-radius:12px; padding:1rem 1.1rem; }
-            .slide .card .n { display:block; font-size:2rem; font-weight:700; color:var(--accent); line-height:1.1; }
+            .slide .card .n { display:block; font-size:1.9rem; font-weight:700; color:var(--accent); line-height:1.1; }
             .slide .card .l { display:block; color:var(--dim); font-size:1rem; margin-top:.3rem; }
             .slide .card .w { display:block; color:#6f8199; font-size:.8rem; margin-top:.45rem;
               text-transform:uppercase; letter-spacing:.09em; }
+            .slide .tile { background:#0f1620; border:1px solid var(--rule); border-radius:12px; padding:.85rem 1rem; }
+            .slide .tile b { display:block; color:var(--accent); font-size:1.05rem; margin-bottom:.25rem; }
+            .slide .tile .d { color:var(--dim); font-size:.95rem; }
             .slide a { color:var(--accent); text-decoration:none; }
             .slide a:hover { text-decoration:underline; }
-            .slide .note { color:var(--dim); font-size:1.05rem; margin-top:1rem; }
-            .slide .cols { display:flex; gap:2.2rem; margin-top:.4rem; }
-            .slide .cols > div { flex:1; }
-            .slide .cols h3 { margin:.2rem 0 .7rem; }
+            .slide .note { color:var(--dim); font-size:1.05rem; margin-top:.9rem; }
             .slide .bars { display:flex; flex-direction:column; gap:.45rem; }
             .slide .bar { display:flex; align-items:center; gap:.6rem; }
             .slide .bar .lab { width:4.6rem; color:var(--dim); font-size:.95rem; }
@@ -199,7 +201,6 @@ public class render_narrative {
               background:linear-gradient(90deg,#2e6ea5,#4aa3df); }
             .slide .bar .fill.warm { background:linear-gradient(90deg,#a5642e,#df9a4a); }
             .slide .bar .val { width:4.5rem; text-align:right; font-size:.95rem; font-variant-numeric:tabular-nums; }
-            .slide .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:1rem 0 .2rem; }
             .slide .tool { display:flex; align-items:center; gap:.85rem; background:#0f1620;
               border:1px solid var(--rule); border-radius:12px; padding:.7rem .95rem; }
             .slide .tool .ico { flex:0 0 auto; width:30px; height:30px; color:var(--accent); }

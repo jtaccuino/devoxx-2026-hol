@@ -15,7 +15,7 @@ title: Introduction
 
 # What you will build
 
-<div class="grid2">
+<div class="grid two">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/><path d="M12 8h5M12 12h5"/></svg></span>
     <span class="txt"><b>JTaccuino</b><span>a Java REPL, in cells</span></span>
@@ -34,23 +34,23 @@ title: Introduction
   </div>
 </div>
 
-<div class="sep">then, a separate stream</div>
+<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>no Python, no context switch, just the JVM.</strong></p>
+
+<div class="sep">and a separate stream</div>
 
 <div class="alt">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="12" r="2.2"/><path d="M8 7.8l7.8 3.1M8 16.2l7.8-3.1"/></svg></span>
-    <span class="txt"><b>DeepNetts</b><span>predict debris from the orbital elements</span></span>
+    <span class="txt"><b>DeepNetts</b><span>a deep-learning library for the JVM</span></span>
     <span class="badge">Zoran's stream</span>
   </div>
 </div>
-
-<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>No Python. No context switch. Just the JVM.</strong></p>
 
 ---
 
 # How this works
 
-<div class="cards">
+<div class="grid three">
   <div class="card"><span class="n">TODO</span><span class="l">yours &mdash; the scaffold runs and fails exactly where you haven't filled it in</span></div>
   <div class="card"><span class="n">given</span><span class="l">run it as-is and watch</span></div>
   <div class="card"><span class="n">&#9733; BONUS</span><span class="l">for fast finishers, more wow, clearly marked</span></div>
@@ -62,7 +62,7 @@ title: Introduction
 
 # Getting everything
 
-<div class="cards">
+<div class="grid two">
   <div class="card"><span class="n">JDK 26+</span><span class="l">any recent OpenJDK &mdash; verified on 27</span></div>
   <div class="card"><span class="n">JTaccuino</span><span class="l"><a href="https://jtaccuino.github.io">jtaccuino.github.io</a></span></div>
   <div class="card"><span class="n">the lab</span><span class="l"><code>git clone https://github.com/jtaccuino/devoxx-hol-2026</code></span></div>

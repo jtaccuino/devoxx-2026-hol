@@ -45,19 +45,21 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 #toc li { margin:.4rem 0; }
 #toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
 #toc a:hover { color:var(--accent); }
-.slide .cards { display:flex; gap:1rem; margin:1.1rem 0; }
-.slide .card { flex:1; background:#0f1620; border:1px solid var(--rule);
+.slide .grid { display:grid; gap:.8rem; margin:.9rem 0; }
+.slide .grid.two { grid-template-columns:1fr 1fr; }
+.slide .grid.three { grid-template-columns:repeat(3,1fr); }
+.slide .card { background:#0f1620; border:1px solid var(--rule);
   border-radius:12px; padding:1rem 1.1rem; }
-.slide .card .n { display:block; font-size:2rem; font-weight:700; color:var(--accent); line-height:1.1; }
+.slide .card .n { display:block; font-size:1.9rem; font-weight:700; color:var(--accent); line-height:1.1; }
 .slide .card .l { display:block; color:var(--dim); font-size:1rem; margin-top:.3rem; }
 .slide .card .w { display:block; color:#6f8199; font-size:.8rem; margin-top:.45rem;
   text-transform:uppercase; letter-spacing:.09em; }
+.slide .tile { background:#0f1620; border:1px solid var(--rule); border-radius:12px; padding:.85rem 1rem; }
+.slide .tile b { display:block; color:var(--accent); font-size:1.05rem; margin-bottom:.25rem; }
+.slide .tile .d { color:var(--dim); font-size:.95rem; }
 .slide a { color:var(--accent); text-decoration:none; }
 .slide a:hover { text-decoration:underline; }
-.slide .note { color:var(--dim); font-size:1.05rem; margin-top:1rem; }
-.slide .cols { display:flex; gap:2.2rem; margin-top:.4rem; }
-.slide .cols > div { flex:1; }
-.slide .cols h3 { margin:.2rem 0 .7rem; }
+.slide .note { color:var(--dim); font-size:1.05rem; margin-top:.9rem; }
 .slide .bars { display:flex; flex-direction:column; gap:.45rem; }
 .slide .bar { display:flex; align-items:center; gap:.6rem; }
 .slide .bar .lab { width:4.6rem; color:var(--dim); font-size:.95rem; }
@@ -67,7 +69,6 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   background:linear-gradient(90deg,#2e6ea5,#4aa3df); }
 .slide .bar .fill.warm { background:linear-gradient(90deg,#a5642e,#df9a4a); }
 .slide .bar .val { width:4.5rem; text-align:right; font-size:.95rem; font-variant-numeric:tabular-nums; }
-.slide .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:1rem 0 .2rem; }
 .slide .tool { display:flex; align-items:center; gap:.85rem; background:#0f1620;
   border:1px solid var(--rule); border-radius:12px; padding:.7rem .95rem; }
 .slide .tool .ico { flex:0 0 auto; width:30px; height:30px; color:var(--accent); }
@@ -93,12 +94,10 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 Sven Reimers · Zoran Sevarac</p>
 </section>
 <section class="slide"><h1>The big agenda</h1>
-<div class="cards">
+<div class="grid three">
   <div class="card"><span class="n">10:30</span><span class="l">intro &amp; the data</span><span class="w">Sven</span></div>
   <div class="card"><span class="n">10:40</span><span class="l">module 1 · JTaccuino</span><span class="w">Sven</span></div>
   <div class="card"><span class="n">10:55</span><span class="l">module 2 · Hardwood + dflib</span><span class="w">Sven</span></div>
-</div>
-<div class="cards">
   <div class="card"><span class="n">11:10</span><span class="l">module 3 · gog4j</span><span class="w">Sven</span></div>
   <div class="card"><span class="n">11:25</span><span class="l">the ML pipeline</span><span class="w">Zoran</span></div>
   <div class="card"><span class="n">12:15</span><span class="l">wrap-up &amp; questions</span><span class="w">both</span></div>
@@ -106,14 +105,14 @@ Sven Reimers · Zoran Sevarac</p>
 <p class="note">Every module: a short talk, then <strong>you type</strong>. Solutions are provided.</p>
 </section>
 <section class="slide"><h1>Heads-up: the data</h1>
-<div class="cards">
+<div class="grid three">
   <div class="card"><span class="n">21,207</span><span class="l">objects in orbit</span></div>
   <div class="card"><span class="n">52</span><span class="l">columns</span></div>
   <div class="card"><span class="n">5.4 MB</span><span class="l">one Parquet file</span></div>
 </div>
-<div class="cols">
-  <div>
-    <h3>By orbit class</h3>
+<div class="grid two">
+  <div class="tile">
+    <b>By orbit class</b>
     <div class="bars">
       <div class="bar"><span class="lab">LEO</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">19,260</span></div>
       <div class="bar"><span class="lab">GEO</span><span class="track"><span class="fill" style="width:6.1%"></span></span><span class="val">1,183</span></div>
@@ -121,8 +120,8 @@ Sven Reimers · Zoran Sevarac</p>
       <div class="bar"><span class="lab">MEO</span><span class="track"><span class="fill" style="width:1.1%"></span></span><span class="val">206</span></div>
     </div>
   </div>
-  <div>
-    <h3>By kind</h3>
+  <div class="tile">
+    <b>By kind</b>
     <div class="bars">
       <div class="bar"><span class="lab">payload</span><span class="track"><span class="fill warm" style="width:100%"></span></span><span class="val">17,110</span></div>
       <div class="bar"><span class="lab">debris</span><span class="track"><span class="fill warm" style="width:17.3%"></span></span><span class="val">2,957</span></div>
@@ -136,11 +135,11 @@ Sven Reimers · Zoran Sevarac</p>
 <h3>Just enough vocabulary to read the plots</h3>
 </section>
 <section class="slide"><h1>What is in the catalog</h1>
-<ul>
-<li><strong>payload</strong> — a working satellite (PAY)</li>
-<li><strong>debris</strong> — a fragment, often from a collision or break-up (DEB)</li>
-<li><strong>rocket body</strong> — the spent upper stage that delivered something (R/B)</li>
-</ul>
+<div class="grid three">
+  <div class="tile"><b>payload</b><span class="d">a working satellite (PAY)</span></div>
+  <div class="tile"><b>debris</b><span class="d">a fragment, often from a collision or break-up (DEB)</span></div>
+  <div class="tile"><b>rocket body</b><span class="d">the spent upper stage that delivered something (R/B)</span></div>
+</div>
 <p>Every object gets a <strong>NORAD catalog number</strong> — a permanent id. That is the
 <code>norad_cat_id</code> column, and the key everything joins on.</p>
 <p>A <strong>TLE</strong> (Two-Line Element set) is the compact, fixed-width text encoding of an
@@ -183,20 +182,20 @@ object's orbit. <code>tle_line1</code> and <code>tle_line2</code> in our file <e
 you the period</strong>: <code>period = 1440 / mean_motion</code> minutes.</p>
 </section>
 <section class="slide"><h1>Near the Earth: altitude</h1>
-<p>Give the size as <strong>altitude above the surface</strong>:</p>
-<ul>
-<li><strong>perigee</strong> — lowest point (<code>perigee_km</code>)</li>
-<li><strong>apogee</strong> — highest point (<code>apogee_km</code>)</li>
-</ul>
+<div class="grid two">
+  <div class="tile"><b>perigee</b><span class="d">the lowest point of the orbit — <code>perigee_km</code></span></div>
+  <div class="tile"><b>apogee</b><span class="d">the highest point of the orbit — <code>apogee_km</code></span></div>
+</div>
 <p>In this file <code>altitude_km</code> is the <em>current</em> height from propagation, and it is
 <code>NaN</code> for ~1,000 decaying objects. <code>apogee_km</code> / <code>perigee_km</code> are always there.</p>
 </section>
 <section class="slide"><h1>The four families</h1>
-<pre><code>LEO   Low Earth Orbit     ~160–2,000 km    period  90–130 min   most of the catalog
-MEO   Medium Earth Orbit  ~2,000–35,786 km period  2–24 h        navigation (GPS, Galileo)
-GEO   Geostationary       ~35,786 km       period  ~24 h         fixed over one spot
-HEO   Highly Elliptical   very stretched   long, slow           science, some comms
-</code></pre>
+<div class="grid two">
+  <div class="tile"><b>LEO · Low Earth Orbit</b><span class="d">~160–2,000 km · period 90–130 min · most of the catalog</span></div>
+  <div class="tile"><b>MEO · Medium Earth Orbit</b><span class="d">~2,000–35,786 km · period 2–24 h · navigation (GPS, Galileo)</span></div>
+  <div class="tile"><b>GEO · Geostationary</b><span class="d">~35,786 km · period ~24 h · fixed over one spot</span></div>
+  <div class="tile"><b>HEO · Highly Elliptical</b><span class="d">very stretched · long, slow orbits · science, some comms</span></div>
+</div>
 <p><strong>35,786 km</strong> is the geostationary belt: at that height the period is exactly one
 day, so a satellite there hovers over a fixed point. One horizontal line on the
 plot and you can <em>see</em> the band.</p>
@@ -215,10 +214,10 @@ plot and you can <em>see</em> the band.</p>
 <p>A TLE is a snapshot at an <strong>epoch</strong>. To know <em>where</em> an object is <strong>now</strong>, you
 run it forward — that is <strong>orbit propagation</strong>, and <strong>SGP4/SDP4</strong> is the standard
 model behind it.</p>
-<ul>
-<li>elements + time → position <strong>(x, y, z)</strong> and velocity</li>
-<li>in an <strong>inertial frame</strong> (Earth-centred, not rotating)</li>
-</ul>
+<div class="grid two">
+  <div class="tile"><b>elements + time</b><span class="d">→ a position <strong>(x, y, z)</strong> and velocity</span></div>
+  <div class="tile"><b>in an inertial frame</b><span class="d">Earth-centred, and <em>not</em> rotating with the ground</span></div>
+</div>
 <p>That is the whole trick in the bonus notebook: propagate all 21,207 objects to
 the current instant with <strong>Orekit</strong>, then plot the resulting point cloud in 3D.</p>
 </section>
@@ -267,7 +266,7 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 <h3>One small Java program, end to end</h3>
 </section>
 <section class="slide"><h1>What you will build</h1>
-<div class="grid2">
+<div class="grid two">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/><path d="M12 8h5M12 12h5"/></svg></span>
     <span class="txt"><b>JTaccuino</b><span>a Java REPL, in cells</span></span>
@@ -285,18 +284,18 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
     <span class="txt"><b>gog4j</b><span>draw it</span></span>
   </div>
 </div>
-<div class="sep">then, a separate stream</div>
+<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>no Python, no context switch, just the JVM.</strong></p>
+<div class="sep">and a separate stream</div>
 <div class="alt">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="12" r="2.2"/><path d="M8 7.8l7.8 3.1M8 16.2l7.8-3.1"/></svg></span>
-    <span class="txt"><b>DeepNetts</b><span>predict debris from the orbital elements</span></span>
+    <span class="txt"><b>DeepNetts</b><span>a deep-learning library for the JVM</span></span>
     <span class="badge">Zoran's stream</span>
   </div>
 </div>
-<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>No Python. No context switch. Just the JVM.</strong></p>
 </section>
 <section class="slide"><h1>How this works</h1>
-<div class="cards">
+<div class="grid three">
   <div class="card"><span class="n">TODO</span><span class="l">yours &mdash; the scaffold runs and fails exactly where you haven't filled it in</span></div>
   <div class="card"><span class="n">given</span><span class="l">run it as-is and watch</span></div>
   <div class="card"><span class="n">&#9733; BONUS</span><span class="l">for fast finishers, more wow, clearly marked</span></div>
@@ -304,7 +303,7 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 <p class="note">Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one gets bored.</p>
 </section>
 <section class="slide"><h1>Getting everything</h1>
-<div class="cards">
+<div class="grid two">
   <div class="card"><span class="n">JDK 26+</span><span class="l">any recent OpenJDK &mdash; verified on 27</span></div>
   <div class="card"><span class="n">JTaccuino</span><span class="l"><a href="https://jtaccuino.github.io">jtaccuino.github.io</a></span></div>
   <div class="card"><span class="n">the lab</span><span class="l"><code>git clone https://github.com/jtaccuino/devoxx-hol-2026</code></span></div>
@@ -322,14 +321,13 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 </section>
 <section class="slide"><h1>Meet the tool · JTaccuino</h1>
 <p><em>A notebook for Java — JShell in cells, with pictures.</em></p>
-<ul>
-<li>Java execution by <strong>JShell</strong>; every cell shares one session</li>
-<li><code>display(...)</code> renders any <strong>JavaFX</strong> node inline</li>
-<li>plain JSON notebooks; open from disk</li>
-<li>built for teaching and interactive experimentation</li>
-</ul>
-<p><strong>Get it:</strong> <a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a>
-<strong>Source:</strong> <a href="https://github.com/jkost/jtaccuino">https://github.com/jkost/jtaccuino</a></p>
+<div class="grid two">
+  <div class="tile"><b>one session</b><span class="d">Java execution by <strong>JShell</strong>; every cell shares it</span></div>
+  <div class="tile"><b>pictures inline</b><span class="d"><code>display(...)</code> renders any JavaFX node</span></div>
+  <div class="tile"><b>plain JSON</b><span class="d">notebooks are files you can open from disk</span></div>
+  <div class="tile"><b>built for teaching</b><span class="d">and interactive experimentation</span></div>
+</div>
+<p><strong>Get it:</strong> <a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a> · <strong>Source:</strong> <a href="https://github.com/jkost/jtaccuino">https://github.com/jkost/jtaccuino</a></p>
 </section>
 <section class="slide"><h1>Why a notebook at all?</h1>
 <p>Because data work is a <strong>conversation</strong>.</p>
@@ -353,11 +351,13 @@ println(&quot;we have %,d objects&quot;, satellites);
 That is the entire trick.</p>
 </section>
 <section class="slide"><h1>Two things a REPL does not have</h1>
-<p><strong>1 · <code>display(...)</code></strong> — hand it a JavaFX node, it draws it inline.</p>
+<div class="grid two">
+  <div class="tile"><b>1 · display(...)</b><span class="d">hand it a JavaFX node and it draws it inline</span></div>
+  <div class="tile"><b>2 · cells re-run</b><span class="d">change one cell, re-run just that cell</span></div>
+</div>
 <pre><code class="language-java">var earth = new Circle(0, 0, 60, Color.ORANGE);
 display(earth);
 </code></pre>
-<p><strong>2 · Cells are the unit of re-running.</strong> Change one, re-run one.</p>
 </section>
 <section class="slide"><h1>One rule that will bite you</h1>
 <p>JShell executes a snippet when the line is <strong>complete</strong>.</p>
@@ -390,20 +390,22 @@ if (ready) {
 </section>
 <section class="slide"><h1>Meet the tool · Hardwood</h1>
 <p><em>A Parquet reader for the JVM — fast, small, no ceremony.</em></p>
-<ul>
-<li>read the <strong>footer</strong> for schema, sizes and statistics, without touching data pages</li>
-<li>stream rows through a <strong>filter</strong>, or read whole <strong>column batches</strong> as primitive arrays</li>
-<li>the reader behind this lab's dataset (21,207 rows, 52 columns)</li>
-</ul>
+<div class="grid two">
+  <div class="tile"><b>the footer</b><span class="d">schema, sizes and statistics &mdash; without touching data pages</span></div>
+  <div class="tile"><b>filters &amp; column batches</b><span class="d">stream rows through a predicate, or read whole columns as primitive arrays</span></div>
+  <div class="tile"><b>behind this dataset</b><span class="d">21,207 rows, 52 columns, one 5.4 MB file</span></div>
+  <div class="tile"><b>fast &amp; small</b><span class="d">no ceremony, no heavyweight dependencies</span></div>
+</div>
 <p><strong>Get it:</strong> <a href="https://hardwood.dev/">https://hardwood.dev/</a></p>
 </section>
 <section class="slide"><h1>Meet the tool · dflib</h1>
 <p><em>DataFrames in plain Java. Select, filter, derive, group, sort.</em></p>
-<ul>
-<li>a fluent, immutable <code>DataFrame</code> API — no SQL, no Python</li>
-<li>2.0 expressions: <code>$str(...)</code>, <code>$double(...)</code>, <code>count()</code>, <code>avg()</code></li>
-<li>CSV and <strong>Parquet</strong> I/O; reads the catalog straight into a frame</li>
-</ul>
+<div class="grid two">
+  <div class="tile"><b>fluent DataFrames</b><span class="d">a flat, immutable API &mdash; no SQL, no Python</span></div>
+  <div class="tile"><b>expressions</b><span class="d"><code>$str(...)</code>, <code>$double(...)</code>, <code>count()</code>, <code>avg()</code></span></div>
+  <div class="tile"><b>Parquet &amp; CSV I/O</b><span class="d">reads the catalog straight into a frame</span></div>
+  <div class="tile"><b>2.0</b><span class="d">the <code>group(...).agg(...)</code> API this lab uses</span></div>
+</div>
 <p><strong>Get it:</strong> <a href="https://github.com/dflib/dflib">https://github.com/dflib/dflib</a></p>
 </section>
 <section class="slide"><h1>Parquet is not a text file</h1>
@@ -490,11 +492,12 @@ messy; the labs use the columns that are complete.</p>
 </section>
 <section class="slide"><h1>Meet the tool · gog4j</h1>
 <p><em>A grammar of graphics for JavaFX — ggplot2, for Java.</em></p>
-<ul>
-<li><strong>data + aes + geoms</strong>, composed layer by layer</li>
-<li>points, bars, boxes, densities, <strong>facets</strong>, 3-D, scatterplot matrices</li>
-<li>a plot <strong>is</strong> a JavaFX <code>Pane</code>: <code>display(...)</code> it, or export to <strong>SVG</strong></li>
-</ul>
+<div class="grid two">
+  <div class="tile"><b>data + aes + geoms</b><span class="d">compose a plot layer by layer</span></div>
+  <div class="tile"><b>a full geom set</b><span class="d">points, bars, boxes, densities, facets, 3-D, matrices</span></div>
+  <div class="tile"><b>it is a Node</b><span class="d">a plot is a JavaFX <code>Pane</code> &mdash; <code>display(...)</code> it</span></div>
+  <div class="tile"><b>export</b><span class="d">write publication SVG straight from the plot</span></div>
+</div>
 <p><strong>Get it:</strong> <a href="https://github.com/svenreimers/gog4j">https://github.com/svenreimers/gog4j</a></p>
 </section>
 <section class="slide"><h1>The grammar</h1>
@@ -534,11 +537,11 @@ messy; the labs use the columns that are complete.</p>
 .theme(Theme.theme_dark())
 .facets(Facets.wrap(&quot;orbit_class&quot;, 2))
 </code></pre>
-<ul>
-<li><code>labs</code> — title and axes</li>
-<li><code>theme</code> — every colour at once</li>
-<li><code>facets</code> — small multiples, one panel per class</li>
-</ul>
+<div class="grid three">
+  <div class="tile"><b>labs</b><span class="d">title and axes</span></div>
+  <div class="tile"><b>theme</b><span class="d">every colour at once</span></div>
+  <div class="tile"><b>facets</b><span class="d">small multiples, one panel per class</span></div>
+</div>
 </section>
 <section class="slide"><h1>Geometry tells the story</h1>
 <p>Faceting by orbit class shows <strong>four different populations</strong>:</p>
@@ -580,10 +583,9 @@ SVG → PDF is one external command away.</p>
 <p>Low effort. High wow. Clearly marked.</p>
 </section>
 <section class="slide lead"><h1>Over to Zoran</h1>
-<h3>From table to trained model</h3>
-<p>The notebooks end with a clean, labelled dataset — every object described by its
-orbital elements, with a ground-truth label for payload versus debris.</p>
-<p><strong>What happens next is Zoran's part of the story.</strong></p>
+<h3>A stream of its own</h3>
+<p>That is the four-tool pipeline over the CelesTrak catalog, done.</p>
+<p><strong>What comes next is Zoran's part.</strong></p>
 </section>
 </div>
 <div id="bar"></div>
