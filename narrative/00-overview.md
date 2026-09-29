@@ -64,7 +64,9 @@ Sven Reimers · Zoran Sevarac
 
 ---
 
-# Heads-up: the data
+# Heads-up: the CelesTrak data
+
+Every current element set from <a href="https://celestrak.org">celestrak.org</a>, merged to one row per object and enriched with SATCAT metadata.
 
 <div class="grid three">
   <div class="card"><span class="n">21,207</span><span class="l">objects in orbit</span></div>
@@ -92,4 +94,4 @@ Sven Reimers · Zoran Sevarac
   </div>
 </div>
 
-<p class="note">Every object has a <strong>NORAD catalog number</strong> and a <strong>TLE</strong> (<code>tle_line1</code>/<code>tle_line2</code>) describing its orbit &mdash; a <strong>payload</strong> is a working satellite (PAY), <strong>debris</strong> a fragment (DEB), a <strong>rocket body</strong> a spent stage (R/B). Merged from every current CelesTrak element set and enriched with SATCAT metadata.</p>
+<p class="note">Every object has a <strong>NORAD catalog number</strong> and a <strong>TLE</strong> (<code>tle_line1</code>/<code>tle_line2</code>) describing its orbit &mdash; a <strong>payload</strong> is a working satellite (PAY), <strong>debris</strong> a fragment (DEB), a <strong>rocket body</strong> a spent stage (R/B). Source: <a href="https://celestrak.org">CelesTrak</a>.</p>
