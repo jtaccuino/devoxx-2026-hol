@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Module 2 · Hardwood + dflib</title><style>
-:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+<title>Module 2 · Hardwood + dflib</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
 * { box-sizing: border-box; }
 html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
@@ -43,7 +42,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 <div id="deck"><section class="slide lead"><h1>Module 2 · Hardwood + dflib</h1>
 <h3>Reading data, and shaping it</h3>
 <p><code>notebooks/exercises/02-parquet-with-hardwood.ipynb</code>
-<code>notebooks/exercises/03-dataframes-with-dflib.ipynb</code></p></section>
+<code>notebooks/exercises/03-dataframes-with-dflib.ipynb</code></p>
+</section>
 <section class="slide"><h1>Parquet is not a text file</h1>
 <p>It is <strong>columnar</strong>: values of one column sit together, so you can read one
 column without reading the others.</p>
@@ -53,13 +53,15 @@ column without reading the others.</p>
 <li><strong>row readers</strong> — stream rows through a filter</li>
 <li><strong>column readers</strong> — a whole column as a primitive array</li>
 </ol>
-<p>You pick the level that answers your question.</p></section>
+<p>You pick the level that answers your question.</p>
+</section>
 <section class="slide"><h1>Level 1 · the footer</h1>
 <p>21,207 rows, 52 columns, 1 row group, 5.4 MB —</p>
 <p>all known <strong>without decompressing a single data page</strong>.</p>
 <p>Even the min/max of a column is in the footer:</p>
 <pre><code>inclination  0.003 .. 142.042   (from the footer only)
-</code></pre></section>
+</code></pre>
+</section>
 <section class="slide"><h1>Level 2 · stream the rows</h1>
 <pre><code class="language-java">long debris = 0;
 try (RowReader rows = catalog.rowReader()) {
@@ -70,7 +72,8 @@ try (RowReader rows = catalog.rowReader()) {
     }
 }
 </code></pre>
-<p>One pass, one <code>long</code> of state, <strong>3,501</strong> debris.</p></section>
+<p>One pass, one <code>long</code> of state, <strong>3,501</strong> debris.</p>
+</section>
 <section class="slide"><h1>Level 3 · column batches</h1>
 <pre><code class="language-java">try (ColumnReader col = catalog.columnReader(&quot;inclination&quot;)) {
     while (col.nextBatch()) {
@@ -80,7 +83,8 @@ try (RowReader rows = catalog.rowReader()) {
     }
 }
 </code></pre>
-<p>No row objects. No boxing. Just a <code>double[]</code>.</p></section>
+<p>No row objects. No boxing. Just a <code>double[]</code>.</p>
+</section>
 <section class="slide"><h1>dflib is the other half</h1>
 <p>Hardwood <em>streams</em>. <strong>dflib</strong> <em>shapes</em>.</p>
 <pre><code class="language-java">var df = Parquet.loader().load(path);
@@ -90,7 +94,8 @@ try (RowReader rows = catalog.rowReader()) {
 df.rows($str(&quot;orbit_class&quot;).eq(&quot;GEO&quot;)).select();               // filter
 df.group(&quot;orbit_class&quot;).agg($col(&quot;orbit_class&quot;), count());     // group
 df.sort(&quot;apogee_km&quot;, false);                                   // sort
-</code></pre></section>
+</code></pre>
+</section>
 <section class="slide"><h1>Derive and aggregate in one breath</h1>
 <p>The mean apogee–perigee spread per class:</p>
 <pre><code class="language-java">df.group(&quot;orbit_class&quot;).agg(
@@ -100,12 +105,14 @@ df.sort(&quot;apogee_km&quot;, false);                                   // sort
 </code></pre>
 <pre><code>HEO  45,138 km    MEO  1,125 km    GEO  472 km    LEO  43 km
 </code></pre>
-<p>A derived column <em>and</em> a summary, in one expression.</p></section>
+<p>A derived column <em>and</em> a summary, in one expression.</p>
+</section>
 <section class="slide"><h1>One real-data wart</h1>
 <p><code>altitude_km</code> is <strong>NaN for 997 rows</strong> — exactly where SGP4 propagation failed
 (decayed objects).</p>
 <p>The <em>analytic</em> <code>apogee_km</code> / <code>perigee_km</code> are always present. Real data is
-messy; the labs use the columns that are complete.</p></section>
+messy; the labs use the columns that are complete.</p>
+</section>
 <section class="slide"><h1>Your turn</h1>
 <p><code>02-parquet-with-hardwood.ipynb</code> — <strong>5 TODOs.</strong> Climb the three levels.</p>
 <p><code>03-dataframes-with-dflib.ipynb</code> — <strong>6 TODOs.</strong> Select, filter, group, sort.</p>
@@ -113,9 +120,10 @@ messy; the labs use the columns that are complete.</p></section>
 <p>~10 minutes each.</p>
 <blockquote>
 <p>On to <strong>module 3</strong> — pictures.</p>
-</blockquote></section></div><div id="bar"></div><div id="hud"></div>
-<script>
-const slides=[...document.querySelectorAll('.slide')];
+</blockquote>
+</section>
+</div><div id="bar"></div><div id="hud"></div>
+<script>const slides=[...document.querySelectorAll('.slide')];
 let i=0;
 function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));

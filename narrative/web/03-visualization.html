@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Module 3 · gog4j</title><style>
-:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+<title>Module 3 · gog4j</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
 * { box-sizing: border-box; }
 html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
@@ -42,7 +41,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 <body><a id="back" href="index.html">&#8592; all decks</a>
 <div id="deck"><section class="slide lead"><h1>Module 3 · gog4j</h1>
 <h3>A grammar of graphics, on JavaFX</h3>
-<p><code>notebooks/exercises/04-plotting-with-gog4j.ipynb</code></p></section>
+<p><code>notebooks/exercises/04-plotting-with-gog4j.ipynb</code></p>
+</section>
 <section class="slide"><h1>The grammar</h1>
 <p>A plot is three pieces, composed:</p>
 <table>
@@ -71,7 +71,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
         Aes.aes().x(&quot;inclination&quot;).y(&quot;apogee_km&quot;).color(&quot;orbit_class&quot;))
     .geoms(Geoms.point());
 </code></pre>
-<p>That is a scatterplot of 21,207 satellites.</p></section>
+<p>That is a scatterplot of 21,207 satellites.</p>
+</section>
 <section class="slide"><h1>Layers stack</h1>
 <p>The same base, refined:</p>
 <pre><code class="language-java">.geoms(Geoms.point())
@@ -83,7 +84,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 <li><code>labs</code> — title and axes</li>
 <li><code>theme</code> — every colour at once</li>
 <li><code>facets</code> — small multiples, one panel per class</li>
-</ul></section>
+</ul>
+</section>
 <section class="slide"><h1>Geometry tells the story</h1>
 <p>Faceting by orbit class shows <strong>four different populations</strong>:</p>
 <pre><code>LEO  ↓ low, dense, inclinations from 0° to 142°
@@ -91,7 +93,8 @@ GEO  → a tight band, near-zero inclination, one altitude
 MEO  • a sparse shell
 HEO  ↗ wildly elliptical
 </code></pre>
-<p>One <code>hline</code> at <strong>35,786 km</strong> makes the GEO belt obvious.</p></section>
+<p>One <code>hline</code> at <strong>35,786 km</strong> makes the GEO belt obvious.</p>
+</section>
 <section class="slide"><h1>display, or export</h1>
 <pre><code class="language-java">display(plot);                                   // live, in the notebook
 </code></pre>
@@ -99,7 +102,8 @@ HEO  ↗ wildly elliptical
     .write(plot, cwd.resolve(&quot;celestrak-orbits.svg&quot;));
 </code></pre>
 <p><code>batchPoints</code> keeps 21,000 points editable in the SVG.
-SVG → PDF is one external command away.</p></section>
+SVG → PDF is one external command away.</p>
+</section>
 <section class="slide"><h1>★ Bonus rounds</h1>
 <p>Finished early? The notebook has four:</p>
 <ol>
@@ -108,9 +112,10 @@ SVG → PDF is one external command away.</p></section>
 <li><strong>The wall chart</strong> — filled density + the GEO belt, dark theme</li>
 <li><em>(module 2)</em> <strong>Top owners</strong> — a bar chart of who launches</li>
 <li><em>(<code>notebooks/bonus/orbits-now-3d.ipynb</code>)</em> <strong>Where is everything right now?</strong>
-   — propagate all 21,207 objects to this instant with Orekit, plot the cloud</li>
+— propagate all 21,207 objects to this instant with Orekit, plot the cloud</li>
 </ol>
-<p>Low effort. High wow. Clearly marked.</p></section>
+<p>Low effort. High wow. Clearly marked.</p>
+</section>
 <section class="slide"><h1>The bridge to machine learning</h1>
 <p>The plots <em>described</em> the catalog. Now <strong>predict</strong> from it.</p>
 <p><code>satcat_object_type</code> is ground truth: payload, or debris.</p>
@@ -119,9 +124,10 @@ drag.</p>
 <pre><code>labelled   20,611 objects   (17,110 payload · 3,501 debris)
 split      16,488 train  ·  4,123 test
 </code></pre>
-<p>We stop at the split. <strong>This is where Zoran takes over.</strong></p></section></div><div id="bar"></div><div id="hud"></div>
-<script>
-const slides=[...document.querySelectorAll('.slide')];
+<p>We stop at the split. <strong>This is where Zoran takes over.</strong></p>
+</section>
+</div><div id="bar"></div><div id="hud"></div>
+<script>const slides=[...document.querySelectorAll('.slide')];
 let i=0;
 function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));

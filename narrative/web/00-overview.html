@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Java is for Data Science, Too</title><style>
-:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+<title>Java is for Data Science, Too</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
 * { box-sizing: border-box; }
 html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
@@ -43,7 +42,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 <div id="deck"><section class="slide lead"><h1>Java is for Data Science, Too</h1>
 <h3>Building an end-to-end ML pipeline without leaving the JVM</h3>
 <p><strong>Devoxx Belgium 2026 · hands-on lab</strong>
-Sven Reimers · Zoran Sevarac</p></section>
+Sven Reimers · Zoran Sevarac</p>
+</section>
 <section class="slide"><h1>What you will build</h1>
 <p>A pipeline over the <strong>CelesTrak satellite catalog</strong>:</p>
 <ol>
@@ -53,7 +53,8 @@ Sven Reimers · Zoran Sevarac</p></section>
 <li><strong>gog4j</strong> — a grammar of graphics on JavaFX</li>
 <li><strong>DeepNetts</strong> — predict debris from orbital elements <em>(Zoran)</em></li>
 </ol>
-<p>No Python. No context switch. Just the JVM.</p></section>
+<p>No Python. No context switch. Just the JVM.</p>
+</section>
 <section class="slide"><h1>The dataset</h1>
 <p><code>data/celestrak_gp_catalog.parquet</code></p>
 <table>
@@ -86,7 +87,8 @@ Sven Reimers · Zoran Sevarac</p></section>
 </tr>
 </tbody>
 </table>
-<p>A real file, not a toy. And small enough to hold in memory.</p></section>
+<p>A real file, not a toy. And small enough to hold in memory.</p>
+</section>
 <section class="slide"><h1>What is actually in orbit</h1>
 <pre><code>LEO  19,260   ████████████████████████████████████████
 GEO   1,183   ██
@@ -97,7 +99,8 @@ MEO     206   ▌
 debris     2,957   ███████
 rocket b.    544   █
 </code></pre>
-<p><code>active,starlink</code> alone is <strong>10,952</strong> objects.</p></section>
+<p><code>active,starlink</code> alone is <strong>10,952</strong> objects.</p>
+</section>
 <section class="slide"><h1>The shape of the lab</h1>
 <table>
 <thead>
@@ -140,24 +143,27 @@ rocket b.    544   █
 </tr>
 </tbody>
 </table>
-<p>Every module: <strong>a short talk, then you type.</strong> Solutions are provided.</p></section>
+<p>Every module: <strong>a short talk, then you type.</strong> Solutions are provided.</p>
+</section>
 <section class="slide"><h1>How this works</h1>
 <p>Each module has a notebook with two kinds of cells:</p>
 <ul>
 <li><strong>TODO</strong> — yours. The scaffold runs; it fails exactly where you haven't
-  filled it in yet.</li>
+filled it in yet.</li>
 <li><strong>given</strong> — run it as-is and watch.</li>
 <li><strong>★ BONUS</strong> — for fast finishers. More wow, clearly marked.</li>
 </ul>
 <p>Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one
-gets bored.</p></section>
+gets bored.</p>
+</section>
 <section class="slide"><h1>Two extras</h1>
 <p><strong>A two-minute space primer</strong> — <code>narrative/00b-space-primer.md</code>. Just enough
 vocabulary (TLE, inclination, LEO/GEO, propagation) to read every plot in the
 lab.</p>
 <p><strong>★ A whole-catalog 3-D view</strong> — <code>notebooks/bonus/orbits-now-3d.ipynb</code>.
 Propagate all 21,207 objects to the current instant with <strong>Orekit</strong> and plot
-where they are <em>right now</em>.</p></section>
+where they are <em>right now</em>.</p>
+</section>
 <section class="slide"><h1>Environment check</h1>
 <ul>
 <li>JDK <strong>26+</strong> (gog4j targets 26; this room runs 27)</li>
@@ -165,9 +171,10 @@ where they are <em>right now</em>.</p></section>
 <li>everything you need is in this repository</li>
 </ul>
 <p>Open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code> from the <strong>repository
-root</strong>, and we begin.</p></section></div><div id="bar"></div><div id="hud"></div>
-<script>
-const slides=[...document.querySelectorAll('.slide')];
+root</strong>, and we begin.</p>
+</section>
+</div><div id="bar"></div><div id="hud"></div>
+<script>const slides=[...document.querySelectorAll('.slide')];
 let i=0;
 function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));

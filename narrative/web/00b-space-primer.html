@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A two-minute space primer</title><style>
-:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+<title>A two-minute space primer</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
 * { box-sizing: border-box; }
 html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
@@ -41,7 +40,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 </style></head>
 <body><a id="back" href="index.html">&#8592; all decks</a>
 <div id="deck"><section class="slide lead"><h1>A two-minute space primer</h1>
-<h3>Just enough vocabulary to read the plots</h3></section>
+<h3>Just enough vocabulary to read the plots</h3>
+</section>
 <section class="slide"><h1>What is in the catalog</h1>
 <ul>
 <li><strong>payload</strong> — a working satellite (PAY)</li>
@@ -51,7 +51,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 <p>Every object gets a <strong>NORAD catalog number</strong> — a permanent id. That is the
 <code>norad_cat_id</code> column, and the key everything joins on.</p>
 <p>A <strong>TLE</strong> (Two-Line Element set) is the compact, fixed-width text encoding of an
-object's orbit. <code>tle_line1</code> and <code>tle_line2</code> in our file <em>are</em> those two lines.</p></section>
+object's orbit. <code>tle_line1</code> and <code>tle_line2</code> in our file <em>are</em> those two lines.</p>
+</section>
 <section class="slide"><h1>An orbit is an ellipse</h1>
 <p>Six numbers describe it. Four matter for this lab:</p>
 <table>
@@ -86,7 +87,8 @@ object's orbit. <code>tle_line1</code> and <code>tle_line2</code> in our file <e
 </tbody>
 </table>
 <p>The closer the orbit, the faster it goes. That is why <strong>mean motion alone tells
-you the period</strong>: <code>period = 1440 / mean_motion</code> minutes.</p></section>
+you the period</strong>: <code>period = 1440 / mean_motion</code> minutes.</p>
+</section>
 <section class="slide"><h1>Near the Earth: altitude</h1>
 <p>Give the size as <strong>altitude above the surface</strong>:</p>
 <ul>
@@ -94,7 +96,8 @@ you the period</strong>: <code>period = 1440 / mean_motion</code> minutes.</p></
 <li><strong>apogee</strong> — highest point (<code>apogee_km</code>)</li>
 </ul>
 <p>In this file <code>altitude_km</code> is the <em>current</em> height from propagation, and it is
-<code>NaN</code> for ~1,000 decaying objects. <code>apogee_km</code> / <code>perigee_km</code> are always there.</p></section>
+<code>NaN</code> for ~1,000 decaying objects. <code>apogee_km</code> / <code>perigee_km</code> are always there.</p>
+</section>
 <section class="slide"><h1>The four families</h1>
 <pre><code>LEO   Low Earth Orbit     ~160–2,000 km    period  90–130 min   most of the catalog
 MEO   Medium Earth Orbit  ~2,000–35,786 km period  2–24 h        navigation (GPS, Galileo)
@@ -103,7 +106,8 @@ HEO   Highly Elliptical   very stretched   long, slow           science, some co
 </code></pre>
 <p><strong>35,786 km</strong> is the geostationary belt: at that height the period is exactly one
 day, so a satellite there hovers over a fixed point. One horizontal line on the
-plot and you can <em>see</em> the band.</p></section>
+plot and you can <em>see</em> the band.</p>
+</section>
 <section class="slide"><h1>Why debris dominates</h1>
 <p>Three collisions define the debris population in our data:</p>
 <ul>
@@ -112,7 +116,8 @@ plot and you can <em>see</em> the band.</p></section>
 <li>plus every rocket body left behind</li>
 </ul>
 <p>You can see them as named groups in <code>norad_groups</code>
-(<code>fengyun-1c-debris</code>, <code>cosmos-2251-debris</code>, <code>iridium-33-debris</code>).</p></section>
+(<code>fengyun-1c-debris</code>, <code>cosmos-2251-debris</code>, <code>iridium-33-debris</code>).</p>
+</section>
 <section class="slide"><h1>Propagation: from elements to a position</h1>
 <p>A TLE is a snapshot at an <strong>epoch</strong>. To know <em>where</em> an object is <strong>now</strong>, you
 run it forward — that is <strong>orbit propagation</strong>, and <strong>SGP4/SDP4</strong> is the standard
@@ -122,7 +127,8 @@ model behind it.</p>
 <li>in an <strong>inertial frame</strong> (Earth-centred, not rotating)</li>
 </ul>
 <p>That is the whole trick in the bonus notebook: propagate all 21,207 objects to
-the current instant with <strong>Orekit</strong>, then plot the resulting point cloud in 3D.</p></section>
+the current instant with <strong>Orekit</strong>, then plot the resulting point cloud in 3D.</p>
+</section>
 <section class="slide"><h1>Vocabulary you can now use</h1>
 <table>
 <thead>
@@ -142,7 +148,7 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 </tr>
 <tr>
 <td><strong>B*</strong> (<code>bstar</code>)</td>
-<td>a drag coefficient — a proxy for "how much air is up there"</td>
+<td>a drag coefficient — a proxy for &quot;how much air is up there&quot;</td>
 </tr>
 <tr>
 <td><strong>RAAN</strong></td>
@@ -162,9 +168,10 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 </tr>
 </tbody>
 </table>
-<p>That is everything the notebooks assume.</p></section></div><div id="bar"></div><div id="hud"></div>
-<script>
-const slides=[...document.querySelectorAll('.slide')];
+<p>That is everything the notebooks assume.</p>
+</section>
+</div><div id="bar"></div><div id="hud"></div>
+<script>const slides=[...document.querySelectorAll('.slide')];
 let i=0;
 function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
   slides.forEach((s,k)=>s.classList.toggle('active',k===i));

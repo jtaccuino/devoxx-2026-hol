@@ -61,7 +61,7 @@ Open `narrative/web/index.html` in a browser — no build step, no network:
 Re-render after editing the markdown:
 
 ```bash
-python3 tools/render_narrative.py
+jbang tools/render_narrative.java
 ```
 
 ## The dataset
@@ -140,12 +140,12 @@ finally {
 Notebooks are generated, not hand-edited:
 
 ```bash
-python3 tools/make_notebooks.py          # writes exercises, solutions, fallback, bonus
-python3 tools/verify_notebooks.py        # replays every solution, prints PASS/FAIL
-python3 tools/render_narrative.py        # regenerates narrative/web/*.html
+jbang tools/make_notebooks.java          # writes exercises, solutions, fallback, bonus
+jbang tools/verify_notebooks.java        # replays every solution, prints PASS/FAIL
+jbang tools/render_narrative.java        # regenerates narrative/web/*.html
 ```
 
-`tools/verify_notebooks.py` runs the solutions in JShell with the JTaccuino
+`tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino
 builtins stubbed; the JavaFX notebooks (04, the penguins worksheet and the 3-D
 bonus) are reassembled into a jbang program that runs on the JavaFX Application
 Thread, because gog4j plot construction and `SvgExporter` require it.
