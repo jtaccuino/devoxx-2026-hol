@@ -1,0 +1,451 @@
+[ {
+  "name" : "gp_last-30-days",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:26.322Z",
+  "bytes" : 31154,
+  "sha256" : "620268bc91ece5ed02d19e39a459db02d55a7a664dc36e2a572d787b6a8d6fdd",
+  "rows" : 203
+}, {
+  "name" : "gp_stations",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=stations&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:28.164Z",
+  "bytes" : 3551,
+  "sha256" : "6117b5fbd8729fd36e06ea197b589e5f95d6a3b35ba44a88b2ec8662d5bc10d5",
+  "rows" : 22
+}, {
+  "name" : "gp_visual",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:29.922Z",
+  "bytes" : 23311,
+  "sha256" : "2927d35479e028047271e4e441ac9c1303f29157b34809897281270114841a70",
+  "rows" : 156
+}, {
+  "name" : "gp_active",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:43.025Z",
+  "bytes" : 2507159,
+  "sha256" : "d0256a147a1627d39a3c7911b749c43405189e1d4ee752dcae8ae38d22bc6ab2",
+  "rows" : 16586
+}, {
+  "name" : "gp_analyst",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=analyst&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:44.923Z",
+  "bytes" : 80743,
+  "sha256" : "158a8b229fad405843c47c5428ce1f7a6ae0b3b74b83aa2ce3ff8ecb1492b710",
+  "rows" : 593
+}, {
+  "name" : "gp_fengyun-1c-debris",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=fengyun-1c-debris&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:47.542Z",
+  "bytes" : 302204,
+  "sha256" : "b1b226314184296c1c8fb3e7663d998d11b6628da2605780fcc7fe31b3f86cbf",
+  "rows" : 1970
+}, {
+  "name" : "gp_iridium-33-debris",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=iridium-33-debris&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:49.334Z",
+  "bytes" : 17113,
+  "sha256" : "dcaf7e2af00b5d7e729dff7ffe08b3676f54bd5405b754d68d428a2d8a30f83c",
+  "rows" : 110
+}, {
+  "name" : "gp_cosmos-2251-debris",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=cosmos-2251-debris&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:51.216Z",
+  "bytes" : 90823,
+  "sha256" : "2835b0179d232390eac16fa4f026ed04b412cfbbd479c707a718df428f036a76",
+  "rows" : 585
+}, {
+  "name" : "gp_weather",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=weather&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:54.923Z",
+  "bytes" : 10635,
+  "sha256" : "5a7e859f6a25d75e7ef5e4eb22b46c0ef5b493748f1ee65f7104560a2d9bdda9",
+  "rows" : 72
+}, {
+  "name" : "gp_resource",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=resource&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:56.682Z",
+  "bytes" : 24946,
+  "sha256" : "708ad0ba4399160d240e3404494f04b9a6235f63a39b993821d3dff2d44145ed",
+  "rows" : 167
+}, {
+  "name" : "gp_sar",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=sar&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:22:58.396Z",
+  "bytes" : 17868,
+  "sha256" : "2c06499b5345269b1773bd75a04d35cb3cc4c3a2158209eede3652a37fb8974d",
+  "rows" : 118
+}, {
+  "name" : "gp_sarsat",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=sarsat&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:00.134Z",
+  "bytes" : 11814,
+  "sha256" : "a5831077fc383c5bfc12481e822fe87fe17be34d61f3aa1fc5ff89653335acbd",
+  "rows" : 83
+}, {
+  "name" : "gp_dmc",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=dmc&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:01.955Z",
+  "bytes" : 1563,
+  "sha256" : "814d58b69300876a3eefa1637c61e0ade4a10bc922411b89b9fd376b27905c25",
+  "rows" : 9
+}, {
+  "name" : "gp_tdrss",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=tdrss&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:03.684Z",
+  "bytes" : 3801,
+  "sha256" : "04764547ba91ade60a170b8e6c17b90d3c6753aad35793d51c5d69fadeb48fdb",
+  "rows" : 26
+}, {
+  "name" : "gp_argos",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=argos&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:05.410Z",
+  "bytes" : 4625,
+  "sha256" : "c3cff07434d63765d0c60de7c8da6bed254724d47f64736895486564b5b260de",
+  "rows" : 30
+}, {
+  "name" : "gp_planet",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=planet&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:07.158Z",
+  "bytes" : 17893,
+  "sha256" : "58daf45a7ca1f46f9b8e60db63542e462b52c1158238418b91f7296b073cbb36",
+  "rows" : 118
+}, {
+  "name" : "gp_spire",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=spire&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:08.920Z",
+  "bytes" : 11459,
+  "sha256" : "f65cb836579b2bd225ee70e993ef4a6e5cfa13c4c3f6c967e7781a77e11ab8b4",
+  "rows" : 72
+}, {
+  "name" : "gp_geo",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=geo&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:10.865Z",
+  "bytes" : 76703,
+  "sha256" : "b9596f73d37d971894a7a41113889fc7383be2e5f7a359e17bd8c2c5d033e118",
+  "rows" : 567
+}, {
+  "name" : "gp_intelsat",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=intelsat&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:12.581Z",
+  "bytes" : 7851,
+  "sha256" : "7ebd1aa436c2815f58ecdc763ae78413e2f332c74f7299ce45d568e2ebbffb4e",
+  "rows" : 55
+}, {
+  "name" : "gp_ses",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=ses&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:14.295Z",
+  "bytes" : 9664,
+  "sha256" : "7a8750fbde662652e0649a98019483810ee510ccfe5f2656742dc43e022699d1",
+  "rows" : 71
+}, {
+  "name" : "gp_eutelsat",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=eutelsat&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:16.190Z",
+  "bytes" : 4223,
+  "sha256" : "ffd0ec5d84fdde34681602117da4773695ee4e3f62cbf0e065af7ffad9dcc56a",
+  "rows" : 29
+}, {
+  "name" : "gp_telesat",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=telesat&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:17.950Z",
+  "bytes" : 2483,
+  "sha256" : "d5f37bcfa011c08bd172a418690cbf328076337bc725cb4688ddaea94a3f2ede",
+  "rows" : 17
+}, {
+  "name" : "gp_starlink",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=starlink&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:24.244Z",
+  "bytes" : 1696353,
+  "sha256" : "71c4e6305f8e1b41d6f1fe37244e4283bb459248c6caf06af68ac73cec1a7ea0",
+  "rows" : 11108
+}, {
+  "name" : "gp_oneweb",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=oneweb&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:26.500Z",
+  "bytes" : 97289,
+  "sha256" : "2364015d523b5779f6a71bab930fe4db9f1c6ef754083df10454e1fff2b642ed",
+  "rows" : 651
+}, {
+  "name" : "gp_qianfan",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=qianfan&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:28.210Z",
+  "bytes" : 38046,
+  "sha256" : "0cbdb44f7bb5c3a1cc738d1127d0c02519c26b184c32499458b78faa007297ab",
+  "rows" : 256
+}, {
+  "name" : "gp_hulianwang",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=hulianwang&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:30.016Z",
+  "bytes" : 32725,
+  "sha256" : "dea4389bf0074200295a9454644c0e14392d83e6949cabd3dd3b635a7b9276b6",
+  "rows" : 208
+}, {
+  "name" : "gp_kuiper",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=kuiper&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:31.793Z",
+  "bytes" : 58863,
+  "sha256" : "505902656df74c9b7d38761a963f1c3c4784066bc16bdd75171e1bc38e46dec0",
+  "rows" : 391
+}, {
+  "name" : "gp_iridium-NEXT",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=iridium-NEXT&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:33.505Z",
+  "bytes" : 12025,
+  "sha256" : "e96361434c596a05e74b66122144b794acbb960a7367c5b58078693fa37b5150",
+  "rows" : 80
+}, {
+  "name" : "gp_orbcomm",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=orbcomm&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:35.339Z",
+  "bytes" : 2332,
+  "sha256" : "ea39bd03719d7ec99b621e2ace6969e0fe0bf468db8469d3f3a7e259e4c78bfc",
+  "rows" : 14
+}, {
+  "name" : "gp_globalstar",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=globalstar&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:37.184Z",
+  "bytes" : 5722,
+  "sha256" : "dfce39dcdf11fbf587b62894913294361d8d6b767e280faedc2888b80c9b7d7b",
+  "rows" : 36
+}, {
+  "name" : "gp_amateur",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=amateur&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:38.929Z",
+  "bytes" : 14815,
+  "sha256" : "4c3ca1f7eea48134c5c7304a62712fab08923de1bb6b1516dbf75901d802f1db",
+  "rows" : 96
+}, {
+  "name" : "gp_satnogs",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=satnogs&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:40.868Z",
+  "bytes" : 95148,
+  "sha256" : "6e8b29c94fc24f862ebca46e4392833ddc02c3d97d6cc49da9e490b6fc179091",
+  "rows" : 634
+}, {
+  "name" : "gp_x-comm",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=x-comm&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:42.593Z",
+  "bytes" : 3223,
+  "sha256" : "930d4d6054d58ea8098d4cf386272749473cc17b869785ab443cf556723bbe49",
+  "rows" : 20
+}, {
+  "name" : "gp_other-comm",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=other-comm&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:44.370Z",
+  "bytes" : 4468,
+  "sha256" : "2c0c787e86dd454e7d096101287de77db3136f82a78a24c46de4e642a1c504c5",
+  "rows" : 31
+}, {
+  "name" : "gp_gnss",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=gnss&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:46.083Z",
+  "bytes" : 24899,
+  "sha256" : "aac1d5002b93b23b80101725a91c46cde0ca9e5a0a59cdf8dafaa77782fc5a36",
+  "rows" : 172
+}, {
+  "name" : "gp_gps-ops",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=gps-ops&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:47.834Z",
+  "bytes" : 4858,
+  "sha256" : "1cf2c7c9fff773fd46579b2b97f7c73e0f6426a9d086c23879ffdc24fa924c8c",
+  "rows" : 32
+}, {
+  "name" : "gp_glo-ops",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=glo-ops&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:49.615Z",
+  "bytes" : 4337,
+  "sha256" : "a83e517511383ca9d6512d3262ef4b9bfc959addb333472ccea07689a274cfd8",
+  "rows" : 29
+}, {
+  "name" : "gp_galileo",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=galileo&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:51.574Z",
+  "bytes" : 4863,
+  "sha256" : "5c4011b360c8b1ecc42f8ca749b6682011700f12df1d75eade0a8b9bb6efdaa1",
+  "rows" : 32
+}, {
+  "name" : "gp_beidou",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=beidou&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:53.314Z",
+  "bytes" : 7929,
+  "sha256" : "4f1e2da6c782420400cee0798bb0209b483253b78c5bd2f7ce3fdff0c3fc642d",
+  "rows" : 54
+}, {
+  "name" : "gp_sbas",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=sbas&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:55.024Z",
+  "bytes" : 3320,
+  "sha256" : "b7bb7f931bcbe9eec81eafb34c47029ff3fa21f30ed27b88f0a366a41df05cb9",
+  "rows" : 21
+}, {
+  "name" : "gp_science",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=science&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:56.748Z",
+  "bytes" : 6865,
+  "sha256" : "9d6c382296724263202b1fe11b490c0c419240ccae9f4d83bc43337d8f23c888",
+  "rows" : 46
+}, {
+  "name" : "gp_geodetic",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=geodetic&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:23:58.544Z",
+  "bytes" : 1646,
+  "sha256" : "8af2e2c6b94fad44e177e810bf11224ce0d13c6eafbe2874ab50cbec0b8c0304",
+  "rows" : 10
+}, {
+  "name" : "gp_engineering",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=engineering&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:00.263Z",
+  "bytes" : 5697,
+  "sha256" : "248d4276ad333c8471ced01a0c8a7f6a036c1ea62a01c2f5ed9234a437ac36b5",
+  "rows" : 37
+}, {
+  "name" : "gp_education",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=education&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:01.989Z",
+  "bytes" : 1118,
+  "sha256" : "bedb9e8cad91b49bf7943bb6d04fa20aadbcfbc4260917bd119997523d6c8f30",
+  "rows" : 6
+}, {
+  "name" : "gp_military",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=military&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:04.423Z",
+  "bytes" : 3911,
+  "sha256" : "51f80c71d4d3c19e9da5f8e0712e11becd588658c3065b1ba9c61c1ccf9991c6",
+  "rows" : 24
+}, {
+  "name" : "gp_radar",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=radar&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:06.184Z",
+  "bytes" : 1744,
+  "sha256" : "7f4c7b7bc03e9ce8be8a76803cf952421786fc716fed008713bcf074b67b96bb",
+  "rows" : 10
+}, {
+  "name" : "gp_cubesat",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?GROUP=cubesat&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:07.992Z",
+  "bytes" : 12760,
+  "sha256" : "a4d492d4abef53b72350b5c89bac4c44e8dd0a1feafbca6b478a9b338853b2d9",
+  "rows" : 83
+}, {
+  "name" : "gp_gpz",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?SPECIAL=gpz&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:10.112Z",
+  "bytes" : 117424,
+  "sha256" : "9a6337bb3b2e28159cf5612458d10c5e3d4c3d6a3d4d22c4bedd8e2420281fb9",
+  "rows" : 866
+}, {
+  "name" : "gp_gpz-plus",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?SPECIAL=gpz-plus&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:12.478Z",
+  "bytes" : 239650,
+  "sha256" : "ed3df190a18c60bc3239198064fa35e44076db55fcfc15f17e9a8cbd7220fd19",
+  "rows" : 1733
+}, {
+  "name" : "gp_decaying",
+  "url" : "https://celestrak.org/NORAD/elements/gp.php?SPECIAL=decaying&FORMAT=csv",
+  "kind" : "GP",
+  "status" : "cached",
+  "fetchedAtUtc" : "2026-09-23T18:24:14.354Z",
+  "bytes" : 17781,
+  "sha256" : "9dd929312ff2cdf5f2cca60b0de7a6f727a13e35aa2309da9fe52c65358326e4",
+  "rows" : 110
+} ]

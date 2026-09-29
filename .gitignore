@@ -1,0 +1,12 @@
+# Derived build output (regenerate with dataset/build.java)
+data/out/
+
+# jbang local resolution cache
+.jbang/
+
+# Jupyter / JTaccuino
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+*.swp
