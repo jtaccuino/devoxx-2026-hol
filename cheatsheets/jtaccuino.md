@@ -97,3 +97,35 @@ catch (ClassNotFoundException notThere) {
 
 If you see *"cannot find symbol: TLE"*, that warning tells you the resolver did
 not deliver the jar, instead of leaving you guessing.
+
+## A trap with the local execution engine
+
+JShell's **local** engine instruments every snippet with the Class-File API
+(JDK 24+, for stop support). To regenerate stack maps it resolves referenced
+classes through the **system** class loader — and a class added with
+`addToClasspath` cannot be resolved there. So a snippet that puts such a type
+(for example Orekit's `TLE`) on a **stack-map merge point** — a branch, loop,
+ternary or `try`/`catch` that must merge two different reference types — fails:
+
+```
+java.lang.IllegalArgumentException: Could not resolve class TLE
+    at ...StackMapGenerator...
+    at LocalExecutionControl.instrument(...)
+```
+
+Keep such types out of branchy code: put them in one straight-line helper, and
+let the branchy caller carry only primitives.
+
+```java
+// one straight line of work - no branches, nothing to merge
+double[] positionOf(String line1, String line2, AbsoluteDate at, TimeScale scale) {
+    var tle = new TLE(line1, line2, scale);
+    var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
+                .getPVCoordinates().getPosition();
+    return new double[]{pos.getX(), pos.getY(), pos.getZ()};
+}
+```
+
+Both 3-D bonus notebooks do exactly this. `tools/verify_jshell.java` replays a
+notebook against the real local engine, so this class of failure is caught
+before it reaches the IDE.

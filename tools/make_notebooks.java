@@ -1163,22 +1163,33 @@ var plotKinds = new ArrayList<String>();
 """),
             code("""
 // ── TODO 1 ────────────────────────────────────────────────────────────
-// For each row with TLE lines, propagate to `now` and append the position
-// (km) and its labels to the lists above. Skip objects that will not propagate.
+// Write a small helper that returns one object's position — x, y, z in km — at
+// a given instant. Keep it one straight line of work; the loop below deals with
+// the objects that will not propagate.
 //
-// hint: build a TLE from its two lines, then ask a TLEPropagator to propagate it to
-//       `now`; read the position x/y/z in km. Catch and skip the ones that fail.
+// hint: build a TLE from the two lines and the time scale, ask a TLEPropagator
+//       to propagate it to the instant, and read the position's x/y/z.
 """,
                     """
+double[] positionOf(String line1, String line2, AbsoluteDate at, TimeScale scale) {
+    var tle = new TLE(line1, line2, scale);
+    var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
+                .getPVCoordinates().getPosition();
+    return new double[]{pos.getX(), pos.getY(), pos.getZ()};
+}
+"""),
+            code("""
+// ── given ─────────────────────────────────────────────────────────────
+// Walk the catalog and collect one position per object. Only primitives cross
+// this loop's branches, which keeps the compiler's frame merging happy.
 for (int i = 0; i < df.height(); i++) {
     Object a = l1.get(i), b = l2.get(i);
     if (a == null || b == null) continue;
     try {
-        var tle = new TLE(a.toString(), b.toString(), tai);
-        var pv = TLEPropagator.selectExtrapolator(tle).propagate(now).getPVCoordinates();
-        xs.add(pv.getPosition().getX() / 1000.0);
-        ys.add(pv.getPosition().getY() / 1000.0);
-        zs.add(pv.getPosition().getZ() / 1000.0);
+        double[] xyz = positionOf(a.toString(), b.toString(), now, tai);
+        xs.add(xyz[0] / 1000.0);
+        ys.add(xyz[1] / 1000.0);
+        zs.add(xyz[2] / 1000.0);
         plotNames.add(String.valueOf(names.get(i)));
         plotClasses.add(String.valueOf(classes.get(i)));
         plotKinds.add(String.valueOf(kinds.get(i)));
@@ -1300,6 +1311,7 @@ import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
 import org.orekit.data.DataContext;
 import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScale;
 import org.orekit.propagation.analytical.tle.TLE;
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.jtaccuino.gog.*;
@@ -1400,18 +1412,25 @@ for (int i = 0; i < leo.height() && fleetL1.size() < fleetSize; i++) {
     }
 }
 
-// positions[frame][object] = x, y, z in km
+// positions[frame][object] = x, y, z in km.
+// positionOf is one straight line of work: the loop below only ever carries
+// primitives, so no Orekit type lands on a branch that the compiler has to merge.
+double[] positionOf(String line1, String line2, AbsoluteDate at, TimeScale scale) {
+    var tle = new TLE(line1, line2, scale);
+    var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
+                .getPVCoordinates().getPosition();
+    return new double[]{pos.getX(), pos.getY(), pos.getZ()};
+}
+
 double[][][] positions = new double[frames][fleetL1.size()][3];
 for (int f = 0; f < frames; f++) {
     var at = now.shiftedBy(f * secondsPerFrame);
     for (int i = 0; i < fleetL1.size(); i++) {
         try {
-            var tle = new TLE(fleetL1.get(i), fleetL2.get(i), tai);
-            var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
-                        .getPVCoordinates().getPosition();
-            positions[f][i][0] = pos.getX() / 1000.0;
-            positions[f][i][1] = pos.getY() / 1000.0;
-            positions[f][i][2] = pos.getZ() / 1000.0;
+            double[] xyz = positionOf(fleetL1.get(i), fleetL2.get(i), at, tai);
+            positions[f][i][0] = xyz[0] / 1000.0;
+            positions[f][i][1] = xyz[1] / 1000.0;
+            positions[f][i][2] = xyz[2] / 1000.0;
         } catch (Exception e) {
             // this object will not propagate - leave it at the origin
         }

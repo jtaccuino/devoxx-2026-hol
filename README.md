@@ -179,6 +179,26 @@ worksheet works only because it also adds `dflib`, `dflib-csv` and
 `dflib-parquet` explicitly. Fix: add a `dflib-bom` `import` to
 `gog4j-dflib-data`'s `dependencyManagement`, or pin the version.
 
+**4 · The local engine cannot resolve `addToClasspath` classes during stack-map generation.**
+
+Not strictly gog4j, but it bit this lab. JShell's **local** execution engine
+instruments each snippet with the Class-File API (JDK 24+) to inject stop
+checks. Regenerating stack maps resolves referenced classes through the
+**system** class loader, which cannot see a class added with `addToClasspath`:
+
+```
+java.lang.IllegalArgumentException: Could not resolve class TLE
+    at ...StackMapGenerator.mergeReferenceFrom...
+    at jdk.jshell.execution.LocalExecutionControl.instrument(...)
+```
+
+It only triggers when such a type sits on a **stack-map merge point** (a branch,
+loop, ternary or try/catch merging two reference types) — which is why it looked
+intermittent. Workaround used in the lab: put the external type in a single
+straight-line helper and let the branchy caller carry only primitives.
+`tools/verify_jshell.java` replays a notebook against the real local engine to
+catch this before the IDE does.
+
 ## Maintainer notes
 
 Notebooks are generated, not hand-edited:
@@ -186,6 +206,7 @@ Notebooks are generated, not hand-edited:
 ```bash
 jbang tools/make_notebooks.java          # writes exercises, solutions, fallback, bonus
 jbang tools/verify_notebooks.java        # replays every solution, prints PASS/FAIL
+jbang tools/verify_jshell.java <nb> <cp> <cwd>   # replay on the real JShell local engine
 jbang tools/render_narrative.java        # regenerates narrative/web/index.html
 jbang tools/package_m2.java              # builds devoxx-hol-2026-m2.zip (offline Maven repo)
 ```

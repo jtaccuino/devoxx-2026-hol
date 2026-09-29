@@ -33,7 +33,7 @@ public class verify_notebooks {
     static final String JAVA_HOME = Path.of(System.getProperty("user.home"),
             ".sdkman/candidates/java/27.0.0+35-zulu").toString();
     static final ObjectMapper OM = new ObjectMapper();
-    static final Pattern METHOD_START = Pattern.compile("^(?:String|double|int|long|boolean|void|Path)\\s+\\w+\\(");
+    static final Pattern METHOD_START = Pattern.compile("^(?:String|double|int|long|boolean|void|Path)(?:\\[\\])?\\s+\\w+\\(");
     static final Pattern ADD_DEP = Pattern.compile("(?m)^(\\s*addDependency\\([^;\\n]*\\))\\s*$");
 
     record Job(String label, String file, String holder, String fx) {}
