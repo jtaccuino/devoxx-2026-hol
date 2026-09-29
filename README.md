@@ -146,6 +146,23 @@ finally {
 }
 ```
 
+**3 · `gog4j-dflib-data`'s POM is invalid for Maven consumers.**
+
+The published POM declares `org.dflib:dflib-csv` with **no version** and no
+`dependencyManagement` (the module is published from Gradle with module
+metadata, `do_not_remove: published-with-gradle-metadata`). A Maven/Aether
+consumer sees:
+
+```
+'dependencies.dependency.version' for org.dflib:dflib-csv:jar is missing
+... transitive dependencies (if any) will not be available
+```
+
+so resolving `gog4j-dflib-data` on its own pulls no transitives. The penguins
+worksheet works only because it also adds `dflib`, `dflib-csv` and
+`dflib-parquet` explicitly. Fix: add a `dflib-bom` `import` to
+`gog4j-dflib-data`'s `dependencyManagement`, or pin the version.
+
 ## Maintainer notes
 
 Notebooks are generated, not hand-edited:
@@ -154,12 +171,22 @@ Notebooks are generated, not hand-edited:
 jbang tools/make_notebooks.java          # writes exercises, solutions, fallback, bonus
 jbang tools/verify_notebooks.java        # replays every solution, prints PASS/FAIL
 jbang tools/render_narrative.java        # regenerates narrative/web/index.html
+jbang tools/package_m2.java              # builds devoxx-hol-2026-m2.zip (offline Maven repo)
 ```
 
 `tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino
 builtins stubbed; the JavaFX notebooks (04, the penguins worksheet and the 3-D
 bonus) are reassembled into a jbang program that runs on the JavaFX Application
 Thread, because gog4j plot construction and `SvgExporter` require it.
+
+`tools/package_m2.java` assembles the offline Maven bundle: it seeds the local
+`0.5-SNAPSHOT` artifacts, resolves the closure with Maven (online), verifies it
+resolves again with `-o` (no network), and zips the whole repository. It pulls
+**every** JavaFX platform classifier so the bundle is not tied to one OS. Attach
+the resulting `devoxx-hol-2026-m2.zip` to the repository's releases — the
+"Getting everything" slide links there. JTaccuino resolves
+`~/.m2/repository` as a `file://` remote, so unpacking the zip into
+`~/.m2/repository` is all a student needs.
 
 ## Attribution
 
