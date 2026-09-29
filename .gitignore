@@ -4,6 +4,9 @@ data/out/
 # jbang local resolution cache
 .jbang/
 
+# Generated figures (produced by running the notebooks / verification)
+*.svg
+
 # Jupyter / JTaccuino
 .ipynb_checkpoints/
 

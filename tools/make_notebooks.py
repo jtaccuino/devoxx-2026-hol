@@ -686,6 +686,149 @@ Back to the [overview](../narrative/00-overview.md)."""),
 ]
 
 
+# --------------------------------------------------------------------------
+# Fallback - penguins worksheet (bundled data, offline, no Parquet)
+# --------------------------------------------------------------------------
+PENGUINS = [
+    md("""# Fallback · Penguins worksheet
+
+If the CelesTrak file is unavailable on your machine, you can still do the whole
+data-and-plot exercise. The **penguins** dataset is bundled inside gog4j itself,
+so nothing is downloaded and nothing is read from disk.
+
+It is small (344 rows, 8 columns) and does the same jobs: select, filter, group,
+sort, plot. Mirrors the TODOs in modules 2 and 3."""),
+
+    code("""addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT")
+addDependency("org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT")
+addDependency("org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT")
+addDependency("org.jtaccuino:gog4j-data:0.5-SNAPSHOT")
+addDependency("org.dflib:dflib:2.0.0-M7")
+addDependency("org.dflib:dflib-csv:2.0.0-M7")
+
+import org.dflib.DataFrame;
+import org.jtaccuino.gog.dflib.data.PenguinsDatasets;
+import org.jtaccuino.gog.*;
+import org.jtaccuino.gog.labs.Labs;
+import org.jtaccuino.gog.render.SvgExporter;
+import org.jtaccuino.gog.theme.Theme;
+import java.nio.file.Files;
+import static org.dflib.Exp.*;
+
+String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
+String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
+
+void save(GgFigure figure, String name) {
+    try {
+        var path = cwd.resolve(name);
+        new SvgExporter().size(1200, 800).batchPoints(true).write(figure, path);
+        println("saved %s (%s bytes)", name, num(Files.size(path)));
+    } catch (Exception e) {
+        println("could not save %s: %s", name, e);
+    }
+}"""),
+
+    md("""## 1 · Load it"""),
+
+    code("""// ── TODO 1 ────────────────────────────────────────────────────────────
+// Load the penguins frame into `df` and print its size.
+
+// var df = PenguinsDatasets.loadPenguins();
+// println("penguins: %s rows x %d columns", num(df.height()), df.width());""",
+         sol="""var df = PenguinsDatasets.loadPenguins();
+println("penguins: %s rows x %d columns", num(df.height()), df.width());"""),
+
+    md("""## 2 · Select"""),
+
+    code("""// ── TODO 2 ────────────────────────────────────────────────────────────
+// Keep species, bill_length_mm and body_mass_g, and show the first 3 rows.
+
+// var sel = df.cols("species", "bill_length_mm", "body_mass_g").select();
+// System.out.println(sel.head(3));""",
+         sol="""var sel = df.cols("species", "bill_length_mm", "body_mass_g").select();
+System.out.println(sel.head(3));"""),
+
+    md("""## 3 · Filter"""),
+
+    code("""// ── TODO 3 ────────────────────────────────────────────────────────────
+// Count the Gentoo penguins.
+
+// var gentoo = df.rows($str("species").eq("Gentoo")).select();
+// println("Gentoo: %s birds", num(gentoo.height()));""",
+         sol="""var gentoo = df.rows($str("species").eq("Gentoo")).select();
+println("Gentoo: %s birds", num(gentoo.height()));"""),
+
+    md("""## 4 · Group and aggregate"""),
+
+    code("""// ── TODO 4 ────────────────────────────────────────────────────────────
+// Mean body mass per species, heaviest first.
+
+// System.out.println(
+//     df.group("species").agg(
+//         $col("species"), $double("body_mass_g").avg().as("mean_mass_g"))
+//       .sort("mean_mass_g", false));""",
+         sol="""System.out.println(
+    df.group("species").agg(
+        $col("species"), $double("body_mass_g").avg().as("mean_mass_g"))
+      .sort("mean_mass_g", false));"""),
+
+    md("""## 5 · Sort"""),
+
+    code("""// ── TODO 5 ────────────────────────────────────────────────────────────
+// The 3 heaviest penguins that actually have a mass (species and body_mass_g).
+// Note: two penguins have a missing body_mass_g, and nulls sort *first* — so
+// filter them out with $double("body_mass_g").isNotNull().
+
+// System.out.println(
+//     df.rows($double("body_mass_g").isNotNull())
+//       .sort("body_mass_g", false)
+//       .cols("species", "body_mass_g").select()
+//       .head(3));""",
+         sol="""System.out.println(
+    df.rows($double("body_mass_g").isNotNull())
+      .sort("body_mass_g", false)
+      .cols("species", "body_mass_g").select()
+      .head(3));"""),
+
+    md("""## 6 · Plot
+
+A `dflib` frame plots through **gog4j-dflib**, exactly like the Parquet table
+plots through gog4j-hardwood."""),
+
+    code("""// ── TODO 6 ────────────────────────────────────────────────────────────
+// Scatter bill_length_mm (x) against body_mass_g (y), coloured by species,
+// titled "Penguins", dark theme; then save it as "penguins.svg".
+
+// var p = Ggplot.ggplot(df,
+//         Aes.aes().x("bill_length_mm").y("body_mass_g").color("species"))
+//     .geoms(Geoms.point())
+//     .labs(Labs.labs("Penguins", "Bill length (mm)", "Body mass (g)"))
+//     .theme(Theme.theme_dark());
+// display(p);
+// save(p, "penguins.svg");""",
+         sol="""var p = Ggplot.ggplot(df,
+        Aes.aes().x("bill_length_mm").y("body_mass_g").color("species"))
+    .geoms(Geoms.point())
+    .labs(Labs.labs("Penguins", "Bill length (mm)", "Body mass (g)"))
+    .theme(Theme.theme_dark());
+display(p);
+save(p, "penguins.svg");"""),
+
+    code("""// ── check ─────────────────────────────────────────────────────────────
+var counts = df.group("species").agg($col("species"), count());
+var pass = df.height() == 344 && gentoo.height() == 124 && counts.height() == 3;
+if (pass) {
+    println("✓ 344 penguins · 124 Gentoo · 3 species");
+} else {
+    println("✗ something is off — check the TODOs above");
+}"""),
+
+    md("""That is the same workflow, end to end, on data that ships with the library.
+
+Back to the [overview](../narrative/00-overview.md)."""),
+]
+
+
 NOTEBOOKS = {
     "01-jtaccuino-basics": E1,
     "02-parquet-with-hardwood": E2,
@@ -734,6 +877,17 @@ def main():
                 json.dump(nb, f, indent=4, ensure_ascii=False)
                 f.write("\n")
             print("wrote", os.path.relpath(path, ROOT))
+
+    fallback = os.path.join(ROOT, "notebooks", "fallback")
+    os.makedirs(fallback, exist_ok=True)
+    for name, cells, suffix in (("penguins-worksheet", PENGUINS, ""),
+                                ("penguins-worksheet", PENGUINS, "-solutions")):
+        nb = build(cells, bool(suffix))
+        path = os.path.join(fallback, name + suffix + ".ipynb")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(nb, f, indent=4, ensure_ascii=False)
+            f.write("\n")
+        print("wrote", os.path.relpath(path, ROOT))
 
 
 if __name__ == "__main__":

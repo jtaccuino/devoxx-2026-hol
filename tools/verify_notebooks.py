@@ -8,6 +8,7 @@ Each notebook's code cells run in one shared JShell session, exactly like the
 notebook. `addDependency` / `println` / `cwd` / `display` are the only builtins
 that need stubbing; everything else is the notebook's own Java.
 """
+import glob
 import json
 import os
 import re
@@ -17,6 +18,12 @@ import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOL = os.path.join(ROOT, "notebooks", "solutions")
+FALLBACK = os.path.join(ROOT, "notebooks", "fallback")
+
+
+def nb_path(name):
+    folder = FALLBACK if "penguins" in name else SOL
+    return os.path.join(folder, name + ".ipynb")
 JAVA_HOME = os.path.expanduser("~/.sdkman/candidates/java/27.0.0+35-zulu")
 
 HOLDER = {
@@ -24,7 +31,10 @@ HOLDER = {
     "02-parquet-with-hardwood": "e2",
     "03-dataframes-with-dflib": "e3",
     "04-plotting-with-gog4j": "e4",
+    "penguins-worksheet-solutions": "penguins",
 }
+
+METHOD_START = re.compile(r"^(?:String|double|int|long|boolean|void)\s+\w+\(")
 
 PREAMBLE = """void addDependency(String gav) { System.out.println("[deps] " + gav); }
 void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }
@@ -50,7 +60,7 @@ def classpath(holder):
 # and SvgExporter both need the FX Application Thread. That notebook is instead
 # reassembled into a jbang program whose body runs inside Platform.runLater.
 def run_fx(name):
-    with open(os.path.join(SOL, name + ".ipynb"), encoding="utf-8") as f:
+    with open(nb_path(name), encoding="utf-8") as f:
         nb = json.load(f)
     cells = [c["source"] for c in nb["cells"] if c["cell_type"] == "code"]
 
@@ -65,7 +75,7 @@ def run_fx(name):
                 imports.append(line)
                 i += 1
                 continue
-            if line.startswith("void save("):
+            if METHOD_START.match(line):
                 depth, start = 0, i
                 while i < len(lines):
                     depth += lines[i].count("{") - lines[i].count("}")
@@ -83,12 +93,23 @@ def run_fx(name):
         split_cell(src)
 
     body_src = re.sub(r"(?m)^(\s*addDependency\([^;\n]*\))\s*$", r"\1;", "\n".join(body))
-    program = """//JAVA 27
-//DEPS org.jtaccuino:gog4j:0.5-SNAPSHOT
-//DEPS org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT
-//DEPS org.dflib:dflib:2.0.0-M7
-//DEPS org.dflib:dflib-parquet:2.0.0-M7
-""" + "\n".join(imports) + """
+    fx_deps = {
+        "04-plotting-with-gog4j": [
+            "org.jtaccuino:gog4j:0.5-SNAPSHOT",
+            "org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT",
+            "org.dflib:dflib:2.0.0-M7",
+            "org.dflib:dflib-parquet:2.0.0-M7",
+        ],
+    }.get(name, [
+        "org.jtaccuino:gog4j:0.5-SNAPSHOT",
+        "org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT",
+        "org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT",
+        "org.jtaccuino:gog4j-data:0.5-SNAPSHOT",
+        "org.dflib:dflib:2.0.0-M7",
+        "org.dflib:dflib-csv:2.0.0-M7",
+    ])
+    program = "//JAVA 27\n" + "\n".join("//DEPS " + d for d in fx_deps) + "\n"
+    program += "\n".join(imports) + """
 
 class NotebookRun {
     static void addDependency(String gav) { System.out.println("[deps] " + gav); }
@@ -126,9 +147,9 @@ class NotebookRun {
 
 
 def run(name):
-    if name.startswith("04"):
+    if name.startswith("04") or "penguins" in name:
         return run_fx(name)
-    with open(os.path.join(SOL, name + ".ipynb"), encoding="utf-8") as f:
+    with open(nb_path(name), encoding="utf-8") as f:
         nb = json.load(f)
     cells = [c["source"] for c in nb["cells"] if c["cell_type"] == "code"]
 
@@ -157,6 +178,7 @@ def run(name):
 
 def main():
     names = sys.argv[1:] or list(HOLDER)
+    before = set(glob.glob(os.path.join(ROOT, "*.svg")))
     rc = 0
     for name in names:
         text, bad = run(name)
@@ -169,6 +191,9 @@ def main():
             print("\n!! problems:")
             for l in bad[:14]:
                 print("   " + l.strip())
+    # notebooks save their figures next to cwd; drop the ones we just created
+    for p in set(glob.glob(os.path.join(ROOT, "*.svg"))) - before:
+        os.remove(p)
     sys.exit(rc)
 
 
