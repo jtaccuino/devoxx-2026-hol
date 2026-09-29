@@ -55,7 +55,7 @@ network.
 The running order is:
 
 1. **Overview** — the big agenda and what you will build (one slide), then the data
-2. **Space primer** — just enough vocabulary to read the plots
+2. **Space primer** — just enough vocabulary to do the exercises
 3. **Getting set up** — how the notebooks work, and how to get everything
 4. **Module 1 · JTaccuino**, **Module 2 · Hardwood + dflib**, **Module 3 · gog4j**
    — each opens with a "meet the tool" slide and closes with a ★ Bonus slide

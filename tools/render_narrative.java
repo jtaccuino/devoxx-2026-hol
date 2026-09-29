@@ -181,42 +181,45 @@ public class render_narrative {
             html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
               font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
             #deck { height:100%; display:flex; align-items:center; justify-content:center; padding-bottom:3rem; }
-            .slide { display:none; width:min(94vw, 1180px); aspect-ratio:16/9; padding:3.2rem 4rem;
+            .slide { display:none; width:min(94vw, 1180px); aspect-ratio:16/9; padding:2.6rem 3.4rem;
               background:#131922; border:1px solid var(--rule); border-radius:14px;
               overflow:auto; box-shadow:0 10px 40px rgba(0,0,0,.45); }
-            .slide.active { display:block; }
+            .slide.active { display:flex; flex-direction:column; justify-content:safe center; }
             .slide.lead { display:none; }
             .slide.lead.active { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
-            .slide h1 { font-size:2.1rem; margin:0 0 .6rem; letter-spacing:-.01em; }
+            .slide h1 { font-size:2.35rem; margin:0 0 .5rem; letter-spacing:-.01em; flex:0 0 auto; }
             .slide.lead h1 { font-size:3rem; }
             .slide h2 { font-size:1.55rem; color:var(--accent); border-bottom:1px solid var(--rule); padding-bottom:.35rem; }
-            .slide h3 { font-size:1.2rem; color:var(--dim); font-weight:600; }
-            .slide p, .slide li { font-size:1.22rem; line-height:1.55; }
+            .slide h3 { font-size:1.25rem; color:var(--dim); font-weight:600; }
+            .slide p, .slide li { font-size:1.3rem; line-height:1.6; }
             .slide ul, .slide ol { padding-left:1.3rem; }
             .slide strong { color:#fff; }
             .slide code { background:#0b0f14; border:1px solid var(--rule); border-radius:5px;
               padding:.08em .38em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.92em; }
             .slide pre { background:#0b0f14; border:1px solid var(--rule); border-radius:9px;
-              padding:1rem 1.15rem; overflow:auto; }
-            .slide pre code { background:none; border:none; padding:0; font-size:1rem; line-height:1.45; }
-            .slide table { border-collapse:collapse; width:100%; margin:.5rem 0; }
-            .slide th, .slide td { border:1px solid var(--rule); padding:.45rem .7rem; text-align:left; font-size:1.05rem; }
+              padding:1rem 1.15rem; overflow:auto; flex:0 0 auto; }
+            .slide pre code { background:none; border:none; padding:0; font-size:1.05rem; line-height:1.5; }
+            .slide table { border-collapse:collapse; width:100%; margin:.5rem 0; flex:0 0 auto; }
+            .slide th, .slide td { border:1px solid var(--rule); padding:.5rem .75rem; text-align:left; font-size:1.12rem; }
             .slide th { background:#1a222d; color:var(--dim); }
             .slide blockquote { border-left:3px solid var(--accent); margin:.6rem 0; padding:.2rem 1rem;
               color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
-            .slide .grid { display:grid; gap:.8rem; margin:.9rem 0; }
+            .slide .grid { display:grid; gap:.85rem; margin:.8rem 0; flex:1 1 auto;
+              grid-auto-rows:1fr; align-content:stretch; }
             .slide .grid.two { grid-template-columns:1fr 1fr; }
             .slide .grid.three { grid-template-columns:repeat(3,1fr); }
-            .slide .card { background:#0f1620; border:1px solid var(--rule);
-              border-radius:12px; padding:1rem 1.1rem; }
-            .slide .card .n { display:block; font-size:1.9rem; font-weight:700; color:var(--accent); line-height:1.1; }
-            .slide .card .l { display:block; color:var(--dim); font-size:1rem; margin-top:.3rem; }
-            .slide .card .w { display:block; color:#6f8199; font-size:.8rem; margin-top:.45rem;
+            .slide .card { background:#0f1620; border:1px solid var(--rule); border-radius:12px;
+              padding:1.1rem 1.2rem; display:flex; flex-direction:column; justify-content:center; }
+            .slide .card .n { display:block; font-size:2.2rem; font-weight:700; color:var(--accent); line-height:1.1; }
+            .slide .card .l { display:block; color:var(--dim); font-size:1.1rem; margin-top:.35rem; }
+            .slide .card .w { display:block; color:#6f8199; font-size:.85rem; margin-top:.5rem;
               text-transform:uppercase; letter-spacing:.09em; }
-            .slide .tile { background:#0f1620; border:1px solid var(--rule); border-radius:12px; padding:.85rem 1rem; }
-            .slide .tile b { display:block; color:var(--accent); font-size:1.05rem; margin-bottom:.25rem; }
-            .slide .tile .d { color:var(--dim); font-size:.95rem; }
-            .slide .agenda { display:grid; grid-template-columns:repeat(6,1fr); gap:.5rem; margin:.5rem 0 .9rem; }
+            .slide .tile { background:#0f1620; border:1px solid var(--rule); border-radius:12px;
+              padding:.95rem 1.1rem; display:flex; flex-direction:column; justify-content:center; }
+            .slide .tile b { display:block; color:var(--accent); font-size:1.15rem; margin-bottom:.3rem; }
+            .slide .tile .d { color:var(--dim); font-size:1.02rem; }
+            .slide .agenda { display:grid; grid-template-columns:repeat(6,1fr); gap:.55rem; margin:.4rem 0 .8rem;
+              flex:0 0 auto; }
             .slide .agenda .slot { background:#0f1620; border:1px solid var(--rule); border-radius:10px; padding:.5rem .55rem; }
             .slide .agenda .slot .t { display:block; color:var(--accent); font-weight:700; font-size:.95rem; }
             .slide .agenda .slot .m { display:block; color:var(--dim); font-size:.78rem; margin-top:.15rem; line-height:1.25; }
@@ -224,7 +227,7 @@ public class render_narrative {
             .slide .agenda .slot.z .t { color:var(--ml); }
             .slide a { color:var(--accent); text-decoration:none; }
             .slide a:hover { text-decoration:underline; }
-            .slide .note { color:var(--dim); font-size:1.05rem; margin-top:.9rem; }
+            .slide .note { color:var(--dim); font-size:1.08rem; margin-top:.9rem; flex:0 0 auto; }
             .slide .bars { display:flex; flex-direction:column; gap:.45rem; }
             .slide .bar { display:flex; align-items:center; gap:.6rem; }
             .slide .bar .lab { width:4.6rem; color:var(--dim); font-size:.95rem; }
@@ -240,8 +243,8 @@ public class render_narrative {
             .slide .tool .ico svg { width:30px; height:30px; display:block; }
             .slide .tool .txt b { display:block; color:var(--fg); font-size:1.02rem; }
             .slide .tool .txt span { color:var(--dim); font-size:.88rem; }
-            .slide .sep { display:flex; align-items:center; gap:.8rem; margin:.8rem 0 .6rem;
-              color:var(--dim); font-size:.9rem; }
+            .slide .sep { display:flex; align-items:center; gap:.8rem; margin:.7rem 0 .5rem;
+              color:var(--dim); font-size:.95rem; flex:0 0 auto; }
             .slide .sep::before, .slide .sep::after { content:""; height:1px; background:var(--rule); flex:1; }
             .slide .sep.ml { color:var(--ml); }
             .slide .sep.ml::before, .slide .sep.ml::after { background:#3a2f66; }
