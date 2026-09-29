@@ -18,16 +18,43 @@ Sven Reimers · Zoran Sevarac
 
 # The big agenda
 
-<div class="grid three">
-  <div class="card"><span class="n">10:30</span><span class="l">intro &amp; the data</span><span class="w">Sven</span></div>
-  <div class="card"><span class="n">10:40</span><span class="l">module 1 · JTaccuino</span><span class="w">Sven</span></div>
-  <div class="card"><span class="n">10:55</span><span class="l">module 2 · Hardwood + dflib</span><span class="w">Sven</span></div>
-  <div class="card"><span class="n">11:10</span><span class="l">module 3 · gog4j</span><span class="w">Sven</span></div>
-  <div class="card"><span class="n">11:25</span><span class="l">the ML pipeline</span><span class="w">Zoran</span></div>
-  <div class="card"><span class="n">12:15</span><span class="l">wrap-up &amp; questions</span><span class="w">both</span></div>
+<div class="agenda">
+  <div class="slot"><span class="t">10:30</span><span class="m">intro &amp; the data</span></div>
+  <div class="slot"><span class="t">10:40</span><span class="m">M1 · JTaccuino</span></div>
+  <div class="slot"><span class="t">10:55</span><span class="m">M2 · Hardwood + dflib</span></div>
+  <div class="slot"><span class="t">11:10</span><span class="m">M3 · gog4j</span></div>
+  <div class="slot z"><span class="t">11:25</span><span class="m">ML pipeline · Zoran</span></div>
+  <div class="slot"><span class="t">12:15</span><span class="m">wrap-up &amp; questions</span></div>
 </div>
 
-<p class="note">Every module: a short talk, then <strong>you type</strong>. Solutions are provided.</p>
+<div class="grid two">
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/><path d="M12 8h5M12 12h5"/></svg></span>
+    <span class="txt"><b>JTaccuino</b><span>a Java REPL, in cells</span></span>
+  </div>
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7" ry="3"/><path d="M5 5.5v13c0 1.7 3.1 3 7 3s7-1.3 7-3v-13"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
+    <span class="txt"><b>Hardwood</b><span>read the Parquet</span></span>
+  </div>
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M15 9v11"/></svg></span>
+    <span class="txt"><b>dflib</b><span>shape the data</span></span>
+  </div>
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg></span>
+    <span class="txt"><b>gog4j</b><span>draw it</span></span>
+  </div>
+</div>
+
+<div class="alt">
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="12" r="2.2"/><path d="M8 7.8l7.8 3.1M8 16.2l7.8-3.1"/></svg></span>
+    <span class="txt"><b>DeepNetts</b><span>a deep-learning library for the JVM &mdash; a stream of its own</span></span>
+    <span class="badge">Zoran's stream</span>
+  </div>
+</div>
+
+<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>no Python, no context switch, just the JVM.</strong></p>
 
 ---
 

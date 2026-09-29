@@ -189,6 +189,12 @@ public class render_narrative {
             .slide .tile { background:#0f1620; border:1px solid var(--rule); border-radius:12px; padding:.85rem 1rem; }
             .slide .tile b { display:block; color:var(--accent); font-size:1.05rem; margin-bottom:.25rem; }
             .slide .tile .d { color:var(--dim); font-size:.95rem; }
+            .slide .agenda { display:grid; grid-template-columns:repeat(6,1fr); gap:.5rem; margin:.5rem 0 .9rem; }
+            .slide .agenda .slot { background:#0f1620; border:1px solid var(--rule); border-radius:10px; padding:.5rem .55rem; }
+            .slide .agenda .slot .t { display:block; color:var(--accent); font-weight:700; font-size:.95rem; }
+            .slide .agenda .slot .m { display:block; color:var(--dim); font-size:.78rem; margin-top:.15rem; line-height:1.25; }
+            .slide .agenda .slot.z { border-color:#6d5bd0; }
+            .slide .agenda .slot.z .t { color:#a892ff; }
             .slide a { color:var(--accent); text-decoration:none; }
             .slide a:hover { text-decoration:underline; }
             .slide .note { color:var(--dim); font-size:1.05rem; margin-top:.9rem; }
