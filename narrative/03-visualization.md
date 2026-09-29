@@ -38,7 +38,7 @@ A plot is three pieces, composed:
 
 | | |
 |---|---|
-| **data** | a `HardwoodTable`, read straight from the Parquet |
+| **data** | a `HardwoodDataFrame`, read straight from the Parquet |
 | **aes** | which columns drive x, y, colour, … |
 | **geoms** | how to draw them |
 

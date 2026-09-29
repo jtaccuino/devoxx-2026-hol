@@ -565,7 +565,7 @@ Next: [`04-plotting-with-gog4j.ipynb`](04-plotting-with-gog4j.ipynb).
 Numbers became a table; now the table becomes a picture. **gog4j** is ggplot2
 for JavaFX. The grammar is three pieces:
 
-* **data** — here a `HardwoodTable`, read straight from the Parquet
+* **data** — here a `HardwoodDataFrame`, read straight from the Parquet
 * **aes** — which columns drive x, y, colour, …
 * **geoms** — how to draw them (points, lines, bars, density, …)
 
@@ -580,7 +580,7 @@ import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
 import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
-import org.jtaccuino.gog.hardwood.HardwoodTable;
+import org.jtaccuino.gog.hardwood.HardwoodDataFrame;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -594,11 +594,11 @@ Path dataset() {
     throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
 }
 
-var full = HardwoodTable.ofFile(dataset());
+var full = HardwoodDataFrame.of(dataset());
 
 // Project to just the fields this module plots. Reading and keeping only the
 // columns you need is the columnar habit; here it also keeps the frame small.
-var table = HardwoodTable.ofColumns(java.util.Map.of(
+var table = HardwoodDataFrame.ofColumns(java.util.Map.of(
         "inclination", full.column("inclination"),
         "eccentricity", full.column("eccentricity"),
         "period_min", full.column("period_min"),
@@ -661,7 +661,7 @@ That single `color(...)` is the whole point of a grammar of graphics.
 //       and add points?
 """,
                     """
-Plot<HardwoodTable> p = Ggplot.ggplot(table,
+Plot<HardwoodDataFrame> p = Ggplot.ggplot(table,
         Aes.aes().x("inclination").y("apogee_km").color("orbit_class"))
     .geoms(Geoms.point());
 """),
@@ -1079,7 +1079,7 @@ import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
 import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
-import org.jtaccuino.gog.hardwood.HardwoodTable;
+import org.jtaccuino.gog.hardwood.HardwoodDataFrame;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -1207,7 +1207,7 @@ the orbit families — a dense ball (LEO), a sparse shell (MEO), one thin ring
 """),
             code("""
 // ── TODO 2 ────────────────────────────────────────────────────────────
-// Build a HardwoodTable from x / y / z and the labels, then plot a 3-D
+// Build a HardwoodDataFrame from x / y / z and the labels, then plot a 3-D
 // scatter coloured by orbit_class into `p`.
 //
 // hint: turn the lists into a table, then start a 3-D plot — how do you map x, y
@@ -1221,9 +1221,9 @@ cols.put("z", zs);
 cols.put("orbit_class", plotClasses);
 cols.put("object_name", plotNames);
 cols.put("satcat_object_type", plotKinds);
-var cloud = HardwoodTable.ofColumns(cols);
+var cloud = HardwoodDataFrame.ofColumns(cols);
 
-Plot<HardwoodTable> p = Ggplot.ggplot3d(cloud,
+Plot<HardwoodDataFrame> p = Ggplot.ggplot3d(cloud,
         Aes.aes().x("x").y("y").z("z").color("orbit_class"))
     .geoms(Geoms.point3d())
     .labs(Labs.labs("The whole catalog, right now", "x (km)", "y (km)"))
@@ -1306,7 +1306,7 @@ import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
 import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
-import org.jtaccuino.gog.hardwood.HardwoodTable;
+import org.jtaccuino.gog.hardwood.HardwoodDataFrame;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -1428,7 +1428,7 @@ cheap enough to re-render a few hundred points.
 """),
             code("""
 // ── given ── a fresh plot for one frame
-java.util.function.IntFunction<Plot<HardwoodTable>> plotFor = f -> {
+java.util.function.IntFunction<Plot<HardwoodDataFrame>> plotFor = f -> {
     var xs = new ArrayList<Double>();
     var ys = new ArrayList<Double>();
     var zs = new ArrayList<Double>();
@@ -1442,7 +1442,7 @@ java.util.function.IntFunction<Plot<HardwoodTable>> plotFor = f -> {
     cols.put("y", ys);
     cols.put("z", zs);
     cols.put("orbit_class", fleetClass);
-    var table = HardwoodTable.ofColumns(cols);
+    var table = HardwoodDataFrame.ofColumns(cols);
     var plot = Ggplot.ggplot3d(table, Aes.aes().x("x").y("y").z("z").color("orbit_class"))
         .geoms(Geoms.point3d())
         .labs(Labs.labs("LEO, live", "x (km)", "y (km)"))
@@ -1502,14 +1502,20 @@ Back to the [overview](../narrative/00-overview.md).
 
     // ----------------------------------------------------------------------
 
-    // JTaccuino's addDependency(...) calls jshell.addToClasspath under the hood,
-    // and a new classpath entry only applies to snippets evaluated *after* it.
-    // Keeping addDependency(...) in its own cell means the following cell's
-    // imports compile against the updated classpath; sharing a cell makes the
-    // import fail with "cannot find symbol".
-    static List<Cell> expand(Cell c) {
+    // JTaccuino feeds a cell to JShell and every *statement* becomes its own
+    // snippet (see ReactiveJShell.eval / analyzeCompletion), so addDependency(...)
+    // is already a separate snippet from the imports below it. What we add is a
+    // statement-level probe right after the dependency block: it names the class
+    // the following imports need, so a resolution that did not deliver the jar
+    // says so plainly instead of failing later with "cannot find symbol".
+    // prefer the jars JTaccuino does *not* already bundle, so the probe is
+    // meaningful; dflib and deepnetts ship with the app
+    static final List<String> PROBE_PRIORITY =
+            List.of("org.orekit.", "dev.hardwood.", "org.jtaccuino.gog.", "org.dflib.");
+
+    static Cell expand(Cell c) {
         if (!c.kind().equals("code") || !c.text().equals(c.sol())) {
-            return List.of(c);
+            return c;
         }
         String[] lines = c.text().split("\n", -1);
         int first = -1;
@@ -1520,11 +1526,11 @@ Back to the [overview](../narrative/00-overview.md).
             }
             // only comments and blanks may precede the dependency block
             if (!lines[i].isBlank() && !lines[i].startsWith("//")) {
-                return List.of(c);
+                return c;
             }
         }
         if (first < 0) {
-            return List.of(c);
+            return c;
         }
         int last = first;
         for (int i = first; i < lines.length; i++) {
@@ -1534,14 +1540,41 @@ Back to the [overview](../narrative/00-overview.md).
                 break;
             }
         }
-        String deps = String.join("\n", java.util.Arrays.copyOfRange(lines, 0, last + 1)).strip()
-                + "\n\n// the new class path only applies to later cells; give the engine a moment\n"
-                + "try { Thread.sleep(250); } catch (InterruptedException e) { }";
-        String rest = String.join("\n", java.util.Arrays.copyOfRange(lines, last + 1, lines.length)).strip();
-        List<Cell> out = new ArrayList<>();
-        out.add(new Cell("code", deps, deps));
-        if (!rest.isEmpty()) out.add(new Cell("code", rest, rest));
-        return out;
+        String rest = String.join("\n",
+                java.util.Arrays.copyOfRange(lines, last + 1, lines.length)).strip();
+        String probe = probeClass(rest);
+        if (probe == null) {
+            return c;
+        }
+        String text = String.join("\n", java.util.Arrays.copyOfRange(lines, 0, last + 1)) + "\n\n"
+                + "// the jars above are on the class path for the snippets that follow; name any\n"
+                + "// that did not land, rather than failing later with \"cannot find symbol\"\n"
+                + "try { Class.forName(\"" + probe + "\"); }\n"
+                + "catch (ClassNotFoundException notThere) {\n"
+                + "    println(\"warning: " + probe + " is not on the class path yet (%s)\",\n"
+                + "            notThere.getMessage());\n"
+                + "}\n\n" + rest;
+        return new Cell("code", text.strip(), text.strip());
+    }
+
+    // the highest-priority lab import in the text that follows
+    static String probeClass(String rest) {
+        List<String> imports = new ArrayList<>();
+        for (String line : rest.split("\n", -1)) {
+            String t = line.strip();
+            if (!t.startsWith("import ") || t.startsWith("import static ") || t.endsWith(".*;")) {
+                continue;
+            }
+            imports.add(t.substring("import ".length(), t.length() - 1).strip());
+        }
+        for (String prefix : PROBE_PRIORITY) {
+            for (String fqcn : imports) {
+                if (fqcn.startsWith(prefix)) {
+                    return fqcn;
+                }
+            }
+        }
+        return null;
     }
 
     static String idFor(String seed, int index) {
@@ -1551,7 +1584,7 @@ Back to the [overview](../narrative/00-overview.md).
     static Map<String, Object> build(String seed, List<Cell> cells, boolean solution) {
         List<Object> cellArray = new ArrayList<>();
         List<Cell> expanded = new ArrayList<>();
-        for (Cell c : cells) expanded.addAll(expand(c));
+        for (Cell c : cells) expanded.add(expand(c));
         int index = 0;
         for (Cell c : expanded) {
             Map<String, Object> node = new LinkedHashMap<>();

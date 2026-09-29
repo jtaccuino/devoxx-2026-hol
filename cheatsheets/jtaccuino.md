@@ -76,11 +76,24 @@ void onFx(Runnable work) {
   — gog4j's fluent setters do not repaint on their own, so the change would never
   reach the screen.
 
-## addDependency belongs in its own cell
+## addDependency is a snippet like everything else
 
-`addDependency(...)` calls `JShell.addToClasspath` underneath, and a new class
-path entry only applies to snippets evaluated **after** it. Keep the calls in
-their own cell and the `import`s in the next one. Sharing a cell makes the
-import fail with `cannot find symbol` — the *"TLE could not be found"* symptom is
-exactly this, when the text below `addDependency("org.orekit…")` imports
-`org.orekit.propagation.analytical.tle.TLE`.
+A cell is **not** a snippet. `ReactiveJShell.eval` feeds the cell to JShell and
+loops over `analyzeCompletion`, so **every statement becomes its own snippet** —
+which means `addDependency(...)` and the `import`s below it were already separate
+snippets; the cell boundary is irrelevant. `JShell.addToClasspath` is applied
+synchronously, so the imports that follow do see the jar.
+
+The lab notebooks therefore just put the `addDependency(...)` calls first, then a
+one-line probe naming the jar they are about to use:
+
+```java
+try { Class.forName("org.orekit.data.DataContext"); }
+catch (ClassNotFoundException notThere) {
+    println("warning: org.orekit.data.DataContext is not on the class path yet (%s)",
+            notThere.getMessage());
+}
+```
+
+If you see *"cannot find symbol: TLE"*, that warning tells you the resolver did
+not deliver the jar, instead of leaving you guessing.

@@ -128,7 +128,7 @@ library-side, reproducible without this repo's code, and worth fixing upstream.
 
 **1 · Facets fail on a table containing a local-wall-clock timestamp.**
 
-`HardwoodTable.ofFile(...)` + `.facets(...)` throws:
+`HardwoodDataFrame.of(...)` + `.facets(...)` throws:
 
 ```
 IllegalStateException: Column 'epoch' is a local-wall-clock TIMESTAMP
@@ -141,7 +141,7 @@ Faceting materialises every column, and `gog4j-hardwood`'s
 the column is not UTC-adjusted.
 
 *Workaround used in the lab:* project to the columns being plotted with
-`HardwoodTable.ofColumns(...)` before building the plot (see module 3).
+`HardwoodDataFrame.ofColumns(...)` before building the plot (see module 3).
 
 **2 · The same failure is masked by an NPE.**
 
@@ -202,10 +202,12 @@ build rather than surfacing only in the IDE.
 > and route `save(...)` through it, and call `onFx(plot::markDirty)` after
 > mutating a plot that is already displayed.
 >
-> **Dependency rule.** `addDependency(...)` ends up in `JShell.addToClasspath`,
-> which only affects *later* snippets — so the generator emits a dedicated
-> `addDependency` cell, then the imports in the next cell. Putting both in one
-> cell is what produces "cannot find symbol: TLE" style failures.
+> **Dependency note.** A cell is not a snippet: `ReactiveJShell.eval` loops over
+> `analyzeCompletion`, so **each statement becomes its own JShell snippet** and
+> `addDependency(...)` is already separate from the imports below it. The
+> generator keeps the `addDependency(...)` calls first and follows them with a
+> one-line `Class.forName(...)` probe that names any jar which did not land —
+> that is what turns a mystery "cannot find symbol: TLE" into a clear warning.
 
 `tools/package_m2.java` assembles the offline Maven bundle: it seeds the local
 `0.5-SNAPSHOT` artifacts, resolves the closure with Maven (online), verifies it

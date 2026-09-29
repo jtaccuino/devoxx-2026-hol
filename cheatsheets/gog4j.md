@@ -8,12 +8,12 @@ Requires **JDK 26+**.
 ## Data
 
 ```java
-var table = HardwoodTable.ofFile(path);         // stream from Parquet
-var table = HardwoodTable.ofColumns(Map.of(     // project to selected columns
+var table = HardwoodDataFrame.of(path);         // stream from Parquet
+var table = HardwoodDataFrame.ofColumns(Map.of(     // project to selected columns
     "x", full.column("x"), "y", full.column("y")));
 ```
 
-`HardwoodTable` is not a dflib `DataFrame`, but `Ggplot` plots it directly
+`HardwoodDataFrame` is not a dflib `DataFrame`, but `Ggplot` plots it directly
 through the gog4j-hardwood SPI.
 
 ## The grammar
@@ -77,7 +77,7 @@ Thread** — which is where JTaccuino runs notebooks, so nothing to do in class.
 
 ## Known issue
 
-`HardwoodTable.ofFile(...)` + `.facets(...)` currently throws, because faceting
+`HardwoodDataFrame.of(...)` + `.facets(...)` currently throws, because faceting
 materialises every column and gog4j-hardwood decodes a local-wall-clock
 timestamp column (`epoch` here) with the wrong accessor. Project to the columns
 you need with `ofColumns(...)` first (as the lab does). See the repository
