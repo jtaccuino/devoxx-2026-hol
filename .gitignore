@@ -17,3 +17,6 @@ devoxx-hol-2026-m2.zip
 # OS / editor
 .DS_Store
 *.swp
+
+# JTaccuino exports (markdown/PDF/PNG drop next to the notebook)
+notebooks/*/markdown/
