@@ -28,7 +28,7 @@ title: Module 1 · JTaccuino
   <div class="tile"><b>built for teaching</b><span class="d">and interactive experimentation</span></div>
 </div>
 
-**Get it:** <https://jtaccuino.github.io> · **Source:** <https://github.com/jkost/jtaccuino>
+**Get it:** <https://jtaccuino.github.io> · **Source:** <https://github.com/jtaccuino/jtaccuino>
 
 ---
 
