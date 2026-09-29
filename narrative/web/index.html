@@ -30,74 +30,31 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 .slide blockquote { border-left:3px solid var(--accent); margin:.6rem 0; padding:.2rem 1rem;
   color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
 #bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
-#hud { position:fixed; right:1rem; bottom:.7rem; color:var(--dim); font-size:.85rem; }
+#nav { position:fixed; right:1rem; bottom:.8rem; display:flex; gap:.4rem; align-items:center; }
+#nav #sec { color:var(--dim); font-size:.85rem; margin-right:.35rem; }
+#nav button { background:#1a222d; color:var(--fg); border:1px solid var(--rule); border-radius:8px;
+  padding:.35rem .62rem; cursor:pointer; font-size:.95rem; line-height:1; }
+#nav button:hover { border-color:var(--accent); color:#fff; }
+#toc { position:fixed; inset:0; background:rgba(5,8,12,.74); display:none;
+  align-items:center; justify-content:center; z-index:10; }
+#toc.open { display:flex; }
+#toc .box { background:#131922; border:1px solid var(--rule); border-radius:14px;
+  padding:1.1rem 1.6rem 1.4rem; min-width:min(90vw,540px); max-height:82vh; overflow:auto; }
+#toc h2 { margin:.2rem 0 .8rem; color:var(--accent); border:none; }
+#toc ol { margin:0; padding-left:1.3rem; }
+#toc li { margin:.4rem 0; }
+#toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
+#toc a:hover { color:var(--accent); }
 @media print {
   .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
-  #hud, #bar { display:none; }
+  #nav, #bar, #toc { display:none; }
 }
 </style></head>
-<body><div id="deck"><section class="slide lead"><h1>Java is for Data Science, Too</h1>
+<body>
+<div id="deck"><section class="slide lead"><h1>Java is for Data Science, Too</h1>
 <h3>Building an end-to-end ML pipeline without leaving the JVM</h3>
 <p><strong>Devoxx Belgium 2026 · hands-on lab</strong>
 Sven Reimers · Zoran Sevarac</p>
-</section>
-<section class="slide"><h1>What you will build</h1>
-<p>A pipeline over the <strong>CelesTrak satellite catalog</strong>:</p>
-<ol>
-<li><strong>JTaccuino</strong> — a notebook that <em>is</em> a Java REPL</li>
-<li><strong>Hardwood</strong> — read Parquet without reading all of it</li>
-<li><strong>dflib</strong> — shape 21,207 rows with a DataFrame</li>
-<li><strong>gog4j</strong> — a grammar of graphics on JavaFX</li>
-<li><strong>DeepNetts</strong> — predict debris from orbital elements <em>(Zoran)</em></li>
-</ol>
-<p>No Python. No context switch. Just the JVM.</p>
-</section>
-<section class="slide"><h1>Meet the stack · JTaccuino</h1>
-<p><em>A notebook for Java — JShell in cells, with pictures.</em></p>
-<ul>
-<li>Java execution by <strong>JShell</strong>; every cell shares one session</li>
-<li><code>display(...)</code> renders any <strong>JavaFX</strong> node inline</li>
-<li>plain JSON notebooks; open from disk</li>
-<li>built for teaching and interactive experimentation</li>
-</ul>
-<p><strong>Get it:</strong> <a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a>
-<strong>Source:</strong> <a href="https://github.com/jkost/jtaccuino">https://github.com/jkost/jtaccuino</a></p>
-</section>
-<section class="slide"><h1>Meet the stack · Hardwood</h1>
-<p><em>A Parquet reader for the JVM — fast, small, no ceremony.</em></p>
-<ul>
-<li>read the <strong>footer</strong> for schema, sizes and statistics, without touching data pages</li>
-<li>stream rows through a <strong>filter</strong>, or read whole <strong>column batches</strong> as primitive arrays</li>
-<li>the reader behind this lab's dataset (21,207 rows, 52 columns)</li>
-</ul>
-<p><strong>Get it:</strong> <a href="https://hardwood.dev/">https://hardwood.dev/</a></p>
-</section>
-<section class="slide"><h1>Meet the stack · dflib</h1>
-<p><em>DataFrames in plain Java. Select, filter, derive, group, sort.</em></p>
-<ul>
-<li>a fluent, immutable <code>DataFrame</code> API — no SQL, no Python</li>
-<li>2.0 expressions: <code>$str(...)</code>, <code>$double(...)</code>, <code>count()</code>, <code>avg()</code></li>
-<li>CSV and <strong>Parquet</strong> I/O; reads the catalog straight into a frame</li>
-</ul>
-<p><strong>Get it:</strong> <a href="https://github.com/dflib/dflib">https://github.com/dflib/dflib</a></p>
-</section>
-<section class="slide"><h1>Meet the stack · gog4j</h1>
-<p><em>A grammar of graphics for JavaFX — ggplot2, for Java.</em></p>
-<ul>
-<li><strong>data + aes + geoms</strong>, composed layer by layer</li>
-<li>points, bars, boxes, densities, <strong>facets</strong>, 3-D, scatterplot matrices</li>
-<li>a plot <strong>is</strong> a JavaFX <code>Pane</code>: <code>display(...)</code> it, or export to <strong>SVG</strong></li>
-</ul>
-<p><strong>Get it:</strong> <a href="https://github.com/svenreimers/gog4j">https://github.com/svenreimers/gog4j</a></p>
-</section>
-<section class="slide"><h1>Meet the stack · Orekit</h1>
-<p><em>The space-flight dynamics library — the one the bonus notebook leans on.</em></p>
-<ul>
-<li>reads TLEs and <strong>propagates</strong> them (SGP4/SDP4) to any instant</li>
-<li>positions, velocities, frames, time scales</li>
-<li>used here to place all 21,207 objects where they are <strong>right now</strong></li>
-</ul>
-<p><strong>Get it:</strong> <a href="https://www.orekit.org/">https://www.orekit.org/</a></p>
 </section>
 <section class="slide"><h1>The dataset</h1>
 <p><code>data/celestrak_gp_catalog.parquet</code></p>
@@ -189,17 +146,6 @@ rocket b.    544   █
 </table>
 <p>Every module: <strong>a short talk, then you type.</strong> Solutions are provided.</p>
 </section>
-<section class="slide"><h1>How this works</h1>
-<p>Each module has a notebook with two kinds of cells:</p>
-<ul>
-<li><strong>TODO</strong> — yours. The scaffold runs; it fails exactly where you haven't
-filled it in yet.</li>
-<li><strong>given</strong> — run it as-is and watch.</li>
-<li><strong>★ BONUS</strong> — for fast finishers. More wow, clearly marked.</li>
-</ul>
-<p>Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one
-gets bored.</p>
-</section>
 <section class="slide"><h1>Bonus</h1>
 <p><strong>★ A whole-catalog 3-D view</strong> — <code>notebooks/bonus/orbits-now-3d.ipynb</code>.
 Propagate all 21,207 objects to the current instant with <strong>Orekit</strong> and plot
@@ -225,11 +171,11 @@ where they are <em>right now</em>.</p>
 </tr>
 <tr>
 <td><strong>this lab</strong></td>
-<td><code>git clone &lt;HOL-REPO-URL&gt;</code></td>
+<td><code>git clone https://github.com/jtaccuino/devoxx-hol-2026</code></td>
 </tr>
 <tr>
 <td><strong>Maven dependencies</strong></td>
-<td><code>&lt;M2-BUNDLE-URL&gt;</code> → unpack into <code>~/.m2/repository</code></td>
+<td><a href="https://github.com/jtaccuino/devoxx-hol-2026/releases"><code>devoxx-hol-2026-m2.zip</code></a> → unpack into <code>~/.m2/repository</code></td>
 </tr>
 </tbody>
 </table>
@@ -368,9 +314,55 @@ the current instant with <strong>Orekit</strong>, then plot the resulting point 
 </table>
 <p>That is everything the notebooks assume.</p>
 </section>
+<section class="slide lead"><h1>What we will be doing</h1>
+<h3>One small Java program, end to end</h3>
+</section>
+<section class="slide"><h1>What you will build</h1>
+<p>A pipeline over the <strong>CelesTrak satellite catalog</strong>:</p>
+<ol>
+<li><strong>JTaccuino</strong> — a notebook that <em>is</em> a Java REPL</li>
+<li><strong>Hardwood</strong> — read Parquet without reading all of it</li>
+<li><strong>dflib</strong> — shape 21,207 rows with a DataFrame</li>
+<li><strong>gog4j</strong> — a grammar of graphics on JavaFX</li>
+<li><strong>DeepNetts</strong> — predict debris from orbital elements <em>(Zoran)</em></li>
+</ol>
+<p>No Python. No context switch. Just the JVM.</p>
+</section>
+<section class="slide"><h1>How this works</h1>
+<p>Each module has a notebook with two kinds of cells:</p>
+<ul>
+<li><strong>TODO</strong> — yours. The scaffold runs; it fails exactly where you haven't
+filled it in yet.</li>
+<li><strong>given</strong> — run it as-is and watch.</li>
+<li><strong>★ BONUS</strong> — for fast finishers. More wow, clearly marked.</li>
+</ul>
+<p>Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one
+gets bored.</p>
+</section>
+<section class="slide"><h1>The plan</h1>
+<ul>
+<li><strong>module 1 · JTaccuino</strong> — the notebook itself</li>
+<li><strong>module 2 · Hardwood + dflib</strong> — read the data, shape the data</li>
+<li><strong>module 3 · gog4j</strong> — draw the data</li>
+<li><strong>then Zoran</strong> — turn it into a model</li>
+</ul>
+<p>Each module opens with a one-slide intro to its tool: what it is and where to
+get it. Everything you need is installed already.</p>
+</section>
 <section class="slide lead"><h1>Module 1 · JTaccuino</h1>
 <h3>A notebook is a REPL with cells and state</h3>
 <p><code>notebooks/exercises/01-jtaccuino-basics.ipynb</code></p>
+</section>
+<section class="slide"><h1>Meet the tool · JTaccuino</h1>
+<p><em>A notebook for Java — JShell in cells, with pictures.</em></p>
+<ul>
+<li>Java execution by <strong>JShell</strong>; every cell shares one session</li>
+<li><code>display(...)</code> renders any <strong>JavaFX</strong> node inline</li>
+<li>plain JSON notebooks; open from disk</li>
+<li>built for teaching and interactive experimentation</li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://jtaccuino.github.io">https://jtaccuino.github.io</a>
+<strong>Source:</strong> <a href="https://github.com/jkost/jtaccuino">https://github.com/jkost/jtaccuino</a></p>
 </section>
 <section class="slide"><h1>Why a notebook at all?</h1>
 <p>Because data work is a <strong>conversation</strong>.</p>
@@ -428,6 +420,24 @@ if (ready) {
 <h3>Reading data, and shaping it</h3>
 <p><code>notebooks/exercises/02-parquet-with-hardwood.ipynb</code>
 <code>notebooks/exercises/03-dataframes-with-dflib.ipynb</code></p>
+</section>
+<section class="slide"><h1>Meet the tool · Hardwood</h1>
+<p><em>A Parquet reader for the JVM — fast, small, no ceremony.</em></p>
+<ul>
+<li>read the <strong>footer</strong> for schema, sizes and statistics, without touching data pages</li>
+<li>stream rows through a <strong>filter</strong>, or read whole <strong>column batches</strong> as primitive arrays</li>
+<li>the reader behind this lab's dataset (21,207 rows, 52 columns)</li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://hardwood.dev/">https://hardwood.dev/</a></p>
+</section>
+<section class="slide"><h1>Meet the tool · dflib</h1>
+<p><em>DataFrames in plain Java. Select, filter, derive, group, sort.</em></p>
+<ul>
+<li>a fluent, immutable <code>DataFrame</code> API — no SQL, no Python</li>
+<li>2.0 expressions: <code>$str(...)</code>, <code>$double(...)</code>, <code>count()</code>, <code>avg()</code></li>
+<li>CSV and <strong>Parquet</strong> I/O; reads the catalog straight into a frame</li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://github.com/dflib/dflib">https://github.com/dflib/dflib</a></p>
 </section>
 <section class="slide"><h1>Parquet is not a text file</h1>
 <p>It is <strong>columnar</strong>: values of one column sit together, so you can read one
@@ -511,6 +521,15 @@ messy; the labs use the columns that are complete.</p>
 <h3>A grammar of graphics, on JavaFX</h3>
 <p><code>notebooks/exercises/04-plotting-with-gog4j.ipynb</code></p>
 </section>
+<section class="slide"><h1>Meet the tool · gog4j</h1>
+<p><em>A grammar of graphics for JavaFX — ggplot2, for Java.</em></p>
+<ul>
+<li><strong>data + aes + geoms</strong>, composed layer by layer</li>
+<li>points, bars, boxes, densities, <strong>facets</strong>, 3-D, scatterplot matrices</li>
+<li>a plot <strong>is</strong> a JavaFX <code>Pane</code>: <code>display(...)</code> it, or export to <strong>SVG</strong></li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://github.com/svenreimers/gog4j">https://github.com/svenreimers/gog4j</a></p>
+</section>
 <section class="slide"><h1>The grammar</h1>
 <p>A plot is three pieces, composed:</p>
 <table>
@@ -572,8 +591,17 @@ HEO  ↗ wildly elliptical
 <p><code>batchPoints</code> keeps 21,000 points editable in the SVG.
 SVG → PDF is one external command away.</p>
 </section>
+<section class="slide"><h1>Meet the tool · Orekit</h1>
+<p><em>The space-flight dynamics library — the one the bonus notebook leans on.</em></p>
+<ul>
+<li>reads TLEs and <strong>propagates</strong> them (SGP4/SDP4) to any instant</li>
+<li>positions, velocities, frames, time scales</li>
+<li>used here to place all 21,207 objects where they are <strong>right now</strong></li>
+</ul>
+<p><strong>Get it:</strong> <a href="https://www.orekit.org/">https://www.orekit.org/</a></p>
+</section>
 <section class="slide"><h1>★ Bonus rounds</h1>
-<p>Finished early? The notebook has four:</p>
+<p>Finished early? Here is where to go:</p>
 <ol>
 <li><strong>Pairs plot</strong> — <code>matrixPlot</code> of every feature at once</li>
 <li><strong>3-D orbit cloud</strong> — inclination × period × eccentricity</li>
@@ -590,18 +618,56 @@ SVG → PDF is one external command away.</p>
 orbital elements, with a ground-truth label for payload versus debris.</p>
 <p><strong>What happens next is Zoran's part of the story.</strong></p>
 </section>
-</div><div id="bar"></div><div id="hud"></div>
-<script>const slides=[...document.querySelectorAll('.slide')];
-let i=0;
-function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
-  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
-  document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
-  document.getElementById('hud').textContent=(i+1)+' / '+slides.length;
-  history.replaceState(null,'','#'+(i+1)); }
-addEventListener('keydown',e=>{
-  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();show(i+1);}
-  if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(i-1);}
-  if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1); });
-addEventListener('click',e=>{ show(e.clientX < innerWidth*0.28 ? i-1 : i+1); });
-const start=parseInt(location.hash.slice(1),10); show(isNaN(start)?0:start-1);
+</div>
+<div id="bar"></div>
+<nav id="nav">
+  <span id="sec"></span>
+  <button id="home" title="back to the overview (o)">&#8962; overview</button>
+  <button id="prev" title="previous (left arrow)">&#8249; prev</button>
+  <button id="next" title="next (right arrow)">next &#8250;</button>
+  <button id="contents" title="contents (c)">&#9776; contents</button>
+</nav>
+<div id="toc"><div class="box"><h2>Contents</h2><ol id="tocList"></ol></div></div>
+<script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":6},{"t":"Introduction","i":14},{"t":"Module 1 · JTaccuino","i":18},{"t":"Module 2 · Hardwood + dflib","i":25},{"t":"Module 3 · gog4j","i":36}];
+const slides = [...document.querySelectorAll('.slide')];
+const toc = document.getElementById('toc');
+const secEl = document.getElementById('sec');
+let i = 0;
+function sectionOf(n){ let s = 0; for (let k = 0; k < sections.length; k++) if (sections[k].i <= n) s = k; return s; }
+function show(n){
+  i = Math.max(0, Math.min(slides.length - 1, n));
+  slides.forEach((s, k) => s.classList.toggle('active', k === i));
+  document.getElementById('bar').style.width = ((i + 1) / slides.length * 100) + '%';
+  secEl.textContent = sections[sectionOf(i)].t + '  ·  ' + (i + 1) + '/' + slides.length;
+  history.replaceState(null, '', '#' + (i + 1));
+}
+function toggleToc(){ toc.classList.toggle('open'); }
+const list = document.getElementById('tocList');
+sections.forEach(s => {
+  const li = document.createElement('li');
+  const a = document.createElement('a');
+  a.textContent = s.t;
+  a.onclick = () => { show(s.i); toc.classList.remove('open'); };
+  li.appendChild(a); list.appendChild(li);
+});
+document.getElementById('prev').onclick = () => show(i - 1);
+document.getElementById('next').onclick = () => show(i + 1);
+document.getElementById('home').onclick = () => show(0);
+document.getElementById('contents').onclick = toggleToc;
+toc.onclick = e => { if (e.target === toc) toc.classList.remove('open'); };
+addEventListener('keydown', e => {
+  if (['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+  if (['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+  if (e.key === 'Home') show(0);
+  if (e.key === 'End') show(slides.length - 1);
+  if (e.key === 'o' || e.key === 'O') show(0);
+  if (e.key === 'c' || e.key === 'C') toggleToc();
+  if (e.key === 'Escape') toc.classList.remove('open');
+});
+addEventListener('click', e => {
+  if (e.target.closest('#nav') || e.target.closest('#toc')) return;
+  show(e.clientX < innerWidth * 0.28 ? i - 1 : i + 1);
+});
+const start = parseInt(location.hash.slice(1), 10);
+show(isNaN(start) ? 0 : start - 1);
 </script></body></html>

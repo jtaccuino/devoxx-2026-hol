@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+title: Overview
 ---
 
 <!-- _class: lead -->
@@ -12,82 +13,6 @@ paginate: true
 
 **Devoxx Belgium 2026 · hands-on lab**
 Sven Reimers · Zoran Sevarac
-
----
-
-# What you will build
-
-A pipeline over the **CelesTrak satellite catalog**:
-
-1. **JTaccuino** — a notebook that *is* a Java REPL
-2. **Hardwood** — read Parquet without reading all of it
-3. **dflib** — shape 21,207 rows with a DataFrame
-4. **gog4j** — a grammar of graphics on JavaFX
-5. **DeepNetts** — predict debris from orbital elements *(Zoran)*
-
-No Python. No context switch. Just the JVM.
-
----
-
-# Meet the stack · JTaccuino
-
-*A notebook for Java — JShell in cells, with pictures.*
-
-- Java execution by **JShell**; every cell shares one session
-- `display(...)` renders any **JavaFX** node inline
-- plain JSON notebooks; open from disk
-- built for teaching and interactive experimentation
-
-**Get it:** <https://jtaccuino.github.io>
-**Source:** <https://github.com/jkost/jtaccuino>
-
----
-
-# Meet the stack · Hardwood
-
-*A Parquet reader for the JVM — fast, small, no ceremony.*
-
-- read the **footer** for schema, sizes and statistics, without touching data pages
-- stream rows through a **filter**, or read whole **column batches** as primitive arrays
-- the reader behind this lab's dataset (21,207 rows, 52 columns)
-
-**Get it:** <https://hardwood.dev/>
-
----
-
-# Meet the stack · dflib
-
-*DataFrames in plain Java. Select, filter, derive, group, sort.*
-
-- a fluent, immutable `DataFrame` API — no SQL, no Python
-- 2.0 expressions: `$str(...)`, `$double(...)`, `count()`, `avg()`
-- CSV and **Parquet** I/O; reads the catalog straight into a frame
-
-**Get it:** <https://github.com/dflib/dflib>
-
----
-
-# Meet the stack · gog4j
-
-*A grammar of graphics for JavaFX — ggplot2, for Java.*
-
-- **data + aes + geoms**, composed layer by layer
-- points, bars, boxes, densities, **facets**, 3-D, scatterplot matrices
-- a plot **is** a JavaFX `Pane`: `display(...)` it, or export to **SVG**
-
-**Get it:** <https://github.com/svenreimers/gog4j>
-
----
-
-# Meet the stack · Orekit
-
-*The space-flight dynamics library — the one the bonus notebook leans on.*
-
-- reads TLEs and **propagates** them (SGP4/SDP4) to any instant
-- positions, velocities, frames, time scales
-- used here to place all 21,207 objects where they are **right now**
-
-**Get it:** <https://www.orekit.org/>
 
 ---
 
@@ -141,20 +66,6 @@ Every module: **a short talk, then you type.** Solutions are provided.
 
 ---
 
-# How this works
-
-Each module has a notebook with two kinds of cells:
-
-- **TODO** — yours. The scaffold runs; it fails exactly where you haven't
-  filled it in yet.
-- **given** — run it as-is and watch.
-- **★ BONUS** — for fast finishers. More wow, clearly marked.
-
-Every exercise has a matching **solution**. No one gets left behind; no one
-gets bored.
-
----
-
 # Bonus
 
 **★ A whole-catalog 3-D view** — `notebooks/bonus/orbits-now-3d.ipynb`.
@@ -171,8 +82,8 @@ For fast finishers, along with the ★ BONUS cells inside the notebooks.
 |---|---|
 | **JDK 26+** | any recent OpenJDK — this lab is verified on **27** |
 | **JTaccuino** | <https://jtaccuino.github.io> |
-| **this lab** | `git clone <HOL-REPO-URL>` |
-| **Maven dependencies** | `<M2-BUNDLE-URL>` → unpack into `~/.m2/repository` |
+| **this lab** | `git clone https://github.com/jtaccuino/devoxx-hol-2026` |
+| **Maven dependencies** | [`devoxx-hol-2026-m2.zip`](https://github.com/jtaccuino/devoxx-hol-2026/releases) → unpack into `~/.m2/repository` |
 
 The Maven bundle already contains **every artifact the notebooks resolve** —
 including the `0.5-SNAPSHOT` builds — so the whole lab runs **offline**.

@@ -50,15 +50,24 @@ the files read fine as prose and render as a deck with any Marp tool.
 
 All of `narrative/*.md` is pre-rendered, in order, to **one self-contained HTML
 deck**: `narrative/web/index.html`. Open it in a browser — no build step, no
-network:
+network.
 
-- arrow keys / space / click to move, `Home` / `End` to jump, `#7` in the URL
-- also print to PDF from the browser
+The running order is:
 
-The deck opens with the tool lineup, a short **space primer** (just enough
-vocabulary to read the plots) and the "getting everything" slide, then walks the
-three modules. It deliberately stops before the machine-learning story and hands
-off to Zoran — that part is left open.
+1. **Overview** — the lab, the dataset, the plan, getting everything
+2. **Space primer** — just enough vocabulary to read the plots
+3. **Introduction** — what we will be doing, and how the notebooks work
+4. **Module 1 · JTaccuino**, **Module 2 · Hardwood + dflib**, **Module 3 · gog4j**
+   — each opens with a "meet the tool" slide (what it is, where to get it)
+5. **Over to Zoran** — the ML story is his, and left open
+
+Navigation:
+
+- **prev / next / overview / contents** buttons along the bottom right
+- keyboard: arrows / space to move, `Home` / `End`, `o` for the overview,
+  `c` for contents, `Esc` to close it; `#7` in the URL jumps to a slide
+- click the left quarter to go back, elsewhere to go forward
+- print to PDF from the browser
 
 Re-render after editing the markdown:
 

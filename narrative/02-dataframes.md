@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+title: Module 2 · Hardwood + dflib
 ---
 
 <!-- _class: lead -->
@@ -12,6 +13,30 @@ paginate: true
 
 `notebooks/exercises/02-parquet-with-hardwood.ipynb`
 `notebooks/exercises/03-dataframes-with-dflib.ipynb`
+
+---
+
+# Meet the tool · Hardwood
+
+*A Parquet reader for the JVM — fast, small, no ceremony.*
+
+- read the **footer** for schema, sizes and statistics, without touching data pages
+- stream rows through a **filter**, or read whole **column batches** as primitive arrays
+- the reader behind this lab's dataset (21,207 rows, 52 columns)
+
+**Get it:** <https://hardwood.dev/>
+
+---
+
+# Meet the tool · dflib
+
+*DataFrames in plain Java. Select, filter, derive, group, sort.*
+
+- a fluent, immutable `DataFrame` API — no SQL, no Python
+- 2.0 expressions: `$str(...)`, `$double(...)`, `count()`, `avg()`
+- CSV and **Parquet** I/O; reads the catalog straight into a frame
+
+**Get it:** <https://github.com/dflib/dflib>
 
 ---
 

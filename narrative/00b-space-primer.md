@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+title: Space primer
 ---
 
 <!-- _class: lead -->

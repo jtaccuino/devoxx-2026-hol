@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+title: Module 3 · gog4j
 ---
 
 <!-- _class: lead -->
@@ -11,6 +12,18 @@ paginate: true
 ### A grammar of graphics, on JavaFX
 
 `notebooks/exercises/04-plotting-with-gog4j.ipynb`
+
+---
+
+# Meet the tool · gog4j
+
+*A grammar of graphics for JavaFX — ggplot2, for Java.*
+
+- **data + aes + geoms**, composed layer by layer
+- points, bars, boxes, densities, **facets**, 3-D, scatterplot matrices
+- a plot **is** a JavaFX `Pane`: `display(...)` it, or export to **SVG**
+
+**Get it:** <https://github.com/svenreimers/gog4j>
 
 ---
 
@@ -82,9 +95,21 @@ SVG → PDF is one external command away.
 
 ---
 
+# Meet the tool · Orekit
+
+*The space-flight dynamics library — the one the bonus notebook leans on.*
+
+- reads TLEs and **propagates** them (SGP4/SDP4) to any instant
+- positions, velocities, frames, time scales
+- used here to place all 21,207 objects where they are **right now**
+
+**Get it:** <https://www.orekit.org/>
+
+---
+
 # ★ Bonus rounds
 
-Finished early? The notebook has four:
+Finished early? Here is where to go:
 
 1. **Pairs plot** — `matrixPlot` of every feature at once
 2. **3-D orbit cloud** — inclination × period × eccentricity

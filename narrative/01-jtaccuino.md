@@ -2,6 +2,7 @@
 marp: true
 theme: default
 paginate: true
+title: Module 1 · JTaccuino
 ---
 
 <!-- _class: lead -->
@@ -11,6 +12,20 @@ paginate: true
 ### A notebook is a REPL with cells and state
 
 `notebooks/exercises/01-jtaccuino-basics.ipynb`
+
+---
+
+# Meet the tool · JTaccuino
+
+*A notebook for Java — JShell in cells, with pictures.*
+
+- Java execution by **JShell**; every cell shares one session
+- `display(...)` renders any **JavaFX** node inline
+- plain JSON notebooks; open from disk
+- built for teaching and interactive experimentation
+
+**Get it:** <https://jtaccuino.github.io>
+**Source:** <https://github.com/jkost/jtaccuino>
 
 ---
 
