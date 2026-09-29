@@ -97,18 +97,13 @@ Low effort. High wow. Clearly marked.
 
 ---
 
-# The bridge to machine learning
+<!-- _class: lead -->
 
-The plots *described* the catalog. Now **predict** from it.
+# Over to Zoran
 
-`satcat_object_type` is ground truth: payload, or debris.
+### From table to trained model
 
-The elements are the features: inclination, eccentricity, period, mean motion,
-drag.
+The notebooks end with a clean, labelled dataset — every object described by its
+orbital elements, with a ground-truth label for payload versus debris.
 
-```
-labelled   20,611 objects   (17,110 payload · 3,501 debris)
-split      16,488 train  ·  4,123 test
-```
-
-We stop at the split. **This is where Zoran takes over.**
+**What happens next is Zoran's part of the story.**

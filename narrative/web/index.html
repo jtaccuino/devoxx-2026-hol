@@ -1,6 +1,7 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>devoxx-hol-2026 · narrative</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+<title>Java is for Data Science, Too</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
 * { box-sizing: border-box; }
 html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
@@ -30,23 +31,377 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
 #bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
 #hud { position:fixed; right:1rem; bottom:.7rem; color:var(--dim); font-size:.85rem; }
-#back { position:fixed; left:1rem; top:.8rem; color:var(--dim); font-size:.85rem; text-decoration:none; }
-#back:hover { color:var(--accent); }
 @media print {
   .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
-  #back, #hud, #bar { display:none; }
+  #hud, #bar { display:none; }
 }
-
-#deck{flex-direction:column} .card{display:flex;justify-content:space-between;align-items:center;
-width:min(94vw,760px);margin:.5rem 0;padding:1.1rem 1.4rem;background:#131922;
-border:1px solid var(--rule);border-radius:12px;text-decoration:none;color:var(--fg);}
-.card:hover{border-color:var(--accent)} .t{font-size:1.25rem} .n{color:var(--dim)}
-.hero{width:min(94vw,760px);margin-bottom:1rem} </style></head>
-<body><div id="deck"><div class="hero"><h1>Java is for Data Science, Too</h1>
-<p style="color:var(--dim)">Devoxx Belgium 2026 — hands-on lab narrative.</p></div>
-<a class="card" href="00-overview.html"><span class="t">Java is for Data Science, Too</span><span class="n">8 slides</span></a>
-<a class="card" href="00b-space-primer.html"><span class="t">A two-minute space primer</span><span class="n">8 slides</span></a>
-<a class="card" href="01-jtaccuino.html"><span class="t">Module 1 · JTaccuino</span><span class="n">6 slides</span></a>
-<a class="card" href="02-dataframes.html"><span class="t">Module 2 · Hardwood + dflib</span><span class="n">9 slides</span></a>
-<a class="card" href="03-visualization.html"><span class="t">Module 3 · gog4j</span><span class="n">7 slides</span></a>
-</div></body></html>
+</style></head>
+<body><div id="deck"><section class="slide lead"><h1>Java is for Data Science, Too</h1>
+<h3>Building an end-to-end ML pipeline without leaving the JVM</h3>
+<p><strong>Devoxx Belgium 2026 · hands-on lab</strong>
+Sven Reimers · Zoran Sevarac</p>
+</section>
+<section class="slide"><h1>What you will build</h1>
+<p>A pipeline over the <strong>CelesTrak satellite catalog</strong>:</p>
+<ol>
+<li><strong>JTaccuino</strong> — a notebook that <em>is</em> a Java REPL</li>
+<li><strong>Hardwood</strong> — read Parquet without reading all of it</li>
+<li><strong>dflib</strong> — shape 21,207 rows with a DataFrame</li>
+<li><strong>gog4j</strong> — a grammar of graphics on JavaFX</li>
+<li><strong>DeepNetts</strong> — predict debris from orbital elements <em>(Zoran)</em></li>
+</ol>
+<p>No Python. No context switch. Just the JVM.</p>
+</section>
+<section class="slide"><h1>The dataset</h1>
+<p><code>data/celestrak_gp_catalog.parquet</code></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rows</td>
+<td><strong>21,207</strong> objects</td>
+</tr>
+<tr>
+<td>columns</td>
+<td><strong>52</strong></td>
+</tr>
+<tr>
+<td>every current CelesTrak GP element set</td>
+<td>merged, one row per object</td>
+</tr>
+<tr>
+<td>enriched with SATCAT</td>
+<td>owner, object type, launch date</td>
+</tr>
+<tr>
+<td>format</td>
+<td>Parquet, GZIP, one row group, ~5.4 MB</td>
+</tr>
+</tbody>
+</table>
+<p>A real file, not a toy. And small enough to hold in memory.</p>
+</section>
+<section class="slide"><h1>What is actually in orbit</h1>
+<pre><code>LEO  19,260   ████████████████████████████████████████
+GEO   1,183   ██
+HEO     558   █
+MEO     206   ▌
+</code></pre>
+<pre><code>payloads  17,110   █████████████████████████████████████
+debris     2,957   ███████
+rocket b.    544   █
+</code></pre>
+<p><code>active,starlink</code> alone is <strong>10,952</strong> objects.</p>
+</section>
+<section class="slide"><h1>The shape of the lab</h1>
+<table>
+<thead>
+<tr>
+<th>time</th>
+<th>who</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10:30</td>
+<td>Sven</td>
+<td>intro + dataset (this deck)</td>
+</tr>
+<tr>
+<td>10:40</td>
+<td>Sven</td>
+<td><strong>module 1</strong> — JTaccuino · 5 min talk, 10 min hands-on</td>
+</tr>
+<tr>
+<td>10:55</td>
+<td>Sven</td>
+<td><strong>module 2</strong> — Hardwood + dflib · 5 + 10</td>
+</tr>
+<tr>
+<td>11:10</td>
+<td>Sven</td>
+<td><strong>module 3</strong> — gog4j · 5 + 10</td>
+</tr>
+<tr>
+<td>11:25</td>
+<td>Zoran</td>
+<td><strong>ML pipeline</strong> — DeepNetts</td>
+</tr>
+<tr>
+<td>12:15</td>
+<td>both</td>
+<td>wrap-up, questions</td>
+</tr>
+</tbody>
+</table>
+<p>Every module: <strong>a short talk, then you type.</strong> Solutions are provided.</p>
+</section>
+<section class="slide"><h1>How this works</h1>
+<p>Each module has a notebook with two kinds of cells:</p>
+<ul>
+<li><strong>TODO</strong> — yours. The scaffold runs; it fails exactly where you haven't
+filled it in yet.</li>
+<li><strong>given</strong> — run it as-is and watch.</li>
+<li><strong>★ BONUS</strong> — for fast finishers. More wow, clearly marked.</li>
+</ul>
+<p>Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one
+gets bored.</p>
+</section>
+<section class="slide"><h1>Bonus</h1>
+<p><strong>★ A whole-catalog 3-D view</strong> — <code>notebooks/bonus/orbits-now-3d.ipynb</code>.
+Propagate all 21,207 objects to the current instant with <strong>Orekit</strong> and plot
+where they are <em>right now</em>.</p>
+<p>For fast finishers, along with the ★ BONUS cells inside the notebooks.</p>
+</section>
+<section class="slide"><h1>Environment check</h1>
+<ul>
+<li>JDK <strong>26+</strong> (gog4j targets 26; this room runs 27)</li>
+<li>JTaccuino, with a <strong>pre-seeded Maven cache</strong> — everything resolves offline</li>
+<li>everything you need is in this repository</li>
+</ul>
+<p>Open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code> from the <strong>repository
+root</strong>, and we begin.</p>
+</section>
+<section class="slide lead"><h1>Module 1 · JTaccuino</h1>
+<h3>A notebook is a REPL with cells and state</h3>
+<p><code>notebooks/exercises/01-jtaccuino-basics.ipynb</code></p>
+</section>
+<section class="slide"><h1>Why a notebook at all?</h1>
+<p>Because data work is a <strong>conversation</strong>.</p>
+<ul>
+<li>you try something, look at the result, adjust</li>
+<li>state should persist between attempts</li>
+<li>the <em>record</em> of what you did is the artifact</li>
+</ul>
+<p>Jupyter made this normal — in <strong>Python</strong>.</p>
+<p>JTaccuino is the same idea for <strong>Java</strong>, running on JShell.</p>
+</section>
+<section class="slide"><h1>The whole model</h1>
+<p>A notebook is <strong>one JShell session</strong>, split into cells.</p>
+<pre><code class="language-java">// cell 1
+int satellites = 21207;
+</code></pre>
+<pre><code class="language-java">// cell 2 — still defined
+println(&quot;we have %,d objects&quot;, satellites);
+</code></pre>
+<p>Variables, imports, methods — anything you define is visible in later cells.
+That is the entire trick.</p>
+</section>
+<section class="slide"><h1>Two things a REPL does not have</h1>
+<p><strong>1 · <code>display(...)</code></strong> — hand it a JavaFX node, it draws it inline.</p>
+<pre><code class="language-java">var earth = new Circle(0, 0, 60, Color.ORANGE);
+display(earth);
+</code></pre>
+<p><strong>2 · Cells are the unit of re-running.</strong> Change one, re-run one.</p>
+</section>
+<section class="slide"><h1>One rule that will bite you</h1>
+<p>JShell executes a snippet when the line is <strong>complete</strong>.</p>
+<pre><code class="language-java">// this does NOT work — the first line is already complete
+if (ready) println(&quot;go&quot;);
+else       println(&quot;wait&quot;);
+</code></pre>
+<pre><code class="language-java">// this does — the open brace keeps the snippet going
+if (ready) {
+    println(&quot;go&quot;);
+} else {
+    println(&quot;wait&quot;);
+}
+</code></pre>
+<p>Same for long expressions: keep them on <strong>one line</strong>, or open a bracket.</p>
+</section>
+<section class="slide"><h1>Your turn</h1>
+<p>Open <code>01-jtaccuino-basics.ipynb</code>.</p>
+<p><strong>5 TODOs.</strong> At the end you will <code>display</code> a small orbit diagram — the same
+<code>display</code> that shows every plot in this lab.</p>
+<p>~10 minutes. The solution is next to it if you get stuck.</p>
+<blockquote>
+<p>On to <strong>module 2</strong> — where the real data starts.</p>
+</blockquote>
+</section>
+<section class="slide lead"><h1>Module 2 · Hardwood + dflib</h1>
+<h3>Reading data, and shaping it</h3>
+<p><code>notebooks/exercises/02-parquet-with-hardwood.ipynb</code>
+<code>notebooks/exercises/03-dataframes-with-dflib.ipynb</code></p>
+</section>
+<section class="slide"><h1>Parquet is not a text file</h1>
+<p>It is <strong>columnar</strong>: values of one column sit together, so you can read one
+column without reading the others.</p>
+<p>That gives you three levels of access — cheapest first:</p>
+<ol>
+<li><strong>footer</strong> — shape and statistics, from the last few kilobytes</li>
+<li><strong>row readers</strong> — stream rows through a filter</li>
+<li><strong>column readers</strong> — a whole column as a primitive array</li>
+</ol>
+<p>You pick the level that answers your question.</p>
+</section>
+<section class="slide"><h1>Level 1 · the footer</h1>
+<p>21,207 rows, 52 columns, 1 row group, 5.4 MB —</p>
+<p>all known <strong>without decompressing a single data page</strong>.</p>
+<p>Even the min/max of a column is in the footer:</p>
+<pre><code>inclination  0.003 .. 142.042   (from the footer only)
+</code></pre>
+</section>
+<section class="slide"><h1>Level 2 · stream the rows</h1>
+<pre><code class="language-java">long debris = 0;
+try (RowReader rows = catalog.rowReader()) {
+    while (rows.hasNext()) {
+        rows.next();
+        String t = rows.getString(&quot;satcat_object_type&quot;);
+        if (&quot;DEB&quot;.equals(t) || &quot;R/B&quot;.equals(t)) debris++;
+    }
+}
+</code></pre>
+<p>One pass, one <code>long</code> of state, <strong>3,501</strong> debris.</p>
+</section>
+<section class="slide"><h1>Level 3 · column batches</h1>
+<pre><code class="language-java">try (ColumnReader col = catalog.columnReader(&quot;inclination&quot;)) {
+    while (col.nextBatch()) {
+        double[] values = col.getDoubles();
+        for (int k = 0; k &lt; col.getValueCount(); k++)
+            if (values[k] &gt; maxInc) maxInc = values[k];
+    }
+}
+</code></pre>
+<p>No row objects. No boxing. Just a <code>double[]</code>.</p>
+</section>
+<section class="slide"><h1>dflib is the other half</h1>
+<p>Hardwood <em>streams</em>. <strong>dflib</strong> <em>shapes</em>.</p>
+<pre><code class="language-java">var df = Parquet.loader().load(path);
+</code></pre>
+<p>Then, in plain Java:</p>
+<pre><code class="language-java">df.cols(&quot;object_name&quot;, &quot;orbit_class&quot;, &quot;apogee_km&quot;).select();   // select
+df.rows($str(&quot;orbit_class&quot;).eq(&quot;GEO&quot;)).select();               // filter
+df.group(&quot;orbit_class&quot;).agg($col(&quot;orbit_class&quot;), count());     // group
+df.sort(&quot;apogee_km&quot;, false);                                   // sort
+</code></pre>
+</section>
+<section class="slide"><h1>Derive and aggregate in one breath</h1>
+<p>The mean apogee–perigee spread per class:</p>
+<pre><code class="language-java">df.group(&quot;orbit_class&quot;).agg(
+    $col(&quot;orbit_class&quot;),
+    $double(&quot;apogee_km&quot;).sub($double(&quot;perigee_km&quot;)).avg().as(&quot;mean_spread_km&quot;))
+  .sort(&quot;mean_spread_km&quot;, false);
+</code></pre>
+<pre><code>HEO  45,138 km    MEO  1,125 km    GEO  472 km    LEO  43 km
+</code></pre>
+<p>A derived column <em>and</em> a summary, in one expression.</p>
+</section>
+<section class="slide"><h1>One real-data wart</h1>
+<p><code>altitude_km</code> is <strong>NaN for 997 rows</strong> — exactly where SGP4 propagation failed
+(decayed objects).</p>
+<p>The <em>analytic</em> <code>apogee_km</code> / <code>perigee_km</code> are always present. Real data is
+messy; the labs use the columns that are complete.</p>
+</section>
+<section class="slide"><h1>Your turn</h1>
+<p><code>02-parquet-with-hardwood.ipynb</code> — <strong>5 TODOs.</strong> Climb the three levels.</p>
+<p><code>03-dataframes-with-dflib.ipynb</code> — <strong>6 TODOs.</strong> Select, filter, group, sort.</p>
+<p>Plus a ★ bonus: <strong>who owns the sky?</strong> (US 12,980 · PRC 3,634 · CIS 1,486)</p>
+<p>~10 minutes each.</p>
+<blockquote>
+<p>On to <strong>module 3</strong> — pictures.</p>
+</blockquote>
+</section>
+<section class="slide lead"><h1>Module 3 · gog4j</h1>
+<h3>A grammar of graphics, on JavaFX</h3>
+<p><code>notebooks/exercises/04-plotting-with-gog4j.ipynb</code></p>
+</section>
+<section class="slide"><h1>The grammar</h1>
+<p>A plot is three pieces, composed:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>data</strong></td>
+<td>a <code>HardwoodTable</code>, read straight from the Parquet</td>
+</tr>
+<tr>
+<td><strong>aes</strong></td>
+<td>which columns drive x, y, colour, …</td>
+</tr>
+<tr>
+<td><strong>geoms</strong></td>
+<td>how to draw them</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">Ggplot.ggplot(table,
+        Aes.aes().x(&quot;inclination&quot;).y(&quot;apogee_km&quot;).color(&quot;orbit_class&quot;))
+    .geoms(Geoms.point());
+</code></pre>
+<p>That is a scatterplot of 21,207 satellites.</p>
+</section>
+<section class="slide"><h1>Layers stack</h1>
+<p>The same base, refined:</p>
+<pre><code class="language-java">.geoms(Geoms.point())
+.labs(Labs.labs(&quot;Everything in orbit&quot;, &quot;Inclination (deg)&quot;, &quot;Apogee (km)&quot;))
+.theme(Theme.theme_dark())
+.facets(Facets.wrap(&quot;orbit_class&quot;, 2))
+</code></pre>
+<ul>
+<li><code>labs</code> — title and axes</li>
+<li><code>theme</code> — every colour at once</li>
+<li><code>facets</code> — small multiples, one panel per class</li>
+</ul>
+</section>
+<section class="slide"><h1>Geometry tells the story</h1>
+<p>Faceting by orbit class shows <strong>four different populations</strong>:</p>
+<pre><code>LEO  ↓ low, dense, inclinations from 0° to 142°
+GEO  → a tight band, near-zero inclination, one altitude
+MEO  • a sparse shell
+HEO  ↗ wildly elliptical
+</code></pre>
+<p>One <code>hline</code> at <strong>35,786 km</strong> makes the GEO belt obvious.</p>
+</section>
+<section class="slide"><h1>display, or export</h1>
+<pre><code class="language-java">display(plot);                                   // live, in the notebook
+</code></pre>
+<pre><code class="language-java">new SvgExporter().size(1600, 1000).batchPoints(true)
+    .write(plot, cwd.resolve(&quot;celestrak-orbits.svg&quot;));
+</code></pre>
+<p><code>batchPoints</code> keeps 21,000 points editable in the SVG.
+SVG → PDF is one external command away.</p>
+</section>
+<section class="slide"><h1>★ Bonus rounds</h1>
+<p>Finished early? The notebook has four:</p>
+<ol>
+<li><strong>Pairs plot</strong> — <code>matrixPlot</code> of every feature at once</li>
+<li><strong>3-D orbit cloud</strong> — inclination × period × eccentricity</li>
+<li><strong>The wall chart</strong> — filled density + the GEO belt, dark theme</li>
+<li><em>(module 2)</em> <strong>Top owners</strong> — a bar chart of who launches</li>
+<li><em>(<code>notebooks/bonus/orbits-now-3d.ipynb</code>)</em> <strong>Where is everything right now?</strong>
+— propagate all 21,207 objects to this instant with Orekit, plot the cloud</li>
+</ol>
+<p>Low effort. High wow. Clearly marked.</p>
+</section>
+<section class="slide lead"><h1>Over to Zoran</h1>
+<h3>From table to trained model</h3>
+<p>The notebooks end with a clean, labelled dataset — every object described by its
+orbital elements, with a ground-truth label for payload versus debris.</p>
+<p><strong>What happens next is Zoran's part of the story.</strong></p>
+</section>
+</div><div id="bar"></div><div id="hud"></div>
+<script>const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+  document.getElementById('hud').textContent=(i+1)+' / '+slides.length;
+  history.replaceState(null,'','#'+(i+1)); }
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();show(i+1);}
+  if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(i-1);}
+  if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1); });
+addEventListener('click',e=>{ show(e.clientX < innerWidth*0.28 ? i-1 : i+1); });
+const start=parseInt(location.hash.slice(1),10); show(isNaN(start)?0:start-1);
+</script></body></html>

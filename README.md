@@ -9,7 +9,7 @@ CelesTrak element sets → **Hardwood** (Parquet) → **dflib** (DataFrames) →
 
 ```
 narrative/    slides (Marp markdown) — open as prose, render as a deck
-narrative/web/  pre-rendered HTML decks (open index.html, arrow keys to navigate)
+narrative/web/  the single pre-rendered HTML deck (open index.html)
 cheatsheets/  one-page API reference per library
 notebooks/    exercises + solutions
 notebooks/fallback/  penguins worksheet, if the dataset is unavailable
@@ -42,21 +42,21 @@ working directory):
 Each has a matching file in `notebooks/solutions/`. Every notebook has a final
 **check** cell that prints `✓` when the TODOs are correct.
 
-`narrative/00-overview.md` is the slide deck; `narrative/01..03` are the module
+`narrative/00-overview.md` opens the story; `narrative/01..03` are the module
 intros. They are plain Markdown with [Marp](https://marp.app) front-matter, so
-`marp narrative/00-overview.md --pdf` renders a deck and the files read fine as
-prose without any tooling.
+the files read fine as prose and render as a deck with any Marp tool.
 
 ## Narrative (web)
 
-The decks are also pre-rendered to **self-contained HTML** in `narrative/web/`.
-Open `narrative/web/index.html` in a browser — no build step, no network:
+All of `narrative/*.md` is pre-rendered, in order, to **one self-contained HTML
+deck**: `narrative/web/index.html`. Open it in a browser — no build step, no
+network:
 
 - arrow keys / space / click to move, `Home` / `End` to jump, `#7` in the URL
 - also print to PDF from the browser
 
-`narrative/00b-space-primer.md` is a short introduction to the space vocabulary
-(TLE, inclination, LEO/MEO/GEO/HEO, propagation) for anyone new to the domain.
+The deck deliberately stops before the machine-learning story and hands off to
+Zoran — that part is left open.
 
 Re-render after editing the markdown:
 
@@ -142,7 +142,7 @@ Notebooks are generated, not hand-edited:
 ```bash
 jbang tools/make_notebooks.java          # writes exercises, solutions, fallback, bonus
 jbang tools/verify_notebooks.java        # replays every solution, prints PASS/FAIL
-jbang tools/render_narrative.java        # regenerates narrative/web/*.html
+jbang tools/render_narrative.java        # regenerates narrative/web/index.html
 ```
 
 `tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino

@@ -3,9 +3,9 @@
 //DEPS org.commonmark:commonmark:0.24.0
 //DEPS org.commonmark:commonmark-ext-gfm-tables:0.24.0
 
-// Render the Marp-style narrative markdown to self-contained HTML decks.
-// No Marp, no network: split the markdown on `---`, render each slide with
-// CommonMark, and wrap the result in a small keyboard-navigable deck.
+// Render the Marp-style narrative markdown into ONE self-contained HTML deck.
+// No Marp, no network: every narrative/*.md is split on `---`, rendered with
+// CommonMark in file order, and concatenated into narrative/web/index.html.
 //
 // Usage: jbang tools/render_narrative.java
 
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -36,15 +35,15 @@ public class render_narrative {
     static final Pattern COMMENT = Pattern.compile("<!--.*?-->", Pattern.DOTALL);
     static final Pattern TITLE = Pattern.compile("(?m)^#\\s+(.*)$");
 
-    record Deck(String file, String title, int slides) {}
-
     public static void main(String[] args) throws IOException {
-        var extensions = List.of(TablesExtension.create());
+        List<org.commonmark.Extension> extensions = List.of(TablesExtension.create());
         Parser parser = Parser.builder().extensions(extensions).build();
         HtmlRenderer renderer = HtmlRenderer.builder().extensions(extensions).build();
 
         Files.createDirectories(OUT);
-        List<Deck> decks = new ArrayList<>();
+        StringBuilder slides = new StringBuilder();
+        String title = null;
+        int count = 0;
 
         try (Stream<Path> files = Files.list(SRC)) {
             for (Path src : files.filter(p -> p.toString().endsWith(".md"))
@@ -54,42 +53,37 @@ public class render_narrative {
                 if (name.startsWith("_")) continue;
 
                 String text = Files.readString(src, StandardCharsets.UTF_8);
+                if (title == null) title = titleOf(text);
                 String body = FRONT_MATTER.matcher(text).replaceFirst("");
-                String title = titleOf(text);
-                String htmlName = name.substring(0, name.length() - 3) + ".html";
 
-                StringBuilder slides = new StringBuilder();
-                int count = 0;
                 for (String part : SLIDE_SPLIT.split(body)) {
-                    String trimmed = part.strip();
-                    if (trimmed.isEmpty()) continue;
+                    if (part.strip().isEmpty()) continue;
                     boolean lead = LEAD.matcher(part).find();
-                    String cleaned = COMMENT.matcher(part).replaceAll("");
-                    Node doc = parser.parse(cleaned);
+                    Node doc = parser.parse(COMMENT.matcher(part).replaceAll(""));
                     slides.append("<section class=\"slide").append(lead ? " lead" : "")
                           .append("\">").append(renderer.render(doc)).append("</section>\n");
                     count++;
                 }
-
-                String page = TEMPLATE.replace("{{TITLE}}", escape(title))
-                        .replace("{{CSS}}", CSS)
-                        .replace("{{SLIDES}}", slides.toString())
-                        .replace("{{JS}}", JS);
-                Files.writeString(OUT.resolve(htmlName), page, StandardCharsets.UTF_8);
-                decks.add(new Deck(htmlName, title, count));
-                System.out.println("wrote narrative/web/" + htmlName + "  (" + count + " slides)");
             }
         }
 
-        StringBuilder items = new StringBuilder();
-        for (Deck d : decks) {
-            items.append("<a class=\"card\" href=\"").append(d.file()).append("\">")
-                 .append("<span class=\"t\">").append(escape(d.title())).append("</span>")
-                 .append("<span class=\"n\">").append(d.slides()).append(" slides</span></a>\n");
+        String page = TEMPLATE
+                .replace("{{TITLE}}", escape(title == null ? "devoxx-hol-2026" : title))
+                .replace("{{CSS}}", CSS)
+                .replace("{{SLIDES}}", slides.toString())
+                .replace("{{JS}}", JS);
+        Files.writeString(OUT.resolve("index.html"), page, StandardCharsets.UTF_8);
+        System.out.println("wrote narrative/web/index.html  (" + count + " slides)");
+
+        // drop any per-deck HTML left over from the earlier, multi-file layout
+        try (Stream<Path> stale = Files.list(OUT)) {
+            for (Path p : stale.filter(x -> x.toString().endsWith(".html"))
+                    .filter(x -> !x.getFileName().toString().equals("index.html"))
+                    .toList()) {
+                Files.deleteIfExists(p);
+                System.out.println("removed stale " + p);
+            }
         }
-        String index = INDEX.replace("{{CSS}}", CSS).replace("{{ITEMS}}", items.toString());
-        Files.writeString(OUT.resolve("index.html"), index, StandardCharsets.UTF_8);
-        System.out.println("wrote narrative/web/index.html");
     }
 
     static String titleOf(String text) {
@@ -132,11 +126,9 @@ public class render_narrative {
               color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
             #bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
             #hud { position:fixed; right:1rem; bottom:.7rem; color:var(--dim); font-size:.85rem; }
-            #back { position:fixed; left:1rem; top:.8rem; color:var(--dim); font-size:.85rem; text-decoration:none; }
-            #back:hover { color:var(--accent); }
             @media print {
               .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
-              #back, #hud, #bar { display:none; }
+              #hud, #bar { display:none; }
             }
             """;
 
@@ -161,22 +153,7 @@ public class render_narrative {
             <html lang="en"><head><meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>{{TITLE}}</title><style>{{CSS}}</style></head>
-            <body><a id="back" href="index.html">&#8592; all decks</a>
-            <div id="deck">{{SLIDES}}</div><div id="bar"></div><div id="hud"></div>
+            <body><div id="deck">{{SLIDES}}</div><div id="bar"></div><div id="hud"></div>
             <script>{{JS}}</script></body></html>
-            """;
-
-    static final String INDEX = """
-            <!doctype html><html lang="en"><head><meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>devoxx-hol-2026 · narrative</title><style>{{CSS}}
-            #deck{flex-direction:column} .card{display:flex;justify-content:space-between;align-items:center;
-            width:min(94vw,760px);margin:.5rem 0;padding:1.1rem 1.4rem;background:#131922;
-            border:1px solid var(--rule);border-radius:12px;text-decoration:none;color:var(--fg);}
-            .card:hover{border-color:var(--accent)} .t{font-size:1.25rem} .n{color:var(--dim)}
-            .hero{width:min(94vw,760px);margin-bottom:1rem} </style></head>
-            <body><div id="deck"><div class="hero"><h1>Java is for Data Science, Too</h1>
-            <p style="color:var(--dim)">Devoxx Belgium 2026 — hands-on lab narrative.</p></div>
-            {{ITEMS}}</div></body></html>
             """;
 }
