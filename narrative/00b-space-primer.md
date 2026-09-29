@@ -2,6 +2,8 @@
 marp: true
 theme: default
 paginate: true
+stream: intro
+slot: 10:30-10:40
 title: Space primer
 ---
 

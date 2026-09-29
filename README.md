@@ -61,13 +61,22 @@ The running order is:
    — each opens with a "meet the tool" slide (what it is, where to get it)
 5. **Over to Zoran** — a separate stream, left open
 
+The deck has **two visible streams**: Sven's *tooling* (the four tools, modules
+1–3) and Zoran's *ML pipeline*. The opening slide shows both; everything after it
+belongs to the tooling stream, and the closing slide hands off to Zoran.
+
 Navigation:
 
-- **prev / next / overview / contents** buttons along the bottom right
+- a **running footer** shows the current stream, the section, the time slot and
+  how many minutes are left; **prev / next / overview / contents** are on the right
 - keyboard: arrows / space to move, `Home` / `End`, `o` for the overview,
   `c` for contents, `Esc` to close it; `#7` in the URL jumps to a slide
 - click the left quarter to go back, elsewhere to go forward
 - print to PDF from the browser
+
+Stream and timing are driven by front matter — `stream:` (`intro`/`tooling`/`ml`)
+and `slot:` (`10:40-10:55`) per file, overridable on a single slide with
+`<!-- _stream: ml -->` / `<!-- _slot: 11:25-12:15 -->`.
 
 Re-render after editing the markdown:
 

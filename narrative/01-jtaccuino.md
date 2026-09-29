@@ -2,6 +2,8 @@
 marp: true
 theme: default
 paginate: true
+stream: tooling
+slot: 10:40-10:55
 title: Module 1 · JTaccuino
 ---
 

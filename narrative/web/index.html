@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Java is for Data Science, Too</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+<title>Java is for Data Science, Too</title><style>:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040;
+  --tool:#4aa3df; --ml:#a892ff; }
 * { box-sizing: border-box; }
 html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
-#deck { height:100%; display:flex; align-items:center; justify-content:center; }
+#deck { height:100%; display:flex; align-items:center; justify-content:center; padding-bottom:3rem; }
 .slide { display:none; width:min(94vw, 1180px); aspect-ratio:16/9; padding:3.2rem 4rem;
   background:#131922; border:1px solid var(--rule); border-radius:14px;
   overflow:auto; box-shadow:0 10px 40px rgba(0,0,0,.45); }
@@ -29,22 +30,6 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 .slide th { background:#1a222d; color:var(--dim); }
 .slide blockquote { border-left:3px solid var(--accent); margin:.6rem 0; padding:.2rem 1rem;
   color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
-#bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
-#nav { position:fixed; right:1rem; bottom:.8rem; display:flex; gap:.4rem; align-items:center; }
-#nav #sec { color:var(--dim); font-size:.85rem; margin-right:.35rem; }
-#nav button { background:#1a222d; color:var(--fg); border:1px solid var(--rule); border-radius:8px;
-  padding:.35rem .62rem; cursor:pointer; font-size:.95rem; line-height:1; }
-#nav button:hover { border-color:var(--accent); color:#fff; }
-#toc { position:fixed; inset:0; background:rgba(5,8,12,.74); display:none;
-  align-items:center; justify-content:center; z-index:10; }
-#toc.open { display:flex; }
-#toc .box { background:#131922; border:1px solid var(--rule); border-radius:14px;
-  padding:1.1rem 1.6rem 1.4rem; min-width:min(90vw,540px); max-height:82vh; overflow:auto; }
-#toc h2 { margin:.2rem 0 .8rem; color:var(--accent); border:none; }
-#toc ol { margin:0; padding-left:1.3rem; }
-#toc li { margin:.4rem 0; }
-#toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
-#toc a:hover { color:var(--accent); }
 .slide .grid { display:grid; gap:.8rem; margin:.9rem 0; }
 .slide .grid.two { grid-template-columns:1fr 1fr; }
 .slide .grid.three { grid-template-columns:repeat(3,1fr); }
@@ -62,7 +47,7 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 .slide .agenda .slot .t { display:block; color:var(--accent); font-weight:700; font-size:.95rem; }
 .slide .agenda .slot .m { display:block; color:var(--dim); font-size:.78rem; margin-top:.15rem; line-height:1.25; }
 .slide .agenda .slot.z { border-color:#6d5bd0; }
-.slide .agenda .slot.z .t { color:#a892ff; }
+.slide .agenda .slot.z .t { color:var(--ml); }
 .slide a { color:var(--accent); text-decoration:none; }
 .slide a:hover { text-decoration:underline; }
 .slide .note { color:var(--dim); font-size:1.05rem; margin-top:.9rem; }
@@ -81,16 +66,44 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
 .slide .tool .ico svg { width:30px; height:30px; display:block; }
 .slide .tool .txt b { display:block; color:var(--fg); font-size:1.02rem; }
 .slide .tool .txt span { color:var(--dim); font-size:.88rem; }
-.slide .sep { display:flex; align-items:center; gap:.8rem; margin:.9rem 0 .7rem;
+.slide .sep { display:flex; align-items:center; gap:.8rem; margin:.8rem 0 .6rem;
   color:var(--dim); font-size:.9rem; }
 .slide .sep::before, .slide .sep::after { content:""; height:1px; background:var(--rule); flex:1; }
+.slide .sep.ml { color:var(--ml); }
+.slide .sep.ml::before, .slide .sep.ml::after { background:#3a2f66; }
 .slide .alt .tool { border-color:#6d5bd0; background:#141129; }
-.slide .alt .tool .ico { color:#a892ff; }
+.slide .alt .tool .ico { color:var(--ml); }
 .slide .badge { margin-left:auto; font-size:.72rem; text-transform:uppercase; letter-spacing:.09em;
   color:#b3a3ff; border:1px solid #3a2f66; border-radius:999px; padding:.15rem .55rem; white-space:nowrap; }
+/* running footer */
+#foot { position:fixed; left:0; right:0; bottom:3px; height:2.5rem; z-index:5;
+  display:flex; align-items:center; gap:.7rem; padding:0 1rem;
+  background:rgba(9,12,17,.92); border-top:1px solid var(--rule); font-size:.85rem; }
+#foot .grow { flex:1; }
+#foot .pill { border-radius:999px; padding:.15rem .6rem; font-size:.76rem; letter-spacing:.04em;
+  border:1px solid var(--rule); color:var(--dim); white-space:nowrap; }
+#foot .pill.tooling { color:#9fd0ff; border-color:#2b5c86; background:#0f1a26; }
+#foot .pill.ml { color:#b3a3ff; border-color:#3a2f66; background:#141129; }
+#foot #where { color:var(--fg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#foot #when { color:var(--accent); white-space:nowrap; }
+#foot button { background:#1a222d; color:var(--fg); border:1px solid var(--rule); border-radius:8px;
+  padding:.28rem .55rem; cursor:pointer; font-size:.9rem; line-height:1; }
+#foot button:hover { border-color:var(--accent); color:#fff; }
+#bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; z-index:6; }
+#toc { position:fixed; inset:0; background:rgba(5,8,12,.74); display:none;
+  align-items:center; justify-content:center; z-index:10; }
+#toc.open { display:flex; }
+#toc .box { background:#131922; border:1px solid var(--rule); border-radius:14px;
+  padding:1.1rem 1.6rem 1.4rem; min-width:min(90vw,540px); max-height:82vh; overflow:auto; }
+#toc h2 { margin:.2rem 0 .8rem; color:var(--accent); border:none; }
+#toc ol { margin:0; padding-left:1.3rem; }
+#toc li { margin:.4rem 0; }
+#toc a { color:var(--fg); text-decoration:none; cursor:pointer; font-size:1.12rem; }
+#toc a:hover { color:var(--accent); }
 @media print {
+  #foot, #bar, #toc { display:none; }
+  #deck { padding-bottom:0; }
   .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
-  #nav, #bar, #toc { display:none; }
 }
 </style></head>
 <body>
@@ -108,6 +121,7 @@ Sven Reimers · Zoran Sevarac</p>
   <div class="slot z"><span class="t">11:25</span><span class="m">ML pipeline · Zoran</span></div>
   <div class="slot"><span class="t">12:15</span><span class="m">wrap-up &amp; questions</span></div>
 </div>
+<div class="sep">Part 1 &middot; tooling &mdash; Sven &middot; 10:30&ndash;11:25</div>
 <div class="grid two">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/><path d="M12 8h5M12 12h5"/></svg></span>
@@ -126,6 +140,7 @@ Sven Reimers · Zoran Sevarac</p>
     <span class="txt"><b>gog4j</b><span>draw it</span></span>
   </div>
 </div>
+<div class="sep ml">Part 2 &middot; ML pipeline &mdash; Zoran &middot; 11:25&ndash;12:15</div>
 <div class="alt">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="12" r="2.2"/><path d="M8 7.8l7.8 3.1M8 16.2l7.8-3.1"/></svg></span>
@@ -133,7 +148,7 @@ Sven Reimers · Zoran Sevarac</p>
     <span class="badge">Zoran's stream</span>
   </div>
 </div>
-<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>no Python, no context switch, just the JVM.</strong></p>
+<p class="note">Everything after this slide is <strong>the tooling stream</strong>; the ML pipeline is Zoran's, on his own terms.</p>
 </section>
 <section class="slide"><h1>Heads-up: the data</h1>
 <div class="grid three">
@@ -591,25 +606,49 @@ SVG → PDF is one external command away.</p>
 </section>
 </div>
 <div id="bar"></div>
-<nav id="nav">
-  <span id="sec"></span>
-  <button id="home" title="back to the overview (o)">&#8962; overview</button>
-  <button id="prev" title="previous (left arrow)">&#8249; prev</button>
-  <button id="next" title="next (right arrow)">next &#8250;</button>
-  <button id="contents" title="contents (c)">&#9776; contents</button>
-</nav>
+<footer id="foot">
+  <span id="stream" class="pill intro">Intro</span>
+  <span id="where"></span>
+  <span class="grow"></span>
+  <span id="when"></span>
+  <button id="home" title="back to the overview (o)">&#8962;</button>
+  <button id="prev" title="previous (left arrow)">&#8249;</button>
+  <button id="next" title="next (right arrow)">&#8250;</button>
+  <button id="contents" title="contents (c)">&#9776;</button>
+</footer>
 <div id="toc"><div class="box"><h2>Contents</h2><ol id="tocList"></ol></div></div>
 <script>const sections = [{"t":"Overview","i":0},{"t":"Space primer","i":3},{"t":"Getting set up","i":11},{"t":"Module 1 · JTaccuino","i":15},{"t":"Module 2 · Hardwood + dflib","i":22},{"t":"Module 3 · gog4j","i":33}];
+const meta = [{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"intro","slot":"10:30-10:40"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:40-10:55"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"10:55-11:10"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"tooling","slot":"11:10-11:25"},{"s":"ml","slot":"11:25-12:15"}];
 const slides = [...document.querySelectorAll('.slide')];
 const toc = document.getElementById('toc');
-const secEl = document.getElementById('sec');
+const streamEl = document.getElementById('stream');
+const whereEl = document.getElementById('where');
+const whenEl = document.getElementById('when');
 let i = 0;
 function sectionOf(n){ let s = 0; for (let k = 0; k < sections.length; k++) if (sections[k].i <= n) s = k; return s; }
+function streamLabel(s){ return s === 'ml' ? 'ML pipeline · Zoran' : (s === 'tooling' ? 'Tooling · Sven' : 'Intro'); }
+function toMin(t){ const p = t.replace('–','-').split('-')[0].split(':'); return (+p[0]) * 60 + (+(p[1] || 0)); }
+function slotText(slot){
+  if (!slot) return '';
+  const [a, b] = slot.replace('–','-').split('-');
+  const s = toMin(a), e = toMin(b);
+  const now = new Date(), cur = now.getHours() * 60 + now.getMinutes();
+  let tail;
+  if (cur < s) tail = 'in ' + (s - cur) + ' min';
+  else if (cur <= e) tail = (e - cur) + ' min left';
+  else tail = (e - s) + ' min';
+  return a + '–' + b + '  ·  ' + tail;
+}
+function refreshWhen(){ whenEl.textContent = slotText((meta[i] || {}).slot); }
 function show(n){
   i = Math.max(0, Math.min(slides.length - 1, n));
   slides.forEach((s, k) => s.classList.toggle('active', k === i));
   document.getElementById('bar').style.width = ((i + 1) / slides.length * 100) + '%';
-  secEl.textContent = sections[sectionOf(i)].t + '  ·  ' + (i + 1) + '/' + slides.length;
+  const s = (meta[i] || {}).s || 'intro';
+  streamEl.textContent = streamLabel(s);
+  streamEl.className = 'pill ' + s;
+  whereEl.textContent = sections[sectionOf(i)].t;
+  refreshWhen();
   history.replaceState(null, '', '#' + (i + 1));
 }
 function toggleToc(){ toc.classList.toggle('open'); }
@@ -636,9 +675,10 @@ addEventListener('keydown', e => {
   if (e.key === 'Escape') toc.classList.remove('open');
 });
 addEventListener('click', e => {
-  if (e.target.closest('#nav') || e.target.closest('#toc')) return;
+  if (e.target.closest('#foot') || e.target.closest('#toc')) return;
   show(e.clientX < innerWidth * 0.28 ? i - 1 : i + 1);
 });
+setInterval(refreshWhen, 20000);
 const start = parseInt(location.hash.slice(1), 10);
 show(isNaN(start) ? 0 : start - 1);
 </script></body></html>

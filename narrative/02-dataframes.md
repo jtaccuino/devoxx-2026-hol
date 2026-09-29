@@ -2,6 +2,8 @@
 marp: true
 theme: default
 paginate: true
+stream: tooling
+slot: 10:55-11:10
 title: Module 2 · Hardwood + dflib
 ---
 

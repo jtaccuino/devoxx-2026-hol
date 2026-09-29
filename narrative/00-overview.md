@@ -2,6 +2,8 @@
 marp: true
 theme: default
 paginate: true
+stream: intro
+slot: 10:30-10:40
 title: Overview
 ---
 
@@ -27,6 +29,8 @@ Sven Reimers · Zoran Sevarac
   <div class="slot"><span class="t">12:15</span><span class="m">wrap-up &amp; questions</span></div>
 </div>
 
+<div class="sep">Part 1 &middot; tooling &mdash; Sven &middot; 10:30&ndash;11:25</div>
+
 <div class="grid two">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/><path d="M12 8h5M12 12h5"/></svg></span>
@@ -46,6 +50,8 @@ Sven Reimers · Zoran Sevarac
   </div>
 </div>
 
+<div class="sep ml">Part 2 &middot; ML pipeline &mdash; Zoran &middot; 11:25&ndash;12:15</div>
+
 <div class="alt">
   <div class="tool">
     <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="12" r="2.2"/><path d="M8 7.8l7.8 3.1M8 16.2l7.8-3.1"/></svg></span>
@@ -54,7 +60,7 @@ Sven Reimers · Zoran Sevarac
   </div>
 </div>
 
-<p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>no Python, no context switch, just the JVM.</strong></p>
+<p class="note">Everything after this slide is <strong>the tooling stream</strong>; the ML pipeline is Zoran's, on his own terms.</p>
 
 ---
 

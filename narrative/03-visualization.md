@@ -2,6 +2,8 @@
 marp: true
 theme: default
 paginate: true
+stream: tooling
+slot: 11:10-11:25
 title: Module 3 · gog4j
 ---
 
@@ -128,6 +130,8 @@ Low effort. High wow. Clearly marked.
 ---
 
 <!-- _class: lead -->
+<!-- _stream: ml -->
+<!-- _slot: 11:25-12:15 -->
 
 # Over to Zoran
 
