@@ -41,8 +41,8 @@ its own folder, so it works wherever the repository sits on disk:
 
 Each has a matching file in `notebooks/solutions/`. Every notebook has a final
 **check** cell that prints `✓` when the TODOs are correct. Each **TODO** cell
-gives the task and a hint — the API to reach for, never the finished line — so
-you write the code rather than uncomment it.
+gives the task and a Socratic hint — a nudge toward the right API, never the
+finished line — so you work out the code rather than uncomment it.
 
 `narrative/00-overview.md` opens the story; `narrative/01..03` are the module
 intros. They are plain Markdown with [Marp](https://marp.app) front-matter, so

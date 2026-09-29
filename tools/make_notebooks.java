@@ -71,7 +71,7 @@ really is — an ordered conversation with one JVM.
 // Declare an int called `satellites` and set it to 21207, the number of
 // objects in the CelesTrak catalog you will meet in the next notebooks.
 //
-// hint: an ordinary Java declaration — int <name> = <value>;
+// hint: which Java type holds a whole number? Declare one named `satellites`.
 """,
                     """
 int satellites = 21207;
@@ -94,7 +94,7 @@ that completes `n` revolutions per day has a period of `1440 / n` minutes.
 // ── TODO 2 ────────────────────────────────────────────────────────────
 // Finish the method so it returns the orbital period in minutes.
 //
-// hint: the minutes in a day, divided by the revolutions per day.
+// hint: a day is 1440 minutes — what do you divide by what?
 
 double periodMinutes(double meanMotionRevPerDay) {
     // your turn
@@ -113,7 +113,7 @@ println("ISS turns 15.5 times a day -> %s min per orbit", dec(periodMinutes(15.5
 // A geostationary satellite turns exactly once per day (mean motion 1.0).
 // Store its period in a double called `geoPeriod`.
 //
-// hint: call your own periodMinutes(...) with 1.0.
+// hint: which mean motion means 'one revolution per day'? Pass it to your method.
 """,
                     """
 double geoPeriod = periodMinutes(1.0);
@@ -132,7 +132,7 @@ node and it draws it inline. Build a node, then show it.
 // Create a Circle centred on (0, 0) with radius 60 and colour ORANGE.
 // Call it `earth`.
 //
-// hint: new Circle(x, y, radius, fill).
+// hint: a JavaFX shape takes its centre, radius and fill up front.
 """,
                     """
 var earth = new Circle(0, 0, 60, Color.ORANGE);
@@ -141,7 +141,7 @@ var earth = new Circle(0, 0, 60, Color.ORANGE);
 // ── TODO 5 ────────────────────────────────────────────────────────────
 // Show it on its own.
 //
-// hint: display(node) draws a JavaFX node inline.
+// hint: which JTaccuino built-in draws a node inline?
 """,
                     """
 display(earth);
@@ -247,7 +247,7 @@ is why it costs the same on a 13 MB file and a 13 GB one.
 // Print how many rows the file has, how many row groups, and who wrote it.
 // The values are on `meta` (a var from the setup cell).
 //
-// hint: meta.numRows(), meta.rowGroups().size(), meta.createdBy().
+// hint: which shape questions can the file metadata answer — rows, chunks, author?
 """,
                     """
 println("rows        %s", num(meta.numRows()));
@@ -264,8 +264,8 @@ enrichment columns added on top of the raw element sets.
 // ── TODO 2 ────────────────────────────────────────────────────────────
 // Print the total column count, and how many columns start with "satcat_".
 //
-// hint: catalog.getFileSchema().getColumnCount(); iterate the columns and test
-//       c.name().startsWith("satcat_").
+// hint: ask the schema for its column count; then walk the names and count those
+//       beginning `satcat_`.
 """,
                     """
 var schema = catalog.getFileSchema();
@@ -284,8 +284,8 @@ state, never a list.
 // ── TODO 3 ────────────────────────────────────────────────────────────
 // Stream every row and count how many are debris (type "DEB" or "R/B").
 //
-// hint: open catalog.rowReader(); loop while (rows.hasNext()) { rows.next(); ... }
-//       and read rows.getString("satcat_object_type").
+// hint: open a row reader and stream — how do you step to the next row, and read
+//       one text column by name?
 """,
                     """
 long debris = 0;
@@ -308,8 +308,8 @@ boxing. Find the highest inclination in the catalog by touching a `double[]`.
 // ── TODO 4 ────────────────────────────────────────────────────────────
 // Read the `inclination` column as batches and find the maximum value.
 //
-// hint: catalog.columnReader("inclination"); loop while (col.nextBatch()), then
-//       scan col.getDoubles() for the first col.getValueCount() entries.
+// hint: a column reader hands you batches — how do you know one is ready, how many
+//       values it holds, and which array to scan?
 """,
                     """
 double maxInc = Double.NEGATIVE_INFINITY;
@@ -333,9 +333,8 @@ of the footer — the values never leave the trailer. They arrive as raw bytes a
 // ── TODO 5 ────────────────────────────────────────────────────────────
 // Read inclination's min and max from the footer statistics of row group 0.
 //
-// hint: find the column chunk whose metaData().pathInSchema().leafName() is
-//       "inclination"; its metaData().statistics() carries minValue()/maxValue(),
-//       which StatisticsDecoder.decodeDouble(...) turns into numbers.
+// hint: every column chunk keeps a min and a max. Find the *inclination* chunk,
+//       then turn its raw statistics into numbers.
 """,
                     """
 var chunk = meta.rowGroups().get(0);
@@ -434,7 +433,8 @@ selection back into a frame.
 // ── TODO 1 ────────────────────────────────────────────────────────────
 // Select object_name, orbit_class and apogee_km, and show the first 5 rows.
 //
-// hint: cols(...) picks the columns, select() materialises them, head(n) shows rows.
+// hint: which call keeps a subset of columns, which materialises the frame, and
+//       which shows the first rows?
 """,
                     """
 var sel = df.cols("object_name", "orbit_class", "apogee_km").select();
@@ -450,8 +450,8 @@ Conditions are built from expressions. `$str("col").eq("GEO")` gives a
 // ── TODO 2 ────────────────────────────────────────────────────────────
 // Keep only geostationary objects (orbit_class == "GEO") and count them.
 //
-// hint: build a Condition with $str("orbit_class").eq("GEO"), keep the rows with
-//       rows(...), materialise with select(), then height().
+// hint: you need rows where a text column equals a value — how do you state that
+//       condition, and what keeps the matches?
 """,
                     """
 var geo = df.rows($str("orbit_class").eq("GEO")).select();
@@ -467,7 +467,7 @@ orbits are where the interesting objects hide.
 // ── TODO 3 ────────────────────────────────────────────────────────────
 // Count the objects whose eccentricity is greater than 0.25.
 //
-// hint: $double("eccentricity").gt(0.25) is a Condition; rows(...) keeps matches.
+// hint: as in TODO 2, but the column is numeric and the test is 'greater than'.
 """,
                     """
 var eccentric = df.rows($double("eccentricity").gt(0.25)).select();
@@ -486,8 +486,8 @@ it in one breath — here the mean gap between apogee and perigee, per orbit cla
 // For each orbit class, compute the mean spread between apogee and perigee,
 // named "mean_spread_km", and sort by it.
 //
-// hint: group("orbit_class").agg($col("orbit_class"), <expr>) where <expr> is
-//       apogee minus perigee, then .avg().as("mean_spread_km"); sort(..., false).
+// hint: one row per class, with a computed value. Derive apogee minus perigee,
+//       average it, name it, then order by it.
 """,
                     """
 System.out.println(
@@ -505,7 +505,7 @@ The classic. `group(...)` then `agg(...)` with `$col(...))` and `count()`.
 // ── TODO 5 ────────────────────────────────────────────────────────────
 // Count the objects in each orbit class, largest first.
 //
-// hint: group("orbit_class").agg($col("orbit_class"), count()), then sort by count.
+// hint: one row per class, counting its members — which aggregation counts rows?
 """,
                     """
 System.out.println(
@@ -520,7 +520,8 @@ Sort a whole frame by a column, descending, and take the top.
 // ── TODO 6 ────────────────────────────────────────────────────────────
 // Show the 5 objects with the highest apogee (object_name and apogee_km only).
 //
-// hint: sort("apogee_km", false) is descending; then keep two columns and head(5).
+// hint: which sort direction puts the largest first? Then keep two columns and
+//       take five.
 """,
                     """
 System.out.println(
@@ -628,8 +629,8 @@ That single `color(...)` is the whole point of a grammar of graphics.
 //   aes   x = inclination, y = apogee_km, colour = orbit_class
 //   geom  points
 //
-// hint: Ggplot.ggplot(data, Aes.aes()...) then .geoms(Geoms.point()).
-//       The result is a Plot<HardwoodTable>.
+// hint: a plot is data + aesthetics + a geom. How do you start one, map x/y/colour,
+//       and add points?
 """,
                     """
 Plot<HardwoodTable> p = Ggplot.ggplot(table,
@@ -650,7 +651,7 @@ A plot without axis labels is a riddle. `Labs.labs(...)` answers it.
 // ── TODO 2 ────────────────────────────────────────────────────────────
 // Add a title and axis labels.
 //
-// hint: Labs.labs(title, x, y) is the spec — hand it to p.labs(...).
+// hint: title and axis labels come as one builder — which method attaches it?
 """,
                     """
 p = p.labs(Labs.labs("Everything in orbit", "Inclination (deg)", "Apogee (km)"));
@@ -668,7 +669,7 @@ A theme changes every colour at once. On a projector, dark wins.
 // ── TODO 3 ────────────────────────────────────────────────────────────
 // Switch to the dark theme.
 //
-// hint: Theme has theme_dark(); hand it to p.theme(...).
+// hint: themes are ready-made — which one is dark, and how do you attach it?
 """,
                     """
 p = p.theme(Theme.theme_dark());
@@ -687,7 +688,8 @@ see that the classes are genuinely different populations.
 // ── TODO 4 ────────────────────────────────────────────────────────────
 // Split the plot into one panel per orbit class, in a 2-wide grid.
 //
-// hint: Facets.wrap(column, columnsWide) — hand it to p.facets(...).
+// hint: you want one small panel per class — which facet constructor splits by a
+//       column into a grid?
 """,
                     """
 p = p.facets(Facets.wrap("orbit_class", 2));
@@ -706,8 +708,8 @@ glance then explains the horizontal stripe of GEO objects.
 // ── TODO 5 ────────────────────────────────────────────────────────────
 // Add a horizontal line at the geostationary altitude, keeping the points.
 //
-// hint: geoms(...) takes several layers — keep point() and add a horizontal line
-//       at 35 786 km (Geoms.hline).
+// hint: keep the points and add a second layer at the geostationary altitude — how
+//       does a plot take more than one geom?
 """,
                     """
 p = p.geoms(Geoms.point(), Geoms.hline(35786));
@@ -726,8 +728,8 @@ at print size, with the 21 000 points batched so the file stays editable.
 // ── TODO 6 ────────────────────────────────────────────────────────────
 // Write the final plot to "celestrak-orbits.svg" at 1600 x 1000.
 //
-// hint: an SvgExporter with size(w, h) and batchPoints(true), written to a path
-//       under cwd.
+// hint: which exporter writes a figure to SVG, and how do you set its size and
+//       keep thousands of points manageable?
 """,
                     """
 new SvgExporter().size(1600, 1000).batchPoints(true)
@@ -885,7 +887,7 @@ void save(GgFigure figure, String name) {
 // ── TODO 1 ────────────────────────────────────────────────────────────
 // Load the penguins frame into `df` and print its size.
 //
-// hint: PenguinsDatasets.loadPenguins() returns the frame.
+// hint: which bundled-data class hands you the penguins frame?
 """,
                     """
 var df = PenguinsDatasets.loadPenguins();
@@ -898,7 +900,7 @@ println("penguins: %s rows x %d columns", num(df.height()), df.width());
 // ── TODO 2 ────────────────────────────────────────────────────────────
 // Keep species, bill_length_mm and body_mass_g, and show the first 3 rows.
 //
-// hint: cols(...) and select(), then head(3).
+// hint: pick three columns, materialise the frame, then show the first three rows.
 """,
                     """
 var sel = df.cols("species", "bill_length_mm", "body_mass_g").select();
@@ -911,7 +913,7 @@ System.out.println(sel.head(3));
 // ── TODO 3 ────────────────────────────────────────────────────────────
 // Count the Gentoo penguins.
 //
-// hint: rows($str("species").eq("Gentoo")).select(), then height().
+// hint: keep the rows whose species equals a value, then count them.
 """,
                     """
 var gentoo = df.rows($str("species").eq("Gentoo")).select();
@@ -924,8 +926,7 @@ println("Gentoo: %s birds", num(gentoo.height()));
 // ── TODO 4 ────────────────────────────────────────────────────────────
 // Mean body mass per species, heaviest first.
 //
-// hint: group("species").agg($col("species"), $double("body_mass_g").avg()
-//       .as("mean_mass_g")), then sort.
+// hint: one row per species with the mean body mass — then order by it.
 """,
                     """
 System.out.println(
@@ -940,8 +941,8 @@ System.out.println(
 // ── TODO 5 ────────────────────────────────────────────────────────────
 // The 3 heaviest penguins that actually have a mass (species and body_mass_g).
 //
-// hint: two penguins have a missing body_mass_g and nulls sort *first* — filter
-//       them out with $double("body_mass_g").isNotNull() before sorting.
+// hint: some penguins have no mass, and missing values sort first — how do you drop
+//       those rows before sorting?
 """,
                     """
 System.out.println(
@@ -961,8 +962,8 @@ plots through gog4j-hardwood.
 // Scatter bill_length_mm (x) against body_mass_g (y), coloured by species,
 // titled "Penguins", dark theme; then save it as "penguins.svg".
 //
-// hint: Ggplot.ggplot(df, Aes.aes()...) + geoms(Geoms.point()), then labs(...)
-//       and theme(Theme.theme_dark()); display(p); save(p, "penguins.svg").
+// hint: data + aesthetics + points, then labels and the dark theme; display it,
+//       then save it.
 """,
                     """
 var p = Ggplot.ggplot(df,
@@ -1086,8 +1087,9 @@ var plotKinds = new ArrayList<String>();
 // For each row with TLE lines, propagate to `now` and append the position
 // (km) and its labels to the lists above. Skip objects that will not propagate.
 //
-// hint: new TLE(line1, line2, tai), then propagate(now) and read getPosition()
-//       x/y/z in km. Wrap it in try/catch and skip failures.
+// hint: per row, build a TLE from its two lines and propagate it to `now`; read the
+//       position in km. Which propagator, and which coordinates? Catch and skip
+//       the ones that fail.
 """,
                     """
 for (int i = 0; i < df.height(); i++) {
@@ -1130,8 +1132,8 @@ the orbit families — a dense ball (LEO), a sparse shell (MEO), one thin ring
 // Build a HardwoodTable from x / y / z and the labels, then plot a 3-D
 // scatter coloured by orbit_class into `p`.
 //
-// hint: HardwoodTable.ofColumns(map), then Ggplot.ggplot3d(...) with
-//       Aes.aes().x("x").y("y").z("z") and Geoms.point3d().
+// hint: turn the lists into a table, then start a 3-D plot — how do you map x, y
+//       and z, and which point geom is the 3-D one?
 """,
                     """
 var cols = new LinkedHashMap<String, List<?>>();
@@ -1164,8 +1166,7 @@ is obvious, and the debris from the three big break-ups shows up as clumps.
 // ── TODO 3 ────────────────────────────────────────────────────────────
 // Same table, but look straight down: x vs y, coloured by satcat_object_type.
 //
-// hint: Ggplot.ggplot(cloud, Aes.aes().x("x").y("y").color("satcat_object_type"))
-//       with Geoms.point() — a 2-D plot of the same table.
+// hint: the same table, but only x and y — coloured by the object-type column.
 """,
                     """
 var top = Ggplot.ggplot(cloud,
