@@ -155,7 +155,7 @@ Sven Reimers · Zoran Sevarac</p>
 <div class="grid three">
   <div class="card"><span class="n">21,207</span><span class="l">objects in orbit</span></div>
   <div class="card"><span class="n">52</span><span class="l">columns</span></div>
-  <div class="card"><span class="n">5.4 MB</span><span class="l">one Parquet file</span></div>
+  <div class="card"><span class="n">19.2 &rarr; 5.8</span><span class="l">MB &middot; CSV &rarr; Parquet</span></div>
 </div>
 <div class="grid two">
   <div class="tile">
@@ -407,7 +407,7 @@ if (ready) {
 <div class="grid two">
   <div class="tile"><b>the footer</b><span class="d">schema, sizes and statistics &mdash; without touching data pages</span></div>
   <div class="tile"><b>filters &amp; column batches</b><span class="d">stream rows through a predicate, or read whole columns as primitive arrays</span></div>
-  <div class="tile"><b>behind this dataset</b><span class="d">21,207 rows, 52 columns, one 5.4 MB file</span></div>
+  <div class="tile"><b>behind this dataset</b><span class="d">21,207 rows, 52 columns &mdash; a 19.2 MB CSV, a 5.8 MB Parquet</span></div>
   <div class="tile"><b>fast &amp; small</b><span class="d">no ceremony, no heavyweight dependencies</span></div>
 </div>
 <p><strong>Get it:</strong> <a href="https://hardwood.dev/">https://hardwood.dev/</a></p>
@@ -434,7 +434,7 @@ column without reading the others.</p>
 <p>You pick the level that answers your question.</p>
 </section>
 <section class="slide"><h1>Level 1 · the footer</h1>
-<p>21,207 rows, 52 columns, 1 row group, 5.4 MB —</p>
+<p>21,207 rows, 52 columns, 1 row group, 5.8 MB —</p>
 <p>all known <strong>without decompressing a single data page</strong>.</p>
 <p>Even the min/max of a column is in the footer:</p>
 <pre><code>inclination  0.003 .. 142.042   (from the footer only)

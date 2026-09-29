@@ -8,11 +8,11 @@ row per satellite and enriched with SATCAT catalog metadata.
 
 | Path | Role | Committed |
 |---|---|---|
-| `celestrak_gp_catalog.parquet` | the lab dataset (52 columns, 21 207 rows) | yes |
+| `celestrak_gp_catalog.parquet` | the lab dataset (52 columns, 21 207 rows, **5.8 MB**) | yes |
 | `raw/gp_*.csv` | 50 raw CelesTrak GP group downloads — exact rebuild inputs | yes |
 | `raw/satcat.csv` | CelesTrak SATCAT catalog — enrichment input | yes |
 | `raw/manifest.json` | per-file fetch timestamps, sizes, SHA-256, row counts | yes |
-| `out/` | derived CSV / long-format / verification output | no (regenerated) |
+| `out/` | derived CSV (**19.2 MB**) / long-format / verification output | no (regenerated) |
 
 ## Provenance
 
@@ -37,6 +37,7 @@ row per satellite and enriched with SATCAT catalog metadata.
 - **21 207 rows** — one per NORAD catalog object
 - **52 columns** — 38 OMM/derived + 14 `satcat_*`
 - Written with dflib's Parquet writer, single row group, GZIP
+- **5.8 MB** as Parquet — the same catalog is **19.2 MB** as plain CSV
 
 ## Columns
 

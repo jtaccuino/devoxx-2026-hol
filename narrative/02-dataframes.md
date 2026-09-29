@@ -25,7 +25,7 @@ title: Module 2 · Hardwood + dflib
 <div class="grid two">
   <div class="tile"><b>the footer</b><span class="d">schema, sizes and statistics &mdash; without touching data pages</span></div>
   <div class="tile"><b>filters &amp; column batches</b><span class="d">stream rows through a predicate, or read whole columns as primitive arrays</span></div>
-  <div class="tile"><b>behind this dataset</b><span class="d">21,207 rows, 52 columns, one 5.4 MB file</span></div>
+  <div class="tile"><b>behind this dataset</b><span class="d">21,207 rows, 52 columns &mdash; a 19.2 MB CSV, a 5.8 MB Parquet</span></div>
   <div class="tile"><b>fast &amp; small</b><span class="d">no ceremony, no heavyweight dependencies</span></div>
 </div>
 
@@ -65,7 +65,7 @@ You pick the level that answers your question.
 
 # Level 1 · the footer
 
-21,207 rows, 52 columns, 1 row group, 5.4 MB —
+21,207 rows, 52 columns, 1 row group, 5.8 MB —
 
 all known **without decompressing a single data page**.
 

@@ -71,7 +71,7 @@ Every current element set from <a href="https://celestrak.org">celestrak.org</a>
 <div class="grid three">
   <div class="card"><span class="n">21,207</span><span class="l">objects in orbit</span></div>
   <div class="card"><span class="n">52</span><span class="l">columns</span></div>
-  <div class="card"><span class="n">5.4 MB</span><span class="l">one Parquet file</span></div>
+  <div class="card"><span class="n">19.2 &rarr; 5.8</span><span class="l">MB &middot; CSV &rarr; Parquet</span></div>
 </div>
 
 <div class="grid two">
