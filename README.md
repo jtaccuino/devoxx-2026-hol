@@ -191,9 +191,16 @@ jbang tools/package_m2.java              # builds devoxx-hol-2026-m2.zip (offlin
 ```
 
 `tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino
-builtins stubbed; the JavaFX notebooks (04, the penguins worksheet and the 3-D
-bonus) are reassembled into a jbang program that runs on the JavaFX Application
-Thread, because gog4j plot construction and `SvgExporter` require it.
+builtins stubbed. The JavaFX notebooks (04, the penguins worksheet and the two
+3-D bonus notebooks) are reassembled into a jbang program that starts the JavaFX
+toolkit, runs the notebook on a **worker** thread and has `display(...)` attach
+nodes to a live scene — exactly like JTaccuino — so FX-thread mistakes fail the
+build rather than surfacing only in the IDE.
+
+> **Threading rule for notebook code.** A cell runs on a worker thread, so any
+> JavaFX work must be marshalled: the Python-free notebooks define `onFx(...)`
+> and route `save(...)` through it, and call `onFx(plot::markDirty)` after
+> mutating a plot that is already displayed.
 
 `tools/package_m2.java` assembles the offline Maven bundle: it seeds the local
 `0.5-SNAPSHOT` artifacts, resolves the closure with Maven (online), verifies it

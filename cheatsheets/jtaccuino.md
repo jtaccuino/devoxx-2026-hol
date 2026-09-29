@@ -51,3 +51,27 @@ Any JavaFX `Node` works, and a gog4j `Plot` **is** a `Node`:
 var plot = Ggplot.ggplot(table, Aes.aes().x("a").y("b")).geoms(Geoms.point());
 display(plot);
 ```
+
+## Threading: JavaFX work belongs on the FX thread
+
+A cell runs on JShell's **worker** thread, *not* on the JavaFX Application
+Thread. Anything that touches JavaFX — building a plot's canvas, `SvgExporter`,
+adding a node to a live scene — must be marshalled there:
+
+```java
+void onFx(Runnable work) {
+    if (javafx.application.Platform.isFxApplicationThread()) { work.run(); return; }
+    var latch = new java.util.concurrent.CountDownLatch(1);
+    javafx.application.Platform.runLater(() -> {
+        try { work.run(); } finally { latch.countDown(); }
+    });
+    latch.await();
+}
+```
+
+- `display(...)` already marshals for you.
+- **Exporting** must go through `onFx(...)` — `SvgExporter` throws *"TextMeasurer...
+  must be called on the FX Application Thread"* otherwise.
+- After mutating a plot that is **already displayed**, call `onFx(plot::markDirty)`
+  — gog4j's fluent setters do not repaint on their own, so the change would never
+  reach the screen.

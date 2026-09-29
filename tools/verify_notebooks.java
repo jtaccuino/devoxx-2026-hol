@@ -63,7 +63,23 @@ public class verify_notebooks {
                 static void addDependency(String gav) { System.out.println("[deps] " + gav); }
                 static void println(String fmt, Object... args) { System.out.printf(fmt, args); System.out.println(); }
                 static java.nio.file.Path cwd = {{CWD}};
-                static void display(Object node) { System.out.println("[display] " + (node == null ? "null" : node.getClass().getSimpleName())); }
+                static javafx.scene.layout.Pane __sink;
+                // faithful to JTaccuino: display() marshals to the FX thread and
+                // attaches the node to a live scene, so off-thread mutation fails
+                static void display(Object node) {
+                    javafx.application.Platform.runLater(() -> {
+                        try {
+                            if (node instanceof javafx.scene.Node n) {
+                                if (__sink == null) {
+                                    __sink = new javafx.scene.layout.Pane();
+                                    new javafx.scene.Scene(__sink);
+                                }
+                                __sink.getChildren().add(n);
+                            }
+                            System.out.println("[display] " + (node == null ? "null" : node.getClass().getSimpleName()));
+                        } catch (Throwable t) { t.printStackTrace(); }
+                    });
+                }
             {{METHODS}}
 
                 public static void main(String[] args) throws Exception {
@@ -71,13 +87,19 @@ public class verify_notebooks {
                     javafx.application.Platform.startup(up::countDown);
                     up.await();
                     var done = new java.util.concurrent.CountDownLatch(1);
-                    javafx.application.Platform.runLater(() -> {
+                    // JTaccuino evaluates snippets on a worker thread, not on the
+                    // FX thread - run the body the same way
+                    var worker = new Thread(() -> {
                         try {
             {{BODY}}
                         } catch (Throwable t) { t.printStackTrace(); }
                         finally { done.countDown(); }
-                    });
+                    }, "jshell-worker");
+                    worker.start();
                     done.await();
+                    var settle = new java.util.concurrent.CountDownLatch(1);
+                    javafx.application.Platform.runLater(settle::countDown);
+                    settle.await();
                     javafx.application.Platform.exit();
                 }
             }

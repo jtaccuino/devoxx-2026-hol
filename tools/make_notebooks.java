@@ -606,13 +606,41 @@ var table = HardwoodTable.ofColumns(java.util.Map.of(
         "orbit_class", full.column("orbit_class"),
         "satcat_object_type", full.column("satcat_object_type")));
 
+// Everything that touches JavaFX — building the plot's canvas, exporting,
+// attaching a node — must run on the FX Application Thread. Notebook code runs
+// on JShell's worker thread, so marshal with onFx(...) and wait for it.
+void onFx(Runnable work) {
+    if (javafx.application.Platform.isFxApplicationThread()) {
+        work.run();
+        return;
+    }
+    var latch = new java.util.concurrent.CountDownLatch(1);
+    javafx.application.Platform.runLater(() -> {
+        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
+    });
+    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+}
+
 void save(GgFigure figure, String name) {
-    try {
-        var path = cwd.resolve(name);
-        new SvgExporter().size(1200, 800).batchPoints(true).write(figure, path);
-        println("saved %s (%s bytes)", name, String.format(java.util.Locale.ROOT, "%,d", Files.size(path)));
-    } catch (Exception e) {
-        println("could not save %s: %s", name, e);
+    save(figure, 1200, 800, name);
+}
+
+void save(GgFigure figure, double width, double height, String name) {
+    var path = cwd.resolve(name);
+    var size = new long[]{-1};
+    var error = new String[]{null};
+    onFx(() -> {
+        try {
+            new SvgExporter().size(width, height).batchPoints(true).write(figure, path);
+            size[0] = Files.size(path);
+        } catch (Exception e) {
+            error[0] = String.valueOf(e);
+        }
+    });
+    if (error[0] != null) {
+        println("could not save %s: %s", name, error[0]);
+    } else {
+        println("saved %s (%s bytes)", name, String.format(java.util.Locale.ROOT, "%,d", size[0]));
     }
 }
 """),
@@ -639,6 +667,7 @@ Plot<HardwoodTable> p = Ggplot.ggplot(table,
 """),
             code("""
 // ── given ── look at it, and save a copy
+onFx(p::markDirty);
 display(p);
 save(p, "01-scatter.svg");
 """),
@@ -657,6 +686,7 @@ A plot without axis labels is a riddle. `Labs.labs(...)` answers it.
 p = p.labs(Labs.labs("Everything in orbit", "Inclination (deg)", "Apogee (km)"));
 """),
             code("""
+onFx(p::markDirty);
 display(p);
 save(p, "02-labelled.svg");
 """),
@@ -675,6 +705,7 @@ A theme changes every colour at once. On a projector, dark wins.
 p = p.theme(Theme.theme_dark());
 """),
             code("""
+onFx(p::markDirty);
 display(p);
 save(p, "03-dark.svg");
 """),
@@ -695,6 +726,7 @@ see that the classes are genuinely different populations.
 p = p.facets(Facets.wrap("orbit_class", 2));
 """),
             code("""
+onFx(p::markDirty);
 display(p);
 save(p, "04-facets.svg");
 """),
@@ -715,6 +747,7 @@ glance then explains the horizontal stripe of GEO objects.
 p = p.geoms(Geoms.point(), Geoms.hline(35786));
 """),
             code("""
+onFx(p::markDirty);
 display(p);
 save(p, "05-geobelt.svg");
 """),
@@ -728,13 +761,11 @@ at print size, with the 21 000 points batched so the file stays editable.
 // ── TODO 6 ────────────────────────────────────────────────────────────
 // Write the final plot to "celestrak-orbits.svg" at 1600 x 1000.
 //
-// hint: which exporter writes a figure to SVG, and how do you set its size and
-//       keep thousands of points manageable?
+// hint: exporting is FX work; save(...) marshals it for you — pass the size you
+//       want.
 """,
                     """
-new SvgExporter().size(1600, 1000).batchPoints(true)
-    .write(p, cwd.resolve("celestrak-orbits.svg"));
-println("wrote celestrak-orbits.svg");
+save(p, 1600, 1000, "celestrak-orbits.svg");
 """),
             md("""
 ## The bridge to machine learning
@@ -870,13 +901,37 @@ import static org.dflib.Exp.*;
 String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
 
+// Everything that touches JavaFX — building the plot's canvas, exporting,
+// attaching a node — must run on the FX Application Thread. Notebook code runs
+// on JShell's worker thread, so marshal with onFx(...) and wait for it.
+void onFx(Runnable work) {
+    if (javafx.application.Platform.isFxApplicationThread()) {
+        work.run();
+        return;
+    }
+    var latch = new java.util.concurrent.CountDownLatch(1);
+    javafx.application.Platform.runLater(() -> {
+        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
+    });
+    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+}
+
 void save(GgFigure figure, String name) {
-    try {
-        var path = cwd.resolve(name);
-        new SvgExporter().size(1200, 800).batchPoints(true).write(figure, path);
-        println("saved %s (%s bytes)", name, num(Files.size(path)));
-    } catch (Exception e) {
-        println("could not save %s: %s", name, e);
+    var path = cwd.resolve(name);
+    var size = new long[]{-1};
+    var error = new String[]{null};
+    onFx(() -> {
+        try {
+            new SvgExporter().size(1200, 800).batchPoints(true).write(figure, path);
+            size[0] = Files.size(path);
+        } catch (Exception e) {
+            error[0] = String.valueOf(e);
+        }
+    });
+    if (error[0] != null) {
+        println("could not save %s: %s", name, error[0]);
+    } else {
+        println("saved %s (%s bytes)", name, num(size[0]));
     }
 }
 """),
@@ -1050,13 +1105,37 @@ var df = Parquet.loader().load(dataset());
 var tai = DataContext.getDefault().getTimeScales().getTAI();
 var now = new AbsoluteDate(Instant.now(), tai);
 
+// Everything that touches JavaFX — building the plot's canvas, exporting,
+// attaching a node — must run on the FX Application Thread. Notebook code runs
+// on JShell's worker thread, so marshal with onFx(...) and wait for it.
+void onFx(Runnable work) {
+    if (javafx.application.Platform.isFxApplicationThread()) {
+        work.run();
+        return;
+    }
+    var latch = new java.util.concurrent.CountDownLatch(1);
+    javafx.application.Platform.runLater(() -> {
+        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
+    });
+    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+}
+
 void save(GgFigure figure, String name) {
-    try {
-        var path = cwd.resolve(name);
-        new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
-        println("saved %s (%s bytes)", name, num(Files.size(path)));
-    } catch (Exception e) {
-        println("could not save %s: %s", name, e);
+    var path = cwd.resolve(name);
+    var size = new long[]{-1};
+    var error = new String[]{null};
+    onFx(() -> {
+        try {
+            new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
+            size[0] = Files.size(path);
+        } catch (Exception e) {
+            error[0] = String.valueOf(e);
+        }
+    });
+    if (error[0] != null) {
+        println("could not save %s: %s", name, error[0]);
+    } else {
+        println("saved %s (%s bytes)", name, num(size[0]));
     }
 }
 """),
@@ -1257,13 +1336,37 @@ var df = Parquet.loader().load(dataset());
 var tai = DataContext.getDefault().getTimeScales().getTAI();
 var now = new AbsoluteDate(Instant.now(), tai);
 
+// Everything that touches JavaFX — building the plot's canvas, exporting,
+// attaching a node — must run on the FX Application Thread. Notebook code runs
+// on JShell's worker thread, so marshal with onFx(...) and wait for it.
+void onFx(Runnable work) {
+    if (javafx.application.Platform.isFxApplicationThread()) {
+        work.run();
+        return;
+    }
+    var latch = new java.util.concurrent.CountDownLatch(1);
+    javafx.application.Platform.runLater(() -> {
+        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
+    });
+    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+}
+
 void save(GgFigure figure, String name) {
-    try {
-        var path = cwd.resolve(name);
-        new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
-        println("saved %s (%s bytes)", name, num(Files.size(path)));
-    } catch (Exception e) {
-        println("could not save %s: %s", name, e);
+    var path = cwd.resolve(name);
+    var size = new long[]{-1};
+    var error = new String[]{null};
+    onFx(() -> {
+        try {
+            new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
+            size[0] = Files.size(path);
+        } catch (Exception e) {
+            error[0] = String.valueOf(e);
+        }
+    });
+    if (error[0] != null) {
+        println("could not save %s: %s", name, error[0]);
+    } else {
+        println("saved %s (%s bytes)", name, num(size[0]));
     }
 }
 """),
@@ -1354,20 +1457,24 @@ println("plotFor is ready");
 var stage = new StackPane();
 stage.setPrefSize(780, 600);
 display(stage);
-stage.getChildren().setAll(plotFor.apply(0));
 
-var frameNo = new AtomicInteger();
-var timer = new AnimationTimer() {
-    private long last;
-    @Override
-    public void handle(long nanos) {
-        if (nanos - last < 500_000_000L) return;   // ~ 2 frames per second
-        last = nanos;
-        int f = frameNo.getAndIncrement() % frames;
-        stage.getChildren().setAll(plotFor.apply(f));
-    }
-};
-timer.start();
+// the swap touches the live scene graph, so it must happen on the FX thread —
+// and so must starting the timer. From then on every tick already runs there.
+onFx(() -> {
+    stage.getChildren().setAll(plotFor.apply(0));
+    var frameNo = new AtomicInteger();
+    var timer = new AnimationTimer() {
+        private long last;
+        @Override
+        public void handle(long nanos) {
+            if (nanos - last < 500_000_000L) return;   // ~ 2 frames per second
+            last = nanos;
+            int f = frameNo.getAndIncrement() % frames;
+            stage.getChildren().setAll(plotFor.apply(f));
+        }
+    };
+    timer.start();
+});
 println("redrawing the plot twice a second — %s points per frame", num(fleetL1.size()));
 """),
             code("""
