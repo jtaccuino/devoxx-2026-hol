@@ -15,16 +15,33 @@ title: Introduction
 
 # What you will build
 
-<div class="pipeline">
-  <div class="step"><b>JTaccuino</b>a Java REPL, in cells</div>
-  <div class="arrow">&#8594;</div>
-  <div class="step"><b>Hardwood</b>read the Parquet</div>
-  <div class="arrow">&#8594;</div>
-  <div class="step"><b>dflib</b>shape the data</div>
-  <div class="arrow">&#8594;</div>
-  <div class="step"><b>gog4j</b>draw it</div>
-  <div class="arrow">&#8594;</div>
-  <div class="step hl"><b>DeepNetts</b>predict it <em>(Zoran)</em></div>
+<div class="grid2">
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 3v18"/><path d="M12 8h5M12 12h5"/></svg></span>
+    <span class="txt"><b>JTaccuino</b><span>a Java REPL, in cells</span></span>
+  </div>
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7" ry="3"/><path d="M5 5.5v13c0 1.7 3.1 3 7 3s7-1.3 7-3v-13"/><path d="M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg></span>
+    <span class="txt"><b>Hardwood</b><span>read the Parquet</span></span>
+  </div>
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M15 9v11"/></svg></span>
+    <span class="txt"><b>dflib</b><span>shape the data</span></span>
+  </div>
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg></span>
+    <span class="txt"><b>gog4j</b><span>draw it</span></span>
+  </div>
+</div>
+
+<div class="sep">then, a separate stream</div>
+
+<div class="alt">
+  <div class="tool">
+    <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="2"/><circle cx="6" cy="17" r="2"/><circle cx="18" cy="12" r="2.2"/><path d="M8 7.8l7.8 3.1M8 16.2l7.8-3.1"/></svg></span>
+    <span class="txt"><b>DeepNetts</b><span>predict debris from the orbital elements</span></span>
+    <span class="badge">Zoran's stream</span>
+  </div>
 </div>
 
 <p class="note">One pipeline over the CelesTrak catalog &mdash; <strong>No Python. No context switch. Just the JVM.</strong></p>

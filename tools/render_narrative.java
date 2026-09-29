@@ -199,12 +199,20 @@ public class render_narrative {
               background:linear-gradient(90deg,#2e6ea5,#4aa3df); }
             .slide .bar .fill.warm { background:linear-gradient(90deg,#a5642e,#df9a4a); }
             .slide .bar .val { width:4.5rem; text-align:right; font-size:.95rem; font-variant-numeric:tabular-nums; }
-            .slide .pipeline { display:flex; align-items:stretch; gap:.45rem; margin:1.3rem 0; }
-            .slide .pipeline .step { flex:1; background:#0f1620; border:1px solid var(--rule);
-              border-radius:10px; padding:.8rem; font-size:.95rem; color:var(--dim); }
-            .slide .pipeline .step b { display:block; color:var(--fg); font-size:1.02rem; margin-bottom:.25rem; }
-            .slide .pipeline .step.hl { border-color:var(--accent); }
-            .slide .pipeline .arrow { align-self:center; color:var(--accent); font-size:1.2rem; }
+            .slide .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin:1rem 0 .2rem; }
+            .slide .tool { display:flex; align-items:center; gap:.85rem; background:#0f1620;
+              border:1px solid var(--rule); border-radius:12px; padding:.7rem .95rem; }
+            .slide .tool .ico { flex:0 0 auto; width:30px; height:30px; color:var(--accent); }
+            .slide .tool .ico svg { width:30px; height:30px; display:block; }
+            .slide .tool .txt b { display:block; color:var(--fg); font-size:1.02rem; }
+            .slide .tool .txt span { color:var(--dim); font-size:.88rem; }
+            .slide .sep { display:flex; align-items:center; gap:.8rem; margin:.9rem 0 .7rem;
+              color:var(--dim); font-size:.9rem; }
+            .slide .sep::before, .slide .sep::after { content:""; height:1px; background:var(--rule); flex:1; }
+            .slide .alt .tool { border-color:#6d5bd0; background:#141129; }
+            .slide .alt .tool .ico { color:#a892ff; }
+            .slide .badge { margin-left:auto; font-size:.72rem; text-transform:uppercase; letter-spacing:.09em;
+              color:#b3a3ff; border:1px solid #3a2f66; border-radius:999px; padding:.15rem .55rem; white-space:nowrap; }
             @media print {
               .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
               #nav, #bar, #toc { display:none; }
