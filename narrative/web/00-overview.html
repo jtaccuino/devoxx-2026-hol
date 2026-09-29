@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java is for Data Science, Too</title><style>
+:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
+#deck { height:100%; display:flex; align-items:center; justify-content:center; }
+.slide { display:none; width:min(94vw, 1180px); aspect-ratio:16/9; padding:3.2rem 4rem;
+  background:#131922; border:1px solid var(--rule); border-radius:14px;
+  overflow:auto; box-shadow:0 10px 40px rgba(0,0,0,.45); }
+.slide.active { display:block; }
+.slide.lead { display:none; }
+.slide.lead.active { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.slide h1 { font-size:2.1rem; margin:0 0 .6rem; letter-spacing:-.01em; }
+.slide.lead h1 { font-size:3rem; }
+.slide h2 { font-size:1.55rem; color:var(--accent); border-bottom:1px solid var(--rule); padding-bottom:.35rem; }
+.slide h3 { font-size:1.2rem; color:var(--dim); font-weight:600; }
+.slide p, .slide li { font-size:1.22rem; line-height:1.55; }
+.slide ul, .slide ol { padding-left:1.3rem; }
+.slide strong { color:#fff; }
+.slide code { background:#0b0f14; border:1px solid var(--rule); border-radius:5px;
+  padding:.08em .38em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.92em; }
+.slide pre { background:#0b0f14; border:1px solid var(--rule); border-radius:9px;
+  padding:1rem 1.15rem; overflow:auto; }
+.slide pre code { background:none; border:none; padding:0; font-size:1rem; line-height:1.45; }
+.slide table { border-collapse:collapse; width:100%; margin:.5rem 0; }
+.slide th, .slide td { border:1px solid var(--rule); padding:.45rem .7rem; text-align:left; font-size:1.05rem; }
+.slide th { background:#1a222d; color:var(--dim); }
+.slide blockquote { border-left:3px solid var(--accent); margin:.6rem 0; padding:.2rem 1rem;
+  color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
+#bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
+#hud { position:fixed; right:1rem; bottom:.7rem; color:var(--dim); font-size:.85rem; }
+#back { position:fixed; left:1rem; top:.8rem; color:var(--dim); font-size:.85rem; text-decoration:none; }
+#back:hover { color:var(--accent); }
+@media print {
+  .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
+  #back, #hud, #bar { display:none; }
+}
+</style></head>
+<body><a id="back" href="index.html">&#8592; all decks</a>
+<div id="deck"><section class="slide lead"><h1>Java is for Data Science, Too</h1>
+<h3>Building an end-to-end ML pipeline without leaving the JVM</h3>
+<p><strong>Devoxx Belgium 2026 · hands-on lab</strong>
+Sven Reimers · Zoran Sevarac</p></section>
+<section class="slide"><h1>What you will build</h1>
+<p>A pipeline over the <strong>CelesTrak satellite catalog</strong>:</p>
+<ol>
+<li><strong>JTaccuino</strong> — a notebook that <em>is</em> a Java REPL</li>
+<li><strong>Hardwood</strong> — read Parquet without reading all of it</li>
+<li><strong>dflib</strong> — shape 21,207 rows with a DataFrame</li>
+<li><strong>gog4j</strong> — a grammar of graphics on JavaFX</li>
+<li><strong>DeepNetts</strong> — predict debris from orbital elements <em>(Zoran)</em></li>
+</ol>
+<p>No Python. No context switch. Just the JVM.</p></section>
+<section class="slide"><h1>The dataset</h1>
+<p><code>data/celestrak_gp_catalog.parquet</code></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rows</td>
+<td><strong>21,207</strong> objects</td>
+</tr>
+<tr>
+<td>columns</td>
+<td><strong>52</strong></td>
+</tr>
+<tr>
+<td>every current CelesTrak GP element set</td>
+<td>merged, one row per object</td>
+</tr>
+<tr>
+<td>enriched with SATCAT</td>
+<td>owner, object type, launch date</td>
+</tr>
+<tr>
+<td>format</td>
+<td>Parquet, GZIP, one row group, ~5.4 MB</td>
+</tr>
+</tbody>
+</table>
+<p>A real file, not a toy. And small enough to hold in memory.</p></section>
+<section class="slide"><h1>What is actually in orbit</h1>
+<pre><code>LEO  19,260   ████████████████████████████████████████
+GEO   1,183   ██
+HEO     558   █
+MEO     206   ▌
+</code></pre>
+<pre><code>payloads  17,110   █████████████████████████████████████
+debris     2,957   ███████
+rocket b.    544   █
+</code></pre>
+<p><code>active,starlink</code> alone is <strong>10,952</strong> objects.</p></section>
+<section class="slide"><h1>The shape of the lab</h1>
+<table>
+<thead>
+<tr>
+<th>time</th>
+<th>who</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10:30</td>
+<td>Sven</td>
+<td>intro + dataset (this deck)</td>
+</tr>
+<tr>
+<td>10:40</td>
+<td>Sven</td>
+<td><strong>module 1</strong> — JTaccuino · 5 min talk, 10 min hands-on</td>
+</tr>
+<tr>
+<td>10:55</td>
+<td>Sven</td>
+<td><strong>module 2</strong> — Hardwood + dflib · 5 + 10</td>
+</tr>
+<tr>
+<td>11:10</td>
+<td>Sven</td>
+<td><strong>module 3</strong> — gog4j · 5 + 10</td>
+</tr>
+<tr>
+<td>11:25</td>
+<td>Zoran</td>
+<td><strong>ML pipeline</strong> — DeepNetts</td>
+</tr>
+<tr>
+<td>12:15</td>
+<td>both</td>
+<td>wrap-up, questions</td>
+</tr>
+</tbody>
+</table>
+<p>Every module: <strong>a short talk, then you type.</strong> Solutions are provided.</p></section>
+<section class="slide"><h1>How this works</h1>
+<p>Each module has a notebook with two kinds of cells:</p>
+<ul>
+<li><strong>TODO</strong> — yours. The scaffold runs; it fails exactly where you haven't
+  filled it in yet.</li>
+<li><strong>given</strong> — run it as-is and watch.</li>
+<li><strong>★ BONUS</strong> — for fast finishers. More wow, clearly marked.</li>
+</ul>
+<p>Every exercise has a matching <strong>solution</strong>. No one gets left behind; no one
+gets bored.</p></section>
+<section class="slide"><h1>Two extras</h1>
+<p><strong>A two-minute space primer</strong> — <code>narrative/00b-space-primer.md</code>. Just enough
+vocabulary (TLE, inclination, LEO/GEO, propagation) to read every plot in the
+lab.</p>
+<p><strong>★ A whole-catalog 3-D view</strong> — <code>notebooks/bonus/orbits-now-3d.ipynb</code>.
+Propagate all 21,207 objects to the current instant with <strong>Orekit</strong> and plot
+where they are <em>right now</em>.</p></section>
+<section class="slide"><h1>Environment check</h1>
+<ul>
+<li>JDK <strong>26+</strong> (gog4j targets 26; this room runs 27)</li>
+<li>JTaccuino, with a <strong>pre-seeded Maven cache</strong> — everything resolves offline</li>
+<li>everything you need is in this repository</li>
+</ul>
+<p>Open <code>notebooks/exercises/01-jtaccuino-basics.ipynb</code> from the <strong>repository
+root</strong>, and we begin.</p></section></div><div id="bar"></div><div id="hud"></div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+  document.getElementById('hud').textContent=(i+1)+' / '+slides.length;
+  history.replaceState(null,'','#'+(i+1)); }
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();show(i+1);}
+  if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(i-1);}
+  if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1); });
+addEventListener('click',e=>{ show(e.clientX < innerWidth*0.28 ? i-1 : i+1); });
+const start=parseInt(location.hash.slice(1),10); show(isNaN(start)?0:start-1);
+</script></body></html>

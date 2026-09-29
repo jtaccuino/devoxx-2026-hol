@@ -90,6 +90,8 @@ Finished early? The notebook has four:
 2. **3-D orbit cloud** — inclination × period × eccentricity
 3. **The wall chart** — filled density + the GEO belt, dark theme
 4. *(module 2)* **Top owners** — a bar chart of who launches
+5. *(`notebooks/bonus/orbits-now-3d.ipynb`)* **Where is everything right now?**
+   — propagate all 21,207 objects to this instant with Orekit, plot the cloud
 
 Low effort. High wow. Clearly marked.
 

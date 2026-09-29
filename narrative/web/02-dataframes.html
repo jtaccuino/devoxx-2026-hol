@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module 2 · Hardwood + dflib</title><style>
+:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
+#deck { height:100%; display:flex; align-items:center; justify-content:center; }
+.slide { display:none; width:min(94vw, 1180px); aspect-ratio:16/9; padding:3.2rem 4rem;
+  background:#131922; border:1px solid var(--rule); border-radius:14px;
+  overflow:auto; box-shadow:0 10px 40px rgba(0,0,0,.45); }
+.slide.active { display:block; }
+.slide.lead { display:none; }
+.slide.lead.active { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.slide h1 { font-size:2.1rem; margin:0 0 .6rem; letter-spacing:-.01em; }
+.slide.lead h1 { font-size:3rem; }
+.slide h2 { font-size:1.55rem; color:var(--accent); border-bottom:1px solid var(--rule); padding-bottom:.35rem; }
+.slide h3 { font-size:1.2rem; color:var(--dim); font-weight:600; }
+.slide p, .slide li { font-size:1.22rem; line-height:1.55; }
+.slide ul, .slide ol { padding-left:1.3rem; }
+.slide strong { color:#fff; }
+.slide code { background:#0b0f14; border:1px solid var(--rule); border-radius:5px;
+  padding:.08em .38em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.92em; }
+.slide pre { background:#0b0f14; border:1px solid var(--rule); border-radius:9px;
+  padding:1rem 1.15rem; overflow:auto; }
+.slide pre code { background:none; border:none; padding:0; font-size:1rem; line-height:1.45; }
+.slide table { border-collapse:collapse; width:100%; margin:.5rem 0; }
+.slide th, .slide td { border:1px solid var(--rule); padding:.45rem .7rem; text-align:left; font-size:1.05rem; }
+.slide th { background:#1a222d; color:var(--dim); }
+.slide blockquote { border-left:3px solid var(--accent); margin:.6rem 0; padding:.2rem 1rem;
+  color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
+#bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
+#hud { position:fixed; right:1rem; bottom:.7rem; color:var(--dim); font-size:.85rem; }
+#back { position:fixed; left:1rem; top:.8rem; color:var(--dim); font-size:.85rem; text-decoration:none; }
+#back:hover { color:var(--accent); }
+@media print {
+  .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
+  #back, #hud, #bar { display:none; }
+}
+</style></head>
+<body><a id="back" href="index.html">&#8592; all decks</a>
+<div id="deck"><section class="slide lead"><h1>Module 2 · Hardwood + dflib</h1>
+<h3>Reading data, and shaping it</h3>
+<p><code>notebooks/exercises/02-parquet-with-hardwood.ipynb</code>
+<code>notebooks/exercises/03-dataframes-with-dflib.ipynb</code></p></section>
+<section class="slide"><h1>Parquet is not a text file</h1>
+<p>It is <strong>columnar</strong>: values of one column sit together, so you can read one
+column without reading the others.</p>
+<p>That gives you three levels of access — cheapest first:</p>
+<ol>
+<li><strong>footer</strong> — shape and statistics, from the last few kilobytes</li>
+<li><strong>row readers</strong> — stream rows through a filter</li>
+<li><strong>column readers</strong> — a whole column as a primitive array</li>
+</ol>
+<p>You pick the level that answers your question.</p></section>
+<section class="slide"><h1>Level 1 · the footer</h1>
+<p>21,207 rows, 52 columns, 1 row group, 5.4 MB —</p>
+<p>all known <strong>without decompressing a single data page</strong>.</p>
+<p>Even the min/max of a column is in the footer:</p>
+<pre><code>inclination  0.003 .. 142.042   (from the footer only)
+</code></pre></section>
+<section class="slide"><h1>Level 2 · stream the rows</h1>
+<pre><code class="language-java">long debris = 0;
+try (RowReader rows = catalog.rowReader()) {
+    while (rows.hasNext()) {
+        rows.next();
+        String t = rows.getString(&quot;satcat_object_type&quot;);
+        if (&quot;DEB&quot;.equals(t) || &quot;R/B&quot;.equals(t)) debris++;
+    }
+}
+</code></pre>
+<p>One pass, one <code>long</code> of state, <strong>3,501</strong> debris.</p></section>
+<section class="slide"><h1>Level 3 · column batches</h1>
+<pre><code class="language-java">try (ColumnReader col = catalog.columnReader(&quot;inclination&quot;)) {
+    while (col.nextBatch()) {
+        double[] values = col.getDoubles();
+        for (int k = 0; k &lt; col.getValueCount(); k++)
+            if (values[k] &gt; maxInc) maxInc = values[k];
+    }
+}
+</code></pre>
+<p>No row objects. No boxing. Just a <code>double[]</code>.</p></section>
+<section class="slide"><h1>dflib is the other half</h1>
+<p>Hardwood <em>streams</em>. <strong>dflib</strong> <em>shapes</em>.</p>
+<pre><code class="language-java">var df = Parquet.loader().load(path);
+</code></pre>
+<p>Then, in plain Java:</p>
+<pre><code class="language-java">df.cols(&quot;object_name&quot;, &quot;orbit_class&quot;, &quot;apogee_km&quot;).select();   // select
+df.rows($str(&quot;orbit_class&quot;).eq(&quot;GEO&quot;)).select();               // filter
+df.group(&quot;orbit_class&quot;).agg($col(&quot;orbit_class&quot;), count());     // group
+df.sort(&quot;apogee_km&quot;, false);                                   // sort
+</code></pre></section>
+<section class="slide"><h1>Derive and aggregate in one breath</h1>
+<p>The mean apogee–perigee spread per class:</p>
+<pre><code class="language-java">df.group(&quot;orbit_class&quot;).agg(
+    $col(&quot;orbit_class&quot;),
+    $double(&quot;apogee_km&quot;).sub($double(&quot;perigee_km&quot;)).avg().as(&quot;mean_spread_km&quot;))
+  .sort(&quot;mean_spread_km&quot;, false);
+</code></pre>
+<pre><code>HEO  45,138 km    MEO  1,125 km    GEO  472 km    LEO  43 km
+</code></pre>
+<p>A derived column <em>and</em> a summary, in one expression.</p></section>
+<section class="slide"><h1>One real-data wart</h1>
+<p><code>altitude_km</code> is <strong>NaN for 997 rows</strong> — exactly where SGP4 propagation failed
+(decayed objects).</p>
+<p>The <em>analytic</em> <code>apogee_km</code> / <code>perigee_km</code> are always present. Real data is
+messy; the labs use the columns that are complete.</p></section>
+<section class="slide"><h1>Your turn</h1>
+<p><code>02-parquet-with-hardwood.ipynb</code> — <strong>5 TODOs.</strong> Climb the three levels.</p>
+<p><code>03-dataframes-with-dflib.ipynb</code> — <strong>6 TODOs.</strong> Select, filter, group, sort.</p>
+<p>Plus a ★ bonus: <strong>who owns the sky?</strong> (US 12,980 · PRC 3,634 · CIS 1,486)</p>
+<p>~10 minutes each.</p>
+<blockquote>
+<p>On to <strong>module 3</strong> — pictures.</p>
+</blockquote></section></div><div id="bar"></div><div id="hud"></div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+function show(n){ i=Math.max(0,Math.min(slides.length-1,n));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+  document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';
+  document.getElementById('hud').textContent=(i+1)+' / '+slides.length;
+  history.replaceState(null,'','#'+(i+1)); }
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();show(i+1);}
+  if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(i-1);}
+  if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1); });
+addEventListener('click',e=>{ show(e.clientX < innerWidth*0.28 ? i-1 : i+1); });
+const start=parseInt(location.hash.slice(1),10); show(isNaN(start)?0:start-1);
+</script></body></html>

@@ -829,6 +829,214 @@ Back to the [overview](../narrative/00-overview.md)."""),
 ]
 
 
+# --------------------------------------------------------------------------
+# Bonus - propagate the whole catalog to now, plot the 3-D point cloud
+# --------------------------------------------------------------------------
+ORBITS3D = [
+    md("""# ★ Bonus · Where is everything, right now?
+
+The catalog stores a **TLE** for every object — the orbital elements stamped at
+an **epoch**. To draw *right now* you take each TLE, run it forward from its
+epoch to the current instant (**propagation**, via **Orekit**'s SGP4/SDP4), and
+keep the resulting position.
+
+20,210 objects propagate in well under a second, so this is the whole catalog —
+not a sample. Then we plot x / y / z in 3-D with gog4j."""),
+
+    code("""addDependency("org.orekit:orekit:13.0.3")
+addDependency("org.dflib:dflib:2.0.0-M7")
+addDependency("org.dflib:dflib-parquet:2.0.0-M7")
+addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT")
+addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT")
+
+import org.dflib.DataFrame;
+import org.dflib.parquet.Parquet;
+import org.orekit.data.DataContext;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.time.TimeScale;
+import org.orekit.propagation.analytical.tle.TLE;
+import org.orekit.propagation.analytical.tle.TLEPropagator;
+import org.orekit.utils.PVCoordinates;
+import org.jtaccuino.gog.*;
+import org.jtaccuino.gog.labs.Labs;
+import org.jtaccuino.gog.render.SvgExporter;
+import org.jtaccuino.gog.theme.Theme;
+import org.jtaccuino.gog.hardwood.HardwoodTable;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.nio.file.Files;
+
+String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
+String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
+
+var df = Parquet.loader().load(cwd.resolve("data/celestrak_gp_catalog.parquet"));
+var tai = DataContext.getDefault().getTimeScales().getTAI();
+var now = new AbsoluteDate(Instant.now(), tai);
+
+void save(GgFigure figure, String name) {
+    try {
+        var path = cwd.resolve(name);
+        new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
+        println("saved %s (%s bytes)", name, num(Files.size(path)));
+    } catch (Exception e) {
+        println("could not save %s: %s", name, e);
+    }
+}"""),
+
+    md("""## 1 · Propagate every object to now
+
+Build an Orekit `TLE` from the two stored lines, propagate it to `now`, and keep
+the position in km. Some objects will not propagate (they were decaying when the
+elements were published) — catch and skip those."""),
+
+    code("""// ── given ── the columns we need, and the lists we will fill
+var l1 = df.getColumn("tle_line1");
+var l2 = df.getColumn("tle_line2");
+var names = df.getColumn("object_name");
+var classes = df.getColumn("orbit_class");
+var kinds = df.getColumn("satcat_object_type");
+
+var xs = new ArrayList<Double>();
+var ys = new ArrayList<Double>();
+var zs = new ArrayList<Double>();
+var plotNames = new ArrayList<String>();
+var plotClasses = new ArrayList<String>();
+var plotKinds = new ArrayList<String>();"""),
+
+    code("""// ── TODO 1 ────────────────────────────────────────────────────────────
+// For each row with TLE lines, propagate to `now` and append the position
+// (km) and its labels to the lists above. Skip objects that will not propagate.
+
+// for (int i = 0; i < df.height(); i++) {
+//     Object a = l1.get(i), b = l2.get(i);
+//     if (a == null || b == null) continue;
+//     try {
+//         var tle = new TLE(a.toString(), b.toString(), tai);
+//         var pv = TLEPropagator.selectExtrapolator(tle).propagate(now).getPVCoordinates();
+//         xs.add(pv.getPosition().getX() / 1000.0);
+//         ys.add(pv.getPosition().getY() / 1000.0);
+//         zs.add(pv.getPosition().getZ() / 1000.0);
+//         plotNames.add(String.valueOf(names.get(i)));
+//         plotClasses.add(String.valueOf(classes.get(i)));
+//         plotKinds.add(String.valueOf(kinds.get(i)));
+//     } catch (Exception e) {
+//         // this object will not propagate - skip it
+//     }
+// }""",
+         sol="""for (int i = 0; i < df.height(); i++) {
+    Object a = l1.get(i), b = l2.get(i);
+    if (a == null || b == null) continue;
+    try {
+        var tle = new TLE(a.toString(), b.toString(), tai);
+        var pv = TLEPropagator.selectExtrapolator(tle).propagate(now).getPVCoordinates();
+        xs.add(pv.getPosition().getX() / 1000.0);
+        ys.add(pv.getPosition().getY() / 1000.0);
+        zs.add(pv.getPosition().getZ() / 1000.0);
+        plotNames.add(String.valueOf(names.get(i)));
+        plotClasses.add(String.valueOf(classes.get(i)));
+        plotKinds.add(String.valueOf(kinds.get(i)));
+    } catch (Exception e) {
+        // this object will not propagate - skip it
+    }
+}"""),
+
+    code("""// ── given ─────────────────────────────────────────────────────────────
+var radii = new ArrayList<Double>();
+for (int i = 0; i < xs.size(); i++) {
+    radii.add(Math.sqrt(xs.get(i) * xs.get(i) + ys.get(i) * ys.get(i) + zs.get(i) * zs.get(i)));
+}
+double minR = radii.stream().mapToDouble(Double::doubleValue).min().orElse(0);
+double maxR = radii.stream().mapToDouble(Double::doubleValue).max().orElse(0);
+println("propagated %s of %s objects to the current instant", num(xs.size()), num(df.height()));
+println("distance from Earth centre: %s km .. %s km", num((long) minR), num((long) maxR));"""),
+
+    md("""## 2 · The 3-D point cloud
+
+Look at it from outside: x / y / z, coloured by orbit class. The shells **are**
+the orbit families — a dense ball (LEO), a sparse shell (MEO), one thin ring
+(GEO), and long streaky arcs (HEO)."""),
+
+    code("""// ── TODO 2 ────────────────────────────────────────────────────────────
+// Build a HardwoodTable from x / y / z and the labels, then plot a 3-D
+// scatter coloured by orbit_class into `p`.
+
+// var cols = new LinkedHashMap<String, List<?>>();
+// cols.put("x", xs);
+// cols.put("y", ys);
+// cols.put("z", zs);
+// cols.put("orbit_class", plotClasses);
+// cols.put("object_name", plotNames);
+// cols.put("satcat_object_type", plotKinds);
+// var cloud = HardwoodTable.ofColumns(cols);
+//
+// Plot<HardwoodTable> p = Ggplot.ggplot3d(cloud,
+//         Aes.aes().x("x").y("y").z("z").color("orbit_class"))
+//     .geoms(Geoms.point3d())
+//     .labs(Labs.labs("The whole catalog, right now", "x (km)", "y (km)"))
+//     .theme(Theme.theme_dark());""",
+         sol="""var cols = new LinkedHashMap<String, List<?>>();
+cols.put("x", xs);
+cols.put("y", ys);
+cols.put("z", zs);
+cols.put("orbit_class", plotClasses);
+cols.put("object_name", plotNames);
+cols.put("satcat_object_type", plotKinds);
+var cloud = HardwoodTable.ofColumns(cols);
+
+Plot<HardwoodTable> p = Ggplot.ggplot3d(cloud,
+        Aes.aes().x("x").y("y").z("z").color("orbit_class"))
+    .geoms(Geoms.point3d())
+    .labs(Labs.labs("The whole catalog, right now", "x (km)", "y (km)"))
+    .theme(Theme.theme_dark());"""),
+
+    code("""// ── given ─────────────────────────────────────────────────────────────
+display(p);
+save(p, "orbits-now-3d.svg");"""),
+
+    md("""## 3 · A flat view: payloads and debris
+
+Seen from above the pole, colour by `satcat_object_type`. The geostationary ring
+is obvious, and the debris from the three big break-ups shows up as clumps."""),
+
+    code("""// ── TODO 3 ────────────────────────────────────────────────────────────
+// Same table, but look straight down: x vs y, coloured by satcat_object_type.
+
+// var top = Ggplot.ggplot(cloud,
+//         Aes.aes().x("x").y("y").color("satcat_object_type"))
+//     .geoms(Geoms.point())
+//     .labs(Labs.labs("Top-down: payload vs debris", "x (km)", "y (km)"))
+//     .theme(Theme.theme_dark());
+// display(top);
+// save(top, "orbits-now-topdown.svg");""",
+         sol="""var top = Ggplot.ggplot(cloud,
+        Aes.aes().x("x").y("y").color("satcat_object_type"))
+    .geoms(Geoms.point())
+    .labs(Labs.labs("Top-down: payload vs debris", "x (km)", "y (km)"))
+    .theme(Theme.theme_dark());
+display(top);
+save(top, "orbits-now-topdown.svg");"""),
+
+    code("""// ── check ─────────────────────────────────────────────────────────────
+var pass = xs.size() >= 20000 && xs.size() <= 21207
+        && xs.size() == ys.size() && xs.size() == zs.size();
+if (pass) {
+    println("✓ %s objects propagated to now · %s km .. %s km from Earth centre",
+            num(xs.size()), num((long) minR), num((long) maxR));
+} else {
+    println("✗ propagated %s objects — check the TODOs above", num(xs.size()));
+}"""),
+
+    md("""Every point is a real position, computed from a published element set at the
+moment you ran the cell. Reload and run it again tomorrow and the cloud is
+different.
+
+Back to the [overview](../narrative/00-overview.md)."""),
+]
+
+
 NOTEBOOKS = {
     "01-jtaccuino-basics": E1,
     "02-parquet-with-hardwood": E2,
@@ -884,6 +1092,16 @@ def main():
                                 ("penguins-worksheet", PENGUINS, "-solutions")):
         nb = build(cells, bool(suffix))
         path = os.path.join(fallback, name + suffix + ".ipynb")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(nb, f, indent=4, ensure_ascii=False)
+            f.write("\n")
+        print("wrote", os.path.relpath(path, ROOT))
+
+    bonus = os.path.join(ROOT, "notebooks", "bonus")
+    os.makedirs(bonus, exist_ok=True)
+    for suffix in ("", "-solutions"):
+        nb = build(ORBITS3D, bool(suffix))
+        path = os.path.join(bonus, "orbits-now-3d" + suffix + ".ipynb")
         with open(path, "w", encoding="utf-8") as f:
             json.dump(nb, f, indent=4, ensure_ascii=False)
             f.write("\n")

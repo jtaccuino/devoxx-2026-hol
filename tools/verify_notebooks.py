@@ -19,10 +19,16 @@ import tempfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOL = os.path.join(ROOT, "notebooks", "solutions")
 FALLBACK = os.path.join(ROOT, "notebooks", "fallback")
+BONUS = os.path.join(ROOT, "notebooks", "bonus")
 
 
 def nb_path(name):
-    folder = FALLBACK if "penguins" in name else SOL
+    if "penguins" in name:
+        folder = FALLBACK
+    elif "orbits-now" in name:
+        folder = BONUS
+    else:
+        folder = SOL
     return os.path.join(folder, name + ".ipynb")
 JAVA_HOME = os.path.expanduser("~/.sdkman/candidates/java/27.0.0+35-zulu")
 
@@ -32,6 +38,7 @@ HOLDER = {
     "03-dataframes-with-dflib": "e3",
     "04-plotting-with-gog4j": "e4",
     "penguins-worksheet-solutions": "penguins",
+    "orbits-now-3d-solutions": "bonus3d",
 }
 
 METHOD_START = re.compile(r"^(?:String|double|int|long|boolean|void)\s+\w+\(")
@@ -100,6 +107,13 @@ def run_fx(name):
             "org.dflib:dflib:2.0.0-M7",
             "org.dflib:dflib-parquet:2.0.0-M7",
         ],
+        "orbits-now-3d-solutions": [
+            "org.orekit:orekit:13.0.3",
+            "org.dflib:dflib:2.0.0-M7",
+            "org.dflib:dflib-parquet:2.0.0-M7",
+            "org.jtaccuino:gog4j:0.5-SNAPSHOT",
+            "org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT",
+        ],
     }.get(name, [
         "org.jtaccuino:gog4j:0.5-SNAPSHOT",
         "org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT",
@@ -118,7 +132,7 @@ class NotebookRun {
     static void display(Object node) { System.out.println("[display] " + (node == null ? "null" : node.getClass().getSimpleName())); }
 """ + "\n".join(methods) + """
 
-    public static void main(String[] a) throws Exception {
+    public static void main(String[] args) throws Exception {
         var up = new java.util.concurrent.CountDownLatch(1);
         javafx.application.Platform.startup(up::countDown); up.await();
         var done = new java.util.concurrent.CountDownLatch(1);
@@ -147,7 +161,7 @@ class NotebookRun {
 
 
 def run(name):
-    if name.startswith("04") or "penguins" in name:
+    if name.startswith("04") or "penguins" in name or "orbits-now" in name:
         return run_fx(name)
     with open(nb_path(name), encoding="utf-8") as f:
         nb = json.load(f)

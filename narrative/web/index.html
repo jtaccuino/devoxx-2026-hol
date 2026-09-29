@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>devoxx-hol-2026 · narrative</title><style>
+:root { --bg:#0e1116; --fg:#e8edf3; --dim:#9fb0c3; --accent:#4aa3df; --rule:#243040; }
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif; }
+#deck { height:100%; display:flex; align-items:center; justify-content:center; }
+.slide { display:none; width:min(94vw, 1180px); aspect-ratio:16/9; padding:3.2rem 4rem;
+  background:#131922; border:1px solid var(--rule); border-radius:14px;
+  overflow:auto; box-shadow:0 10px 40px rgba(0,0,0,.45); }
+.slide.active { display:block; }
+.slide.lead { display:none; }
+.slide.lead.active { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.slide h1 { font-size:2.1rem; margin:0 0 .6rem; letter-spacing:-.01em; }
+.slide.lead h1 { font-size:3rem; }
+.slide h2 { font-size:1.55rem; color:var(--accent); border-bottom:1px solid var(--rule); padding-bottom:.35rem; }
+.slide h3 { font-size:1.2rem; color:var(--dim); font-weight:600; }
+.slide p, .slide li { font-size:1.22rem; line-height:1.55; }
+.slide ul, .slide ol { padding-left:1.3rem; }
+.slide strong { color:#fff; }
+.slide code { background:#0b0f14; border:1px solid var(--rule); border-radius:5px;
+  padding:.08em .38em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.92em; }
+.slide pre { background:#0b0f14; border:1px solid var(--rule); border-radius:9px;
+  padding:1rem 1.15rem; overflow:auto; }
+.slide pre code { background:none; border:none; padding:0; font-size:1rem; line-height:1.45; }
+.slide table { border-collapse:collapse; width:100%; margin:.5rem 0; }
+.slide th, .slide td { border:1px solid var(--rule); padding:.45rem .7rem; text-align:left; font-size:1.05rem; }
+.slide th { background:#1a222d; color:var(--dim); }
+.slide blockquote { border-left:3px solid var(--accent); margin:.6rem 0; padding:.2rem 1rem;
+  color:var(--dim); background:#10161e; border-radius:0 8px 8px 0; }
+#bar { position:fixed; left:0; bottom:0; height:3px; background:var(--accent); transition:width .18s; }
+#hud { position:fixed; right:1rem; bottom:.7rem; color:var(--dim); font-size:.85rem; }
+#back { position:fixed; left:1rem; top:.8rem; color:var(--dim); font-size:.85rem; text-decoration:none; }
+#back:hover { color:var(--accent); }
+@media print {
+  .slide { display:block !important; page-break-after:always; box-shadow:none; border:none; }
+  #back, #hud, #bar { display:none; }
+}
+
+#deck{flex-direction:column} .card{display:flex;justify-content:space-between;align-items:center;
+width:min(94vw,760px);margin:.5rem 0;padding:1.1rem 1.4rem;background:#131922;
+border:1px solid var(--rule);border-radius:12px;text-decoration:none;color:var(--fg);}
+.card:hover{border-color:var(--accent)} .t{font-size:1.25rem} .n{color:var(--dim)}
+.hero{width:min(94vw,760px);margin-bottom:1rem} </style></head>
+<body><div id="deck"><div class="hero"><h1>Java is for Data Science, Too</h1>
+<p style="color:var(--dim)">Devoxx Belgium 2026 — hands-on lab narrative.</p></div>
+<a class="card" href="00-overview.html"><span class="t">Java is for Data Science, Too</span><span class="n">8 slides</span></a>
+<a class="card" href="00b-space-primer.html"><span class="t">A two-minute space primer</span><span class="n">8 slides</span></a>
+<a class="card" href="01-jtaccuino.html"><span class="t">Module 1 · JTaccuino</span><span class="n">6 slides</span></a>
+<a class="card" href="02-dataframes.html"><span class="t">Module 2 · Hardwood + dflib</span><span class="n">9 slides</span></a>
+<a class="card" href="03-visualization.html"><span class="t">Module 3 · gog4j</span><span class="n">7 slides</span></a></div></body></html>

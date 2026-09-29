@@ -8,13 +8,15 @@ CelesTrak element sets → **Hardwood** (Parquet) → **dflib** (DataFrames) →
 **gog4j** (plots) → **DeepNetts** (ML). Notebooks run in **JTaccuino**.
 
 ```
-narrative/    slides (Marp) — open as markdown, render as a deck
+narrative/    slides (Marp markdown) — open as prose, render as a deck
+narrative/web/  pre-rendered HTML decks (open index.html, arrow keys to navigate)
 cheatsheets/  one-page API reference per library
 notebooks/    exercises + solutions
 notebooks/fallback/  penguins worksheet, if the dataset is unavailable
+notebooks/bonus/     orbits-now-3d: propagate the whole catalog to now (Orekit)
 data/         the dataset (committed) and raw inputs
 dataset/      jbang scripts that rebuild the dataset
-tools/        notebook generator + verification harness
+tools/        notebook generator, narrative renderer, verification harness
 ```
 
 ## Requirements
@@ -45,6 +47,23 @@ intros. They are plain Markdown with [Marp](https://marp.app) front-matter, so
 `marp narrative/00-overview.md --pdf` renders a deck and the files read fine as
 prose without any tooling.
 
+## Narrative (web)
+
+The decks are also pre-rendered to **self-contained HTML** in `narrative/web/`.
+Open `narrative/web/index.html` in a browser — no build step, no network:
+
+- arrow keys / space / click to move, `Home` / `End` to jump, `#7` in the URL
+- also print to PDF from the browser
+
+`narrative/00b-space-primer.md` is a short introduction to the space vocabulary
+(TLE, inclination, LEO/MEO/GEO/HEO, propagation) for anyone new to the domain.
+
+Re-render after editing the markdown:
+
+```bash
+python3 tools/render_narrative.py
+```
+
 ## The dataset
 
 `data/celestrak_gp_catalog.parquet` — 21,207 satellites × 52 columns, enriched
@@ -66,6 +85,14 @@ the usage policy.
 If the Parquet cannot be read, `notebooks/fallback/penguins-worksheet.ipynb`
 repeats the whole workflow on the penguins dataset bundled inside gog4j — same
 TODO structure, nothing to download.
+
+## Bonus
+
+`notebooks/bonus/orbits-now-3d.ipynb` (with a solution) propagates **every**
+object in the catalog from its element-set epoch to the current instant with
+Orekit's SGP4/SDP4, then plots the resulting x/y/z point cloud in 3-D with
+gog4j — plus a top-down payload-vs-debris view. 20,210 objects propagate in
+well under a second.
 
 ## Known gog4j issues
 
@@ -113,14 +140,15 @@ finally {
 Notebooks are generated, not hand-edited:
 
 ```bash
-python3 tools/make_notebooks.py          # writes exercises, solutions, fallback
+python3 tools/make_notebooks.py          # writes exercises, solutions, fallback, bonus
 python3 tools/verify_notebooks.py        # replays every solution, prints PASS/FAIL
+python3 tools/render_narrative.py        # regenerates narrative/web/*.html
 ```
 
 `tools/verify_notebooks.py` runs the solutions in JShell with the JTaccuino
-builtins stubbed; notebook 04 (and the penguins worksheet) are reassembled into
-a jbang program that runs on the JavaFX Application Thread, because gog4j plot
-construction and `SvgExporter` require it.
+builtins stubbed; the JavaFX notebooks (04, the penguins worksheet and the 3-D
+bonus) are reassembled into a jbang program that runs on the JavaFX Application
+Thread, because gog4j plot construction and `SvgExporter` require it.
 
 ## Attribution
 

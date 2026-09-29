@@ -93,6 +93,18 @@ gets bored.
 
 ---
 
+# Two extras
+
+**A two-minute space primer** — `narrative/00b-space-primer.md`. Just enough
+vocabulary (TLE, inclination, LEO/GEO, propagation) to read every plot in the
+lab.
+
+**★ A whole-catalog 3-D view** — `notebooks/bonus/orbits-now-3d.ipynb`.
+Propagate all 21,207 objects to the current instant with **Orekit** and plot
+where they are *right now*.
+
+---
+
 # Environment check
 
 - JDK **26+** (gog4j targets 26; this room runs 27)
