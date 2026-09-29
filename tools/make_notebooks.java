@@ -1032,13 +1032,6 @@ import java.util.List;
 import java.util.Map;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import static org.dflib.Exp.*;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
 String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
@@ -1183,94 +1176,6 @@ var top = Ggplot.ggplot(cloud,
 display(top);
 save(top, "orbits-now-topdown.svg");
 """),
-            md("""
-## ★ Bonus — make it move
-
-A static cloud is a picture; motion is a plot. Precompute each object's position
-at a series of instants, then play the frames back as a flip-book.
-
-We keep it to **LEO** and a few hundred objects so it stays smooth — that is the
-same "focus on LEO" idea as limiting the axes, done as a **filter on the data**
-rather than a change to the plot.
-"""),
-            code("""
-// ── ★ BONUS ───────────────────────────────────────────────────────────
-// Precompute a trajectory: for each frame, where every object is.
-var leo = df.rows($str("orbit_class").eq("LEO")).select();
-var leoL1 = leo.getColumn("tle_line1");
-var leoL2 = leo.getColumn("tle_line2");
-
-int fleetSize = 300;           // objects in the animation
-int frames = 48;               // frames per lap
-double secondsPerFrame = 120;  // two minutes of real motion per frame
-
-var fleetL1 = new ArrayList<String>();
-var fleetL2 = new ArrayList<String>();
-for (int i = 0; i < leo.height() && fleetL1.size() < fleetSize; i++) {
-    Object a = leoL1.get(i), b = leoL2.get(i);
-    if (a != null && b != null) {
-        fleetL1.add(a.toString());
-        fleetL2.add(b.toString());
-    }
-}
-
-// trajectory[frame][object] = x, y, z in km
-double[][][] trajectory = new double[frames][fleetL1.size()][3];
-for (int f = 0; f < frames; f++) {
-    var at = now.shiftedBy(f * secondsPerFrame);
-    for (int i = 0; i < fleetL1.size(); i++) {
-        try {
-            var tle = new TLE(fleetL1.get(i), fleetL2.get(i), tai);
-            var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
-                        .getPVCoordinates().getPosition();
-            trajectory[f][i][0] = pos.getX() / 1000.0;
-            trajectory[f][i][1] = pos.getY() / 1000.0;
-            trajectory[f][i][2] = pos.getZ() / 1000.0;
-        } catch (Exception e) {
-            // this object will not propagate - leave it at the origin
-        }
-    }
-}
-println("precomputed %d frames for %s LEO objects", frames, num(fleetL1.size()));
-"""),
-            code("""
-// ── ★ BONUS ───────────────────────────────────────────────────────────
-// Play the frames: a plain JavaFX Pane, Earth in the middle, one dot per
-// satellite. Every tick we project the current frame, move the dots, and slowly
-// turn the view — the same kind of loop an animation needs.
-double scale = 230.0 / 9000.0;      // km -> pixels (LEO reaches ~ 8400 km)
-double cx = 240, cy = 240;
-var view = new Pane();
-view.setPrefSize(480, 480);
-view.getChildren().add(new Circle(cx, cy, 6378.137 * scale, Color.web("#2e7d32")));
-
-var dots = new ArrayList<Circle>();
-for (int i = 0; i < fleetL1.size(); i++) {
-    var dot = new Circle(0, 0, 1.5, Color.web("#ffb454"));
-    dots.add(dot);
-    view.getChildren().add(dot);
-}
-
-var azimuth = new double[]{0.0};
-var frame = new int[]{0};
-var timeline = new Timeline(new KeyFrame(Duration.millis(90), e -> {
-    double cosA = Math.cos(azimuth[0]), sinA = Math.sin(azimuth[0]);
-    int f = frame[0] % frames;
-    for (int i = 0; i < dots.size(); i++) {
-        double x = trajectory[f][i][0], y = trajectory[f][i][1], z = trajectory[f][i][2];
-        double px = x * cosA - y * sinA;
-        double pz = x * sinA + y * cosA;
-        dots.get(i).setCenterX(cx + px * scale);
-        dots.get(i).setCenterY(cy - (z * 0.75 + pz * 0.35) * scale);
-    }
-    azimuth[0] += 0.01;
-    frame[0]++;
-}));
-timeline.setCycleCount(Timeline.INDEFINITE);
-timeline.play();
-display(view);
-println("animating %s satellites — re-run the cell to start a fresh lap", num(dots.size()));
-"""),
             code("""
 // ── check ─────────────────────────────────────────────────────────────
 var pass = xs.size() >= 20000 && xs.size() <= 21207
@@ -1286,6 +1191,204 @@ if (pass) {
 Every point is a real position, computed from a published element set at the
 moment you ran the cell. Reload and run it again tomorrow and the cloud is
 different.
+
+Back to the [overview](../narrative/00-overview.md).
+"""));
+
+    // ----------------------------------------------------------------------
+    // Wow - redraw the gog4j 3-D plot a couple of times a second
+    // ----------------------------------------------------------------------
+    static final List<Cell> ORBITS_LIVE = List.of(
+            md("""
+# ★ Wow · a live 3-D view
+
+The bonus notebook draws a still point cloud. Here we **redraw the gog4j plot a
+couple of times a second** with freshly propagated positions, so the fleet
+appears to orbit the Earth.
+
+The trick: `display(...)` the container **once**, then swap a new plot into it on
+every tick. The notebook keeps that node in the live scene graph, so the swap
+shows.
+"""),
+            code("""
+addDependency("org.orekit:orekit:13.0.3");
+addDependency("org.dflib:dflib:2.0.0-M7");
+addDependency("org.dflib:dflib-parquet:2.0.0-M7");
+addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
+
+import org.dflib.DataFrame;
+import org.dflib.parquet.Parquet;
+import org.orekit.data.DataContext;
+import org.orekit.time.AbsoluteDate;
+import org.orekit.propagation.analytical.tle.TLE;
+import org.orekit.propagation.analytical.tle.TLEPropagator;
+import org.jtaccuino.gog.*;
+import org.jtaccuino.gog.labs.Labs;
+import org.jtaccuino.gog.render.SvgExporter;
+import org.jtaccuino.gog.theme.Theme;
+import org.jtaccuino.gog.hardwood.HardwoodTable;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import javafx.animation.AnimationTimer;
+import javafx.scene.layout.StackPane;
+import static org.dflib.Exp.*;
+
+String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
+String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
+
+// The notebook may live in a sub-folder (exercises/, bonus/, ...), so walk up
+// from the notebook's own folder to find the repository's data/ directory.
+Path dataset() {
+    for (Path p = cwd.toAbsolutePath(); p != null; p = p.getParent()) {
+        Path candidate = p.resolve("data/celestrak_gp_catalog.parquet");
+        if (Files.isRegularFile(candidate)) return candidate;
+    }
+    throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
+}
+
+var df = Parquet.loader().load(dataset());
+var tai = DataContext.getDefault().getTimeScales().getTAI();
+var now = new AbsoluteDate(Instant.now(), tai);
+
+void save(GgFigure figure, String name) {
+    try {
+        var path = cwd.resolve(name);
+        new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
+        println("saved %s (%s bytes)", name, num(Files.size(path)));
+    } catch (Exception e) {
+        println("could not save %s: %s", name, e);
+    }
+}
+"""),
+            md("""
+## 1 · A fleet and its frames
+
+Take a few hundred **LEO** objects and work out where each one is at a series of
+instants — one instant per frame. Precomputing the frames keeps the drawing loop
+cheap; the loop itself only re-renders.
+"""),
+            code("""
+// ── given ── the fleet, and one position per object per frame
+var leo = df.rows($str("orbit_class").eq("LEO")).select();
+var leoL1 = leo.getColumn("tle_line1");
+var leoL2 = leo.getColumn("tle_line2");
+var leoClass = leo.getColumn("orbit_class");
+
+int fleetSize = 500;          // objects drawn at once
+int frames = 60;              // one lap of the flip-book
+double secondsPerFrame = 90;  // real time advanced per frame
+
+var fleetL1 = new ArrayList<String>();
+var fleetL2 = new ArrayList<String>();
+var fleetClass = new ArrayList<String>();
+for (int i = 0; i < leo.height() && fleetL1.size() < fleetSize; i++) {
+    Object a = leoL1.get(i), b = leoL2.get(i);
+    if (a != null && b != null) {
+        fleetL1.add(a.toString());
+        fleetL2.add(b.toString());
+        fleetClass.add(String.valueOf(leoClass.get(i)));
+    }
+}
+
+// positions[frame][object] = x, y, z in km
+double[][][] positions = new double[frames][fleetL1.size()][3];
+for (int f = 0; f < frames; f++) {
+    var at = now.shiftedBy(f * secondsPerFrame);
+    for (int i = 0; i < fleetL1.size(); i++) {
+        try {
+            var tle = new TLE(fleetL1.get(i), fleetL2.get(i), tai);
+            var pos = TLEPropagator.selectExtrapolator(tle).propagate(at)
+                        .getPVCoordinates().getPosition();
+            positions[f][i][0] = pos.getX() / 1000.0;
+            positions[f][i][1] = pos.getY() / 1000.0;
+            positions[f][i][2] = pos.getZ() / 1000.0;
+        } catch (Exception e) {
+            // this object will not propagate - leave it at the origin
+        }
+    }
+}
+println("precomputed %d frames for %s objects", frames, num(fleetL1.size()));
+"""),
+            md("""
+## 2 · Redraw the plot, twice a second
+
+Build a gog4j 3-D plot for one frame, and swap it into a container we displayed
+once. An `AnimationTimer` throttles itself to ~2 fps — enough to read as motion,
+cheap enough to re-render a few hundred points.
+"""),
+            code("""
+// ── given ── a fresh plot for one frame
+java.util.function.IntFunction<Plot<HardwoodTable>> plotFor = f -> {
+    var xs = new ArrayList<Double>();
+    var ys = new ArrayList<Double>();
+    var zs = new ArrayList<Double>();
+    for (int i = 0; i < fleetL1.size(); i++) {
+        xs.add(positions[f][i][0]);
+        ys.add(positions[f][i][1]);
+        zs.add(positions[f][i][2]);
+    }
+    var cols = new LinkedHashMap<String, List<?>>();
+    cols.put("x", xs);
+    cols.put("y", ys);
+    cols.put("z", zs);
+    cols.put("orbit_class", fleetClass);
+    var table = HardwoodTable.ofColumns(cols);
+    var plot = Ggplot.ggplot3d(table, Aes.aes().x("x").y("y").z("z").color("orbit_class"))
+        .geoms(Geoms.point3d())
+        .labs(Labs.labs("LEO, live", "x (km)", "y (km)"))
+        .theme(Theme.theme_dark());
+    plot.setPrefSize(780, 600);
+    return plot;
+};
+println("plotFor is ready");
+"""),
+            code("""
+// ── given ── display once, then swap the plot on every tick
+var stage = new StackPane();
+stage.setPrefSize(780, 600);
+display(stage);
+stage.getChildren().setAll(plotFor.apply(0));
+
+var frameNo = new AtomicInteger();
+var timer = new AnimationTimer() {
+    private long last;
+    @Override
+    public void handle(long nanos) {
+        if (nanos - last < 500_000_000L) return;   // ~ 2 frames per second
+        last = nanos;
+        int f = frameNo.getAndIncrement() % frames;
+        stage.getChildren().setAll(plotFor.apply(f));
+    }
+};
+timer.start();
+println("redrawing the plot twice a second — %s points per frame", num(fleetL1.size()));
+"""),
+            code("""
+// ── given ── one frame as a file, for the record
+save(plotFor.apply(0), "orbits-live-frame.svg");
+"""),
+            code("""
+// ── check ─────────────────────────────────────────────────────────────
+var pass = fleetL1.size() > 100 && frames > 10 && positions.length == frames;
+if (pass) {
+    println("✓ %s points × %d frames — redrawn live at ~2 fps", num(fleetL1.size()), frames);
+} else {
+    println("✗ something is off — check the setup above");
+}
+"""),
+            md("""
+Reload the notebook and run it again tomorrow: the fleet is somewhere else, and
+the animation follows the *current* element sets.
+
+It is the same pipeline as the other notebooks — **Hardwood** reads, **dflib**
+shapes, **Orekit** propagates, **gog4j** draws — just on a clock.
 
 Back to the [overview](../narrative/00-overview.md).
 """));
@@ -1416,5 +1519,10 @@ Back to the [overview](../narrative/00-overview.md).
                 "orbits-now-3d", ORBITS3D, false);
         write(Path.of("notebooks", "bonus", "orbits-now-3d-solutions.ipynb"),
                 "orbits-now-3d", ORBITS3D, true);
+
+        write(Path.of("notebooks", "bonus", "orbits-live-3d.ipynb"),
+                "orbits-live-3d", ORBITS_LIVE, false);
+        write(Path.of("notebooks", "bonus", "orbits-live-3d-solutions.ipynb"),
+                "orbits-live-3d", ORBITS_LIVE, true);
     }
 }

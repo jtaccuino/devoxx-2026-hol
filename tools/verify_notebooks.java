@@ -44,7 +44,8 @@ public class verify_notebooks {
             new Job("03-dataframes-with-dflib", "notebooks/solutions/03-dataframes-with-dflib.ipynb", "e3", null),
             new Job("04-plotting-with-gog4j", "notebooks/solutions/04-plotting-with-gog4j.ipynb", "e4", "04"),
             new Job("penguins-worksheet-solutions", "notebooks/fallback/penguins-worksheet-solutions.ipynb", "penguins", "penguins"),
-            new Job("orbits-now-3d-solutions", "notebooks/bonus/orbits-now-3d-solutions.ipynb", "bonus3d", "orbits"));
+            new Job("orbits-now-3d-solutions", "notebooks/bonus/orbits-now-3d-solutions.ipynb", "bonus3d", "orbits"),
+            new Job("orbits-live-3d-solutions", "notebooks/bonus/orbits-live-3d-solutions.ipynb", "bonus3d", "orbits"));
 
     static final String PREAMBLE = """
             void addDependency(String gav) { System.out.println("[deps] " + gav); }
