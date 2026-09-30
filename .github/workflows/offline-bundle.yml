@@ -30,14 +30,16 @@ jobs:
       GOG4J_REPO_USER: ${{ github.actor }}
     steps:
       - name: Fetch sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
+      # No `cache: maven` here on purpose: that option needs a pom.xml, and this
+      # repository has none (it is a jbang lab, not a Maven project). jbang keeps
+      # its own dependency cache instead.
       - name: Setup JDK 26
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '26'
-          cache: maven
 
       - name: Setup jbang
         uses: jbangdev/setup-jbang@main
@@ -48,8 +50,7 @@ jobs:
       - name: Point jbang at GitHub Packages
         run: |
           mkdir -p ~/.jbang
-          export JBANG_REPOS="central=https://repo1.maven.org/maven2/,github=https://maven.pkg.github.com/jtaccuino/gog4j"
-          echo "JBANG_REPOS=$JBANG_REPOS" >> "$GITHUB_ENV"
+          echo "JBANG_REPOS=central=https://repo1.maven.org/maven2/,github=${{ vars.GOG4J_REPO_URL || 'https://maven.pkg.github.com/jtaccuino/gog4j' }}" >> "$GITHUB_ENV"
 
       - name: Check the gog4j version is consistent
         run: jbang tools/check_versions.java
@@ -65,7 +66,7 @@ jobs:
           find . -maxdepth 3 -name '*.svg' -delete
 
       - name: Upload the bundle as a workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: devoxx-hol-2026-m2
           path: devoxx-hol-2026-m2.zip
