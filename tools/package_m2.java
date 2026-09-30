@@ -3,16 +3,26 @@
 
 // Build the prepackaged Maven repository for the lab, as a single zip.
 //
-// The notebooks resolve a fixed set of artifacts, including 0.5-SNAPSHOT builds
-// of gog4j that are not on Maven Central. This script assembles a self-contained
-// ~/.m2/repository into devoxx-hol-2026-m2.zip, which the "Getting everything"
-// slide points at. Students unpack it into ~/.m2/repository and the whole lab
-// runs offline.
+// The notebooks resolve a fixed set of artifacts, including gog4j 0.5.0.
+// This script assembles a self-contained ~/.m2/repository into
+// devoxx-hol-2026-m2.zip, which the "Getting everything" slide points at.
+// Students unpack it into ~/.m2/repository and the whole lab runs offline.
+//
+// gog4j 0.5.0 is published to GitHub Packages, which requires authentication
+// even for a public package, so it is resolved:
+//   * locally  - seeded from ~/.m2/repository if a developer installed it, or
+//   * remotely - from GitHub Packages when GOG4J_REPO_PASSWORD is set
+//                (that is what the .github workflow does)
 //
 // Requires: mvn on the PATH, and network access on first build.
 //
 // Usage: jbang tools/package_m2.java
 //        jbang tools/package_m2.java --keep   (keep build/m2-bundle for inspection)
+//
+// Env (CI):
+//   GOG4J_REPO_URL       default https://maven.pkg.github.com/jtaccuino/gog4j
+//   GOG4J_REPO_USER      default GITHUB_ACTOR
+//   GOG4J_REPO_PASSWORD  default GITHUB_TOKEN   (needs packages: read)
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +47,21 @@ public class package_m2 {
     static final Path REPO = WORK.resolve("repo");
     static final Path POM = WORK.resolve("pom.xml");
     static final Path ZIP = ROOT.resolve("devoxx-hol-2026-m2.zip");
+    static final Path SETTINGS = WORK.resolve("settings.xml");
+
+    // gog4j releases live on GitHub Packages; CI reads them from there
+    static final String REMOTE_URL = envOr("GOG4J_REPO_URL", "https://maven.pkg.github.com/jtaccuino/gog4j");
+    static final String REMOTE_USER = envOr("GOG4J_REPO_USER", System.getenv("GITHUB_ACTOR"));
+    static final String REMOTE_PASSWORD = envOr("GOG4J_REPO_PASSWORD", System.getenv("GITHUB_TOKEN"));
+
+    static String envOr(String key, String fallback) {
+        String value = System.getenv(key);
+        return (value == null || value.isBlank()) ? fallback : value;
+    }
+
+    static boolean remoteEnabled() {
+        return REMOTE_PASSWORD != null && !REMOTE_PASSWORD.isBlank();
+    }
 
     // exactly the coordinates the notebooks addDependency(...) on
     static final List<String> DEPS = List.of(
@@ -45,13 +70,13 @@ public class package_m2 {
             "org.dflib:dflib-parquet:2.0.0-M7",
             "org.dflib:dflib-csv:2.0.0-M7",
             "org.orekit:orekit:13.0.3",
-            "org.jtaccuino:gog4j:0.5-SNAPSHOT",
-            "org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT",
-            "org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT",
-            "org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT",
-            "org.jtaccuino:gog4j-data:0.5-SNAPSHOT");
+            "org.jtaccuino:gog4j:0.5.0",
+            "org.jtaccuino:gog4j-hardwood:0.5.0",
+            "org.jtaccuino:gog4j-dflib:0.5.0",
+            "org.jtaccuino:gog4j-dflib-data:0.5.0",
+            "org.jtaccuino:gog4j-data:0.5.0");
 
-    // the SNAPSHOTs are only in the local ~/.m2, so seed them before resolving
+    // a developer may have installed the gog4j artifacts locally - seed those first
     static List<String> seedPaths() {
         List<String> out = new ArrayList<>();
         for (String gav : DEPS) {
@@ -77,23 +102,32 @@ public class package_m2 {
         Files.createDirectories(REPO);
         System.out.println("work dir : " + WORK.toAbsolutePath());
 
-        int seeded = seedSnapshots();
-        System.out.println("seeded   : " + seeded + " local SNAPSHOT files");
+        int seeded = seedLocalArtifacts();
+        System.out.println("seeded   : " + seeded + " local artifacts");
+        if (remoteEnabled()) {
+            System.out.println("remote   : " + REMOTE_URL + " (user " + REMOTE_USER + ")");
+        } else {
+            System.out.println("remote   : disabled (no GOG4J_REPO_PASSWORD / GITHUB_TOKEN)");
+        }
 
         Files.writeString(POM, pom(), StandardCharsets.UTF_8);
         System.out.println("pom      : " + POM.toAbsolutePath());
 
+        List<String> credentialArgs = List.of();
+        if (remoteEnabled()) {
+            Files.writeString(SETTINGS, settings(), StandardCharsets.UTF_8);
+            credentialArgs = List.of("-s", SETTINGS.toString());
+        }
+
         System.out.println("\nresolving the closure (online, first run downloads)...");
-        String resolve = mvn("-B", "-ntp", "-f", POM.toString(),
-                "-Dmaven.repo.local=" + REPO, "dependency:resolve");
+        String resolve = mvn(resolveArgs(credentialArgs).toArray(String[]::new));
         if (!resolve.contains("BUILD SUCCESS")) {
             System.out.println(resolve);
             throw new IllegalStateException("dependency:resolve failed");
         }
 
         System.out.println("\nverifying the bundle resolves with no network...");
-        String offline = mvn("-o", "-B", "-ntp", "-f", POM.toString(),
-                "-Dmaven.repo.local=" + REPO, "dependency:resolve");
+        String offline = mvn(offlineArgs(credentialArgs).toArray(String[]::new));
         if (!offline.contains("BUILD SUCCESS")) {
             System.out.println(offline);
             throw new IllegalStateException("offline verification failed - the bundle is incomplete");
@@ -114,13 +148,47 @@ public class package_m2 {
 
     // ------------------------------------------------------------------ steps
 
-    static int seedSnapshots() throws IOException {
+    static List<String> resolveArgs(List<String> credentials) {
+        List<String> args = new ArrayList<>(List.of("-B", "-ntp", "-U", "-f", POM.toString(),
+                "-Dmaven.repo.local=" + REPO));
+        args.addAll(credentials);
+        args.add("dependency:resolve");
+        return args;
+    }
+
+    static List<String> offlineArgs(List<String> credentials) {
+        List<String> args = new ArrayList<>(List.of("-o", "-B", "-ntp", "-f", POM.toString(),
+                "-Dmaven.repo.local=" + REPO));
+        args.addAll(credentials);
+        args.add("dependency:resolve");
+        return args;
+    }
+
+    // minimal settings.xml that authenticates the GitHub Packages repository
+    static String settings() {
+        return """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+                  <servers>
+                    <server>
+                      <id>github</id>
+                      <username>%s</username>
+                      <password>%s</password>
+                    </server>
+                  </servers>
+                </settings>
+                """.formatted(REMOTE_USER, REMOTE_PASSWORD);
+    }
+
+    static int seedLocalArtifacts() throws IOException {
         int count = 0;
         for (String artifact : seedPaths()) {
             Path src = LOCAL_M2.resolve(artifact);
             if (!Files.isDirectory(src)) {
-                throw new IllegalStateException("missing local artifact: " + src
-                        + " (build gog4j with 'mvn install' first)");
+                // not installed locally - it will be resolved from GitHub Packages
+                System.out.println("  local miss: " + artifact
+                        + (remoteEnabled() ? "  (GitHub Packages)" : ""));
+                continue;
             }
             try (var walk = Files.walk(src)) {
                 for (Path file : walk.filter(Files::isRegularFile).toList()) {
@@ -158,8 +226,18 @@ public class package_m2 {
                   <version>1.0</version>
                   <packaging>pom</packaging>
                   <name>devoxx-hol-2026 lab dependencies</name>
-                  <dependencies>
                 """);
+        if (remoteEnabled()) {
+            sb.append("  <repositories>\n")
+              .append("    <repository>\n")
+              .append("      <id>github</id>\n")
+              .append("      <url>").append(REMOTE_URL).append("</url>\n")
+              .append("      <snapshots><enabled>true</enabled></snapshots>\n")
+              .append("      <releases><enabled>true</enabled></releases>\n")
+              .append("    </repository>\n")
+              .append("  </repositories>\n");
+        }
+        sb.append("  <dependencies>\n");
         for (String gav : DEPS) {
             String[] p = gav.split(":");
             sb.append("    <dependency><groupId>").append(p[0])

@@ -585,8 +585,8 @@ Build a plot with `Ggplot.ggplot(...)`, add layers with `.geoms(...)`, then
 either `display(...)` it or export it to SVG.
 """),
             code("""
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
-addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j:0.5.0");
+addDependency("org.jtaccuino:gog4j-hardwood:0.5.0");
 
 import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
@@ -898,10 +898,10 @@ It is small (344 rows, 8 columns) and does the same jobs: select, filter, group,
 sort, plot. Mirrors the TODOs in modules 2 and 3.
 """),
             code("""
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
-addDependency("org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT");
-addDependency("org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT");
-addDependency("org.jtaccuino:gog4j-data:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j:0.5.0");
+addDependency("org.jtaccuino:gog4j-dflib:0.5.0");
+addDependency("org.jtaccuino:gog4j-dflib-data:0.5.0");
+addDependency("org.jtaccuino:gog4j-data:0.5.0");
 addDependency("org.dflib:dflib:2.0.0-M7");
 addDependency("org.dflib:dflib-csv:2.0.0-M7");
 
@@ -1083,8 +1083,8 @@ not a sample. Then we plot x / y / z in 3-D with gog4j.
 addDependency("org.orekit:orekit:13.0.3");
 addDependency("org.dflib:dflib:2.0.0-M7");
 addDependency("org.dflib:dflib-parquet:2.0.0-M7");
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
-addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j:0.5.0");
+addDependency("org.jtaccuino:gog4j-hardwood:0.5.0");
 
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;
@@ -1323,8 +1323,8 @@ shows.
 addDependency("org.orekit:orekit:13.0.3");
 addDependency("org.dflib:dflib:2.0.0-M7");
 addDependency("org.dflib:dflib-parquet:2.0.0-M7");
-addDependency("org.jtaccuino:gog4j:0.5-SNAPSHOT");
-addDependency("org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
+addDependency("org.jtaccuino:gog4j:0.5.0");
+addDependency("org.jtaccuino:gog4j-hardwood:0.5.0");
 
 import org.dflib.DataFrame;
 import org.dflib.parquet.Parquet;

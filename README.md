@@ -25,9 +25,18 @@ tools/        notebook generator, narrative renderer, verification harness
 |---|---|
 | JDK | **26 or newer** — gog4j is compiled to class file 70. This material is verified on **JDK 27**. |
 | JTaccuino | the notebook kernel |
-| Maven | a **pre-seeded `~/.m2`** — everything resolves offline |
+| Maven | the **offline bundle** from the releases page, unpacked into `~/.m2/repository` |
 
 `dataset/*.java` run on **JDK 21**; the notebooks need 26+.
+
+gog4j `0.5.0` is published to **GitHub Packages**
+(`https://maven.pkg.github.com/jtaccuino/gog4j`). GitHub Packages requires
+authentication even for public packages, and jbang does not read repositories
+from `settings.xml` — so the labs are delivered with a **pre-seeded `~/.m2`**:
+download `devoxx-hol-2026-m2.zip` from the
+[releases page](https://github.com/jtaccuino/devoxx-hol-2026/releases) and
+unpack it into `~/.m2/repository`. That is the supported way to run the
+notebooks; resolving gog4j live needs a GitHub token and is not part of the lab.
 
 ## Run order
 
@@ -123,7 +132,7 @@ once — so the fleet appears to orbit the Earth.
 
 ## Known gog4j issues
 
-Found while building this lab (gog4j `0.5-SNAPSHOT`, 2026-09-28). Both are
+Found while building this lab (gog4j `0.5.0`, 2026-09-28). Both are
 library-side, reproducible without this repo's code, and worth fixing upstream.
 
 **1 · Facets fail on a table containing a local-wall-clock timestamp.**
@@ -211,6 +220,11 @@ jbang tools/render_narrative.java        # regenerates narrative/web/index.html
 jbang tools/package_m2.java              # builds devoxx-hol-2026-m2.zip (offline Maven repo)
 ```
 
+`tools/verify_notebooks.java` builds the solution classpaths from
+`tools/cp/*.java`, which carry a `//REPOS` line pointing at Maven Central and
+GitHub Packages; that is how jbang reaches gog4j `0.5.0`. Keep `~/.m2/settings.xml`
+(server `github`) on a developer machine, or the `//REPOS` resolution will 401.
+
 `tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino
 builtins stubbed. The JavaFX notebooks (04, the penguins worksheet and the two
 3-D bonus notebooks) are reassembled into a jbang program that starts the JavaFX
@@ -236,14 +250,26 @@ build rather than surfacing only in the IDE.
 > node. `use("dflib")` activates the dflib extension, whose
 > `println(DataFrame)` renders a real table.
 
-`tools/package_m2.java` assembles the offline Maven bundle: it seeds the local
-`0.5-SNAPSHOT` artifacts, resolves the closure with Maven (online), verifies it
-resolves again with `-o` (no network), and zips the whole repository. It pulls
-**every** JavaFX platform classifier so the bundle is not tied to one OS. Attach
-the resulting `devoxx-hol-2026-m2.zip` to the repository's releases — the
-"Getting everything" slide links there. JTaccuino resolves
-`~/.m2/repository` as a `file://` remote, so unpacking the zip into
-`~/.m2/repository` is all a student needs.
+`tools/package_m2.java` assembles the offline Maven bundle. It resolves the
+dependency closure — gog4j `0.5.0` from GitHub Packages when
+`GOG4J_REPO_PASSWORD` is set (which is what CI does), otherwise from a developer's
+local `~/.m2` — verifies the closure resolves again with `-o` (no network), and
+zips the whole repository. It pulls **every** JavaFX platform classifier so the
+bundle is not tied to one OS.
+
+The bundle is built and published automatically by
+`.github/workflows/offline-bundle.yml` on every push to `main`: it attaches
+`devoxx-hol-2026-m2.zip` to a rolling `offline-bundle` release, whose asset URL
+the "Getting everything" slide links to. JTaccuino resolves `~/.m2/repository`
+as a `file://` remote, so unpacking the zip there is all a student needs.
+
+To build it by hand against GitHub Packages:
+
+```bash
+export GOG4J_REPO_PASSWORD=$(gh auth token)
+export GOG4J_REPO_USER=$(gh api user -q .login)
+jbang tools/package_m2.java
+```
 
 ## Attribution
 

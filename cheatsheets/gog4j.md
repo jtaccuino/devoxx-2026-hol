@@ -1,7 +1,7 @@
 # gog4j cheat sheet
 
 A grammar of graphics on JavaFX. Dependencies:
-`org.jtaccuino:gog4j:0.5-SNAPSHOT`, `org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT`.
+`org.jtaccuino:gog4j:0.5.0`, `org.jtaccuino:gog4j-hardwood:0.5.0`.
 
 Requires **JDK 26+**.
 

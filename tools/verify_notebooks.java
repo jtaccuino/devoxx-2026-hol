@@ -208,6 +208,8 @@ public class verify_notebooks {
         for (String line : bodyText.split("\n", -1)) indented.append("        ").append(line).append('\n');
 
         StringBuilder deps = new StringBuilder();
+        deps.append("//REPOS central=https://repo1.maven.org/maven2/,")
+            .append("github=https://maven.pkg.github.com/jtaccuino/gog4j\n");
         for (String d : fxDeps(job.fx())) deps.append("//DEPS ").append(d).append('\n');
 
         String program = FX_TEMPLATE
@@ -227,21 +229,21 @@ public class verify_notebooks {
     static List<String> fxDeps(String key) {
         return switch (key) {
             case "04" -> List.of(
-                    "org.jtaccuino:gog4j:0.5-SNAPSHOT",
-                    "org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT",
+                    "org.jtaccuino:gog4j:0.5.0",
+                    "org.jtaccuino:gog4j-hardwood:0.5.0",
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-parquet:2.0.0-M7");
             case "orbits" -> List.of(
                     "org.orekit:orekit:13.0.3",
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-parquet:2.0.0-M7",
-                    "org.jtaccuino:gog4j:0.5-SNAPSHOT",
-                    "org.jtaccuino:gog4j-hardwood:0.5-SNAPSHOT");
+                    "org.jtaccuino:gog4j:0.5.0",
+                    "org.jtaccuino:gog4j-hardwood:0.5.0");
             default -> List.of(
-                    "org.jtaccuino:gog4j:0.5-SNAPSHOT",
-                    "org.jtaccuino:gog4j-dflib:0.5-SNAPSHOT",
-                    "org.jtaccuino:gog4j-dflib-data:0.5-SNAPSHOT",
-                    "org.jtaccuino:gog4j-data:0.5-SNAPSHOT",
+                    "org.jtaccuino:gog4j:0.5.0",
+                    "org.jtaccuino:gog4j-dflib:0.5.0",
+                    "org.jtaccuino:gog4j-dflib-data:0.5.0",
+                    "org.jtaccuino:gog4j-data:0.5.0",
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-csv:2.0.0-M7");
         };

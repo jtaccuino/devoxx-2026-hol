@@ -1,0 +1,92 @@
+name: Build offline bundle
+
+# On every push to main: rebuild the offline Maven bundle and attach it to a
+# release, so the "Getting everything" slide always points at a fresh archive.
+#
+# gog4j's 0.5.0 lives on GitHub Packages
+# (https://maven.pkg.github.com/jtaccuino/gog4j). This repository is under the
+# same jtaccuino organisation, so the built-in GITHUB_TOKEN can read it - add a
+# repository variable GOG4J_REPO_URL only if the package moves.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # create the release and attach the asset
+  packages: read    # read the gog4j release from GitHub Packages
+
+concurrency:
+  group: offline-bundle-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bundle:
+    name: Package ~/.m2 and publish the release
+    runs-on: ubuntu-latest
+    env:
+      GOG4J_REPO_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      GOG4J_REPO_USER: ${{ github.actor }}
+    steps:
+      - name: Fetch sources
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 26
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '26'
+          cache: maven
+
+      - name: Setup jbang
+        uses: jbangdev/setup-jbang@main
+
+      # jbang (0.122) does not read repositories from settings.xml, so give it
+      # the GitHub Packages repo explicitly. The //REPOS lines in tools/cp/*.java
+      # point at the same URL for the verifier's own jbang runs.
+      - name: Point jbang at GitHub Packages
+        run: |
+          mkdir -p ~/.jbang
+          export JBANG_REPOS="central=https://repo1.maven.org/maven2/,github=https://maven.pkg.github.com/jtaccuino/gog4j"
+          echo "JBANG_REPOS=$JBANG_REPOS" >> "$GITHUB_ENV"
+
+      - name: Build the offline Maven bundle
+        env:
+          GOG4J_REPO_URL: ${{ vars.GOG4J_REPO_URL || 'https://maven.pkg.github.com/jtaccuino/gog4j' }}
+        run: jbang tools/package_m2.java
+
+      - name: Verify the notebooks against the bundle
+        run: |
+          jbang tools/verify_notebooks.java
+          find . -maxdepth 3 -name '*.svg' -delete
+
+      - name: Upload the bundle as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: devoxx-hol-2026-m2
+          path: devoxx-hol-2026-m2.zip
+          retention-days: 30
+
+      # One rolling release, replaced on every push to main: the slide links to
+      # /releases/latest/download/... which always resolves to the newest build.
+      - name: Publish the rolling release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="offline-bundle"
+          notes="Offline Maven repository for the Devoxx 2026 hands-on lab.
+
+          Built from ${{ github.sha }} on $(date -u +%Y-%m-%dT%H:%M:%SZ).
+
+          Unpack \`devoxx-hol-2026-m2.zip\` into \`~/.m2/repository\` and the whole
+          lab resolves without network access. Built by \`tools/package_m2.java\`,
+          with the gog4j \`0.5.0\` resolved from GitHub Packages."
+
+          gh release view "$tag" >/dev/null 2>&1 \
+            && gh release delete "$tag" --yes --cleanup-tag \
+            || true
+
+          gh release create "$tag" devoxx-hol-2026-m2.zip \
+            --title "Offline Maven bundle" \
+            --notes "$notes"
