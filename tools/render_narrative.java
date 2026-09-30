@@ -1,5 +1,6 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //JAVA 21
+//SOURCES LabVersions.java
 //DEPS org.commonmark:commonmark:0.24.0
 //DEPS org.commonmark:commonmark-ext-gfm-tables:0.24.0
 
@@ -78,7 +79,9 @@ public class render_narrative {
                     boolean lead = LEAD.matcher(part).find();
                     String stream = override(part, STREAM_OVERRIDE, fileStream);
                     String slot = override(part, SLOT_OVERRIDE, fileSlot);
-                    Node doc = parser.parse(COMMENT.matcher(part).replaceAll(""));
+                    String cleaned = COMMENT.matcher(part).replaceAll("")
+                            .replace("@GOG4J@", LabVersions.gog4jVersion());
+                    Node doc = parser.parse(cleaned);
                     slides.append("<section class=\"slide").append(lead ? " lead" : "")
                           .append("\">").append(renderer.render(doc)).append("</section>\n");
                     meta.add(new Meta(stream, slot));

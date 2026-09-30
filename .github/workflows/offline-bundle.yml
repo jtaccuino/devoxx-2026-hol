@@ -51,6 +51,9 @@ jobs:
           export JBANG_REPOS="central=https://repo1.maven.org/maven2/,github=https://maven.pkg.github.com/jtaccuino/gog4j"
           echo "JBANG_REPOS=$JBANG_REPOS" >> "$GITHUB_ENV"
 
+      - name: Check the gog4j version is consistent
+        run: jbang tools/check_versions.java
+
       - name: Build the offline Maven bundle
         env:
           GOG4J_REPO_URL: ${{ vars.GOG4J_REPO_URL || 'https://maven.pkg.github.com/jtaccuino/gog4j' }}
@@ -75,13 +78,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="offline-bundle"
+          version=$(sed -n 's/^gog4j\.version=//p' tools/versions.properties)
           notes="Offline Maven repository for the Devoxx 2026 hands-on lab.
 
           Built from ${{ github.sha }} on $(date -u +%Y-%m-%dT%H:%M:%SZ).
 
           Unpack \`devoxx-hol-2026-m2.zip\` into \`~/.m2/repository\` and the whole
           lab resolves without network access. Built by \`tools/package_m2.java\`,
-          with the gog4j \`0.5.0\` resolved from GitHub Packages."
+          with gog4j \`$version\` resolved from GitHub Packages."
 
           gh release view "$tag" >/dev/null 2>&1 \
             && gh release delete "$tag" --yes --cleanup-tag \

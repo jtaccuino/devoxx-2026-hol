@@ -213,6 +213,7 @@ catch this before the IDE does.
 Notebooks are generated, not hand-edited:
 
 ```bash
+jbang tools/check_versions.java          # verifies the gog4j version is consistent
 jbang tools/make_notebooks.java          # writes exercises, solutions, fallback, bonus
 jbang tools/verify_notebooks.java        # replays every solution, prints PASS/FAIL
 jbang tools/verify_jshell.java <nb> <cp> <cwd>   # replay on the real JShell local engine
@@ -220,10 +221,34 @@ jbang tools/render_narrative.java        # regenerates narrative/web/index.html
 jbang tools/package_m2.java              # builds devoxx-hol-2026-m2.zip (offline Maven repo)
 ```
 
-`tools/verify_notebooks.java` builds the solution classpaths from
-`tools/cp/*.java`, which carry a `//REPOS` line pointing at Maven Central and
-GitHub Packages; that is how jbang reaches gog4j `0.5.0`. Keep `~/.m2/settings.xml`
-(server `github`) on a developer machine, or the `//REPOS` resolution will 401.
+### Bumping the gog4j version
+
+`tools/versions.properties` is the **single source of truth**. The tools read it
+via `tools/LabVersions.java`:
+
+| tool | uses it for |
+|---|---|
+| `make_notebooks.java` | the `addDependency("org.jtaccuino:…")` lines (`@GOG4J@` placeholder) |
+| `verify_notebooks.java` | the classpaths of the generated FX programs, and the `//REPOS` URL |
+| `package_m2.java` | the dependency list of the offline bundle, and the default repo URL |
+| `render_narrative.java` | the version shown on the "Getting everything" slide |
+
+`tools/cp/*.java` are the one exception: jbang parses those files directly, with
+no templating, so they carry the version **literally**. To publish a new gog4j
+release:
+
+```bash
+# 1. edit tools/versions.properties  (gog4j.version=...)
+# 2. update the //DEPS lines in tools/cp/*.java to match
+jbang tools/check_versions.java          # fails loudly if they drifted
+jbang tools/make_notebooks.java          # regenerate the notebooks
+jbang tools/render_narrative.java        # regenerate the deck
+jbang tools/verify_notebooks.java        # everything still runs
+```
+
+`check_versions.java` is the guard against the one manual step: it exits
+non-zero listing any `tools/cp/*.java` line that disagrees with the properties
+file. CI runs it before building the bundle.
 
 `tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino
 builtins stubbed. The JavaFX notebooks (04, the penguins worksheet and the two
@@ -262,6 +287,11 @@ The bundle is built and published automatically by
 `devoxx-hol-2026-m2.zip` to a rolling `offline-bundle` release, whose asset URL
 the "Getting everything" slide links to. JTaccuino resolves `~/.m2/repository`
 as a `file://` remote, so unpacking the zip there is all a student needs.
+
+`tools/verify_notebooks.java` builds the solution classpaths from
+`tools/cp/*.java`, which carry a `//REPOS` line pointing at Maven Central and
+GitHub Packages; that is how jbang reaches gog4j. Keep `~/.m2/settings.xml`
+(server `github`) on a developer machine, or the `//REPOS` resolution will 401.
 
 To build it by hand against GitHub Packages:
 

@@ -1,5 +1,6 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //JAVA 27
+//SOURCES LabVersions.java
 //DEPS com.fasterxml.jackson.core:jackson-databind:2.17.2
 
 // Replay the solution notebooks through JShell with the JTaccuino builtins
@@ -209,7 +210,7 @@ public class verify_notebooks {
 
         StringBuilder deps = new StringBuilder();
         deps.append("//REPOS central=https://repo1.maven.org/maven2/,")
-            .append("github=https://maven.pkg.github.com/jtaccuino/gog4j\n");
+            .append("github=").append(LabVersions.gog4jRepoUrl()).append("\n");
         for (String d : fxDeps(job.fx())) deps.append("//DEPS ").append(d).append('\n');
 
         String program = FX_TEMPLATE
@@ -227,23 +228,28 @@ public class verify_notebooks {
     }
 
     static List<String> fxDeps(String key) {
+        String gog4j = LabVersions.gog4jCoordinate("gog4j");
+        String hardwood = LabVersions.gog4jCoordinate("gog4j-hardwood");
+        String dflib = LabVersions.gog4jCoordinate("gog4j-dflib");
+        String dflibData = LabVersions.gog4jCoordinate("gog4j-dflib-data");
+        String data = LabVersions.gog4jCoordinate("gog4j-data");
         return switch (key) {
             case "04" -> List.of(
-                    "org.jtaccuino:gog4j:0.5.0",
-                    "org.jtaccuino:gog4j-hardwood:0.5.0",
+                    gog4j,
+                    hardwood,
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-parquet:2.0.0-M7");
             case "orbits" -> List.of(
                     "org.orekit:orekit:13.0.3",
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-parquet:2.0.0-M7",
-                    "org.jtaccuino:gog4j:0.5.0",
-                    "org.jtaccuino:gog4j-hardwood:0.5.0");
+                    gog4j,
+                    hardwood);
             default -> List.of(
-                    "org.jtaccuino:gog4j:0.5.0",
-                    "org.jtaccuino:gog4j-dflib:0.5.0",
-                    "org.jtaccuino:gog4j-dflib-data:0.5.0",
-                    "org.jtaccuino:gog4j-data:0.5.0",
+                    gog4j,
+                    dflib,
+                    dflibData,
+                    data,
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-csv:2.0.0-M7");
         };

@@ -1,14 +1,15 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //JAVA 21
+//SOURCES LabVersions.java
 
 // Build the prepackaged Maven repository for the lab, as a single zip.
 //
-// The notebooks resolve a fixed set of artifacts, including gog4j 0.5.0.
+// The notebooks resolve a fixed set of artifacts, including the gog4j version
 // This script assembles a self-contained ~/.m2/repository into
 // devoxx-hol-2026-m2.zip, which the "Getting everything" slide points at.
 // Students unpack it into ~/.m2/repository and the whole lab runs offline.
 //
-// gog4j 0.5.0 is published to GitHub Packages, which requires authentication
+// gog4j is published to GitHub Packages, which requires authentication
 // even for a public package, so it is resolved:
 //   * locally  - seeded from ~/.m2/repository if a developer installed it, or
 //   * remotely - from GitHub Packages when GOG4J_REPO_PASSWORD is set
@@ -20,7 +21,7 @@
 //        jbang tools/package_m2.java --keep   (keep build/m2-bundle for inspection)
 //
 // Env (CI):
-//   GOG4J_REPO_URL       default https://maven.pkg.github.com/jtaccuino/gog4j
+//   GOG4J_REPO_URL       default from tools/versions.properties
 //   GOG4J_REPO_USER      default GITHUB_ACTOR
 //   GOG4J_REPO_PASSWORD  default GITHUB_TOKEN   (needs packages: read)
 
@@ -50,7 +51,7 @@ public class package_m2 {
     static final Path SETTINGS = WORK.resolve("settings.xml");
 
     // gog4j releases live on GitHub Packages; CI reads them from there
-    static final String REMOTE_URL = envOr("GOG4J_REPO_URL", "https://maven.pkg.github.com/jtaccuino/gog4j");
+    static final String REMOTE_URL = envOr("GOG4J_REPO_URL", LabVersions.gog4jRepoUrl());
     static final String REMOTE_USER = envOr("GOG4J_REPO_USER", System.getenv("GITHUB_ACTOR"));
     static final String REMOTE_PASSWORD = envOr("GOG4J_REPO_PASSWORD", System.getenv("GITHUB_TOKEN"));
 
@@ -70,11 +71,11 @@ public class package_m2 {
             "org.dflib:dflib-parquet:2.0.0-M7",
             "org.dflib:dflib-csv:2.0.0-M7",
             "org.orekit:orekit:13.0.3",
-            "org.jtaccuino:gog4j:0.5.0",
-            "org.jtaccuino:gog4j-hardwood:0.5.0",
-            "org.jtaccuino:gog4j-dflib:0.5.0",
-            "org.jtaccuino:gog4j-dflib-data:0.5.0",
-            "org.jtaccuino:gog4j-data:0.5.0");
+            LabVersions.gog4jCoordinate("gog4j"),
+            LabVersions.gog4jCoordinate("gog4j-hardwood"),
+            LabVersions.gog4jCoordinate("gog4j-dflib"),
+            LabVersions.gog4jCoordinate("gog4j-dflib-data"),
+            LabVersions.gog4jCoordinate("gog4j-data"));
 
     // a developer may have installed the gog4j artifacts locally - seed those first
     static List<String> seedPaths() {

@@ -36,7 +36,7 @@ title: Getting set up
   <div class="card"><span class="n">Maven deps</span><span class="l"><a href="https://github.com/jtaccuino/devoxx-hol-2026/releases">devoxx-hol-2026-m2.zip</a> &rarr; unpack into <code>~/.m2/repository</code></span></div>
 </div>
 
-<p class="note">gog4j <code>0.5.0</code> lives on GitHub Packages, which needs a token even to download — so the bundle is not a convenience, it is <strong>how you run this lab</strong>. Unpack it and everything resolves <strong>offline</strong>.</p>
+<p class="note">gog4j <code>@GOG4J@</code> lives on GitHub Packages, which needs a token even to download — so the bundle is not a convenience, it is <strong>how you run this lab</strong>. Unpack it and everything resolves <strong>offline</strong>.</p>
 
 ---
 
