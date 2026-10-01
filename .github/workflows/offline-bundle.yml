@@ -65,9 +65,16 @@ jobs:
           echo "gog4j in the local repository:"
           ls ~/.m2/repository/org/jtaccuino/gog4j/
 
+      # The JavaFX notebooks need a display: Linux runs the GTK glass backend,
+      # which fails headless with "Unable to open DISPLAY". xvfb gives them a
+      # virtual one. (macOS uses a different backend and does not need this.)
+      - name: Install xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
       - name: Verify the notebooks against the bundle
         run: |
-          jbang tools/verify_notebooks.java
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" \
+            jbang tools/verify_notebooks.java
           find . -maxdepth 3 -name '*.svg' -delete
 
       - name: Upload the bundle as a workflow artifact

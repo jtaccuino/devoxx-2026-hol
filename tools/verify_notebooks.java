@@ -88,6 +88,7 @@ public class verify_notebooks {
 
     static final String FX_TEMPLATE = """
             //JAVA 27
+            //JAVA_OPTIONS -Dprism.order=sw -Dprism.forceGPU=false -Djava.awt.headless=false
             {{DEPS}}
             {{IMPORTS}}
 
@@ -190,6 +191,8 @@ public class verify_notebooks {
         List<String> cmd = List.of("jshell", "--class-path", cp,
                 "-J-Duser.language=en", "-J-Duser.country=US",
                 "-R-Duser.language=en", "-R-Duser.country=US",
+                // software rendering, so JavaFX works on a headless CI runner too
+                "-R-Dprism.order=sw", "-R-Dprism.forceGPU=false", "-R-Djava.awt.headless=false",
                 "-q", tmp.toString());
         Result r = exec(cmd);
         Files.deleteIfExists(tmp);
