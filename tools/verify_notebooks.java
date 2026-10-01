@@ -31,8 +31,37 @@ import java.util.stream.Stream;
 public class verify_notebooks {
 
     static final Path ROOT = Path.of(".");
-    static final String JAVA_HOME = Path.of(System.getProperty("user.home"),
-            ".sdkman/candidates/java/27.0.0+35-zulu").toString();
+    // Prefer a JAVA_HOME that actually points at a JDK (CI sets one via
+    // setup-java), then the JVM running this tool, then a developer's sdkman
+    // install. The notebooks need JDK 26+, so what matters is that it exists.
+    static final String JAVA_HOME = resolveJavaHome();
+
+    static String resolveJavaHome() {
+        String fromEnv = System.getenv("JAVA_HOME");
+        if (isJdk(fromEnv)) {
+            return fromEnv;
+        }
+        String fromProperty = System.getProperty("java.home");
+        if (isJdk(fromProperty)) {
+            return fromProperty;
+        }
+        String sdkman = Path.of(System.getProperty("user.home"),
+                ".sdkman/candidates/java/27.0.0+35-zulu").toString();
+        if (isJdk(sdkman)) {
+            return sdkman;
+        }
+        // give up on a specific path and let the caller's PATH decide
+        return fromEnv != null ? fromEnv : "";
+    }
+
+    static boolean isJdk(String home) {
+        if (home == null || home.isBlank()) {
+            return false;
+        }
+        return Files.isRegularFile(Path.of(home, "bin", "javac"))
+                || Files.isRegularFile(Path.of(home, "bin", "javac.exe"));
+    }
+
     static final ObjectMapper OM = new ObjectMapper();
     static final Pattern METHOD_START = Pattern.compile("^(?:String|double|int|long|boolean|void|Path)(?:\\[\\])?\\s+\\w+\\(");
     static final Pattern ADD_DEP = Pattern.compile("(?m)^(\\s*addDependency\\([^;\\n]*\\))\\s*$");
@@ -255,6 +284,15 @@ public class verify_notebooks {
         };
     }
 
+    static void applyJavaHome(ProcessBuilder pb) {
+        if (JAVA_HOME == null || JAVA_HOME.isBlank()) {
+            return;
+        }
+        pb.environment().put("JAVA_HOME", JAVA_HOME);
+        String path = pb.environment().getOrDefault("PATH", "");
+        pb.environment().put("PATH", Path.of(JAVA_HOME, "bin") + ":" + path);
+    }
+
     static String cwdExpr(Job job) {
         // run each notebook from its own folder, exactly as JTaccuino does
         String dir = Path.of(job.file()).toAbsolutePath().getParent().toString().replace("\\", "\\\\");
@@ -263,8 +301,7 @@ public class verify_notebooks {
 
     static String classpath(String holder) throws Exception {
         ProcessBuilder pb = new ProcessBuilder("jbang", "info", "classpath", "tools/cp/" + holder + ".java");
-        pb.environment().put("JAVA_HOME", JAVA_HOME);
-        pb.environment().put("PATH", JAVA_HOME + "/bin:" + pb.environment().get("PATH"));
+        applyJavaHome(pb);
         pb.redirectError(ProcessBuilder.Redirect.DISCARD);
         Process p = pb.start();
         p.getOutputStream().close();
@@ -277,8 +314,7 @@ public class verify_notebooks {
     static Result exec(List<String> cmd) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(cmd);
         pb.redirectErrorStream(true);
-        pb.environment().put("JAVA_HOME", JAVA_HOME);
-        pb.environment().put("PATH", JAVA_HOME + "/bin:" + pb.environment().get("PATH"));
+        applyJavaHome(pb);
         Process p = pb.start();
         p.getOutputStream().close();
         String output = new String(p.getInputStream().readAllBytes(), StandardCharsets.UTF_8);

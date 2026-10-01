@@ -44,21 +44,26 @@ jobs:
       - name: Setup jbang
         uses: jbangdev/setup-jbang@main
 
-      # jbang (0.122) does not read repositories from settings.xml, so give it
-      # the GitHub Packages repo explicitly. The //REPOS lines in tools/cp/*.java
-      # point at the same URL for the verifier's own jbang runs.
-      - name: Point jbang at GitHub Packages
-        run: |
-          mkdir -p ~/.jbang
-          echo "JBANG_REPOS=central=https://repo1.maven.org/maven2/,github=${{ vars.GOG4J_REPO_URL || 'https://maven.pkg.github.com/jtaccuino/gog4j' }}" >> "$GITHUB_ENV"
-
       - name: Check the gog4j version is consistent
         run: jbang tools/check_versions.java
 
+      # Only this step needs package credentials: it resolves the closure from
+      # GitHub Packages. Everything after it runs against the bundle, with no
+      # credentials at all - which is also the path a student takes.
       - name: Build the offline Maven bundle
         env:
           GOG4J_REPO_URL: ${{ vars.GOG4J_REPO_URL || 'https://maven.pkg.github.com/jtaccuino/gog4j' }}
         run: jbang tools/package_m2.java
+
+      # jbang does not read repositories from settings.xml, and we would rather
+      # not hand it credentials anyway: unpack the bundle into ~/.m2/repository
+      # and every tool resolves gog4j from there, offline.
+      - name: Install the bundle into ~/.m2/repository
+        run: |
+          mkdir -p ~/.m2/repository
+          unzip -q -o devoxx-hol-2026-m2.zip -d ~/.m2/repository
+          echo "gog4j in the local repository:"
+          ls ~/.m2/repository/org/jtaccuino/gog4j/
 
       - name: Verify the notebooks against the bundle
         run: |
