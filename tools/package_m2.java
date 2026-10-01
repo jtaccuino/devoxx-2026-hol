@@ -260,10 +260,21 @@ public class package_m2 {
 
     static long zip(Path source, Path target) throws IOException {
         long count = 0;
+        long skipped = 0;
         try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(target))) {
             try (var walk = Files.walk(source)) {
                 for (Path file : walk.filter(Files::isRegularFile)
                         .sorted(Comparator.comparing(Path::toString)).toList()) {
+                    // Do not ship Maven's bookkeeping: `_remote.repositories`
+                    // records which repository an artifact came from, and a
+                    // `*.lastUpdated` marks a failed resolution. Both make a
+                    // consumer that unpacks this bundle refuse to use the
+                    // artifact ("came from the wrong repository" / "cached
+                    // failure"), and they are pure noise in a prepackaged repo.
+                    if (isMavenBookkeeping(file.getFileName().toString())) {
+                        skipped++;
+                        continue;
+                    }
                     String entry = source.relativize(file).toString().replace('\\', '/');
                     zip.putNextEntry(new ZipEntry(entry));
                     Files.copy(file, zip);
@@ -272,7 +283,16 @@ public class package_m2 {
                 }
             }
         }
+        if (skipped > 0) {
+            System.out.println("skipped  : " + skipped + " Maven bookkeeping files");
+        }
         return count;
+    }
+
+    static boolean isMavenBookkeeping(String name) {
+        return name.equals("_remote.repositories")
+                || name.endsWith(".lastUpdated")
+                || name.startsWith("resolver-status");
     }
 
     // ------------------------------------------------------------------ util
