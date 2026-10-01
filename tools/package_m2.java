@@ -37,6 +37,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -94,6 +97,54 @@ public class package_m2 {
     static final String JAVAFX_VERSION = "26";
     static final List<String> JAVAFX_MODULES = List.of("javafx-base", "javafx-graphics", "javafx-controls");
     static final List<String> JAVAFX_PLATFORMS = List.of("linux", "linux-aarch64", "mac", "mac-aarch64", "win");
+
+    // The gog4j 0.5.0 POMs declare some dependencies without a version, relying
+    // on an imported BOM (they are published from Gradle with module metadata).
+    // Maven tolerates it with a warning; jbang's Aether rejects the descriptor
+    // outright ("Could not read artifact descriptor"), which broke CI. The
+    // versions come from the BOMs the same POMs import.
+    static final java.util.Map<String, String> DEPENDENCY_VERSIONS = java.util.Map.of(
+            "dflib", "2.0.0-M7",
+            "dflib-csv", "2.0.0-M7",
+            "dflib-parquet", "2.0.0-M7",
+            "hardwood-core", "1.1.0.Beta1",
+            "zstd-jni", "1.5.7-9");
+
+    static final Pattern DEPENDENCY = Pattern.compile("<dependency>(.*?)</dependency>", Pattern.DOTALL);
+    static final Pattern ARTIFACT_ID = Pattern.compile("<artifactId>(.*?)</artifactId>");
+
+    /**
+     * Returns the POM with a version injected into every dependency that lacks
+     * one, when we know that artifact's version. Unknown artifacts are left
+     * alone - better an untouched POM than a wrong version.
+     */
+    static String repairPom(String xml) {
+        StringBuilder out = new StringBuilder();
+        Matcher block = DEPENDENCY.matcher(xml);
+        int last = 0;
+        while (block.find()) {
+            String dependency = block.group(1);
+            out.append(xml, last, block.start());
+            last = block.end();
+            if (dependency.contains("<version>")) {
+                out.append(block.group());
+                continue;
+            }
+            Matcher id = ARTIFACT_ID.matcher(dependency);
+            String version = id.find() ? DEPENDENCY_VERSIONS.get(id.group(1)) : null;
+            if (version == null) {
+                out.append(block.group());
+                continue;
+            }
+            // insert <version> at the end of the dependency's body (the group
+            // captured between <dependency> and </dependency>)
+            String injected = dependency.stripTrailing()
+                    + "\n      <version>" + version + "</version>\n    ";
+            out.append("<dependency>").append(injected).append("</dependency>");
+        }
+        out.append(xml.substring(last));
+        return out.toString();
+    }
 
     public static void main(String[] args) throws Exception {
         boolean keep = List.of(args).contains("--keep");
@@ -261,6 +312,7 @@ public class package_m2 {
     static long zip(Path source, Path target) throws IOException {
         long count = 0;
         long skipped = 0;
+        long repaired = 0;
         try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(target))) {
             try (var walk = Files.walk(source)) {
                 for (Path file : walk.filter(Files::isRegularFile)
@@ -275,9 +327,31 @@ public class package_m2 {
                         skipped++;
                         continue;
                     }
+                    String name = file.getFileName().toString();
+
+                    // A repaired gog4j POM no longer matches its published .sha1,
+                    // so ship the POM without the checksum rather than a wrong one.
+                    if (name.endsWith(".pom.sha1") || name.endsWith(".pom.md5")
+                            || name.endsWith(".pom.sha256") || name.endsWith(".pom.sha512")) {
+                        if (file.getParent().toString().contains("org/jtaccuino")) {
+                            skipped++;
+                            continue;
+                        }
+                    }
+
                     String entry = source.relativize(file).toString().replace('\\', '/');
                     zip.putNextEntry(new ZipEntry(entry));
-                    Files.copy(file, zip);
+                    if (name.endsWith(".pom")) {
+                        String xml = Files.readString(file, StandardCharsets.UTF_8);
+                        String fixed = repairPom(xml);
+                        if (!fixed.equals(xml)) {
+                            repaired++;
+                            System.out.println("repaired : " + entry);
+                        }
+                        zip.write(fixed.getBytes(StandardCharsets.UTF_8));
+                    } else {
+                        Files.copy(file, zip);
+                    }
                     zip.closeEntry();
                     count++;
                 }
@@ -285,6 +359,9 @@ public class package_m2 {
         }
         if (skipped > 0) {
             System.out.println("skipped  : " + skipped + " Maven bookkeeping files");
+        }
+        if (repaired > 0) {
+            System.out.println("repaired : " + repaired + " POM(s) missing dependency versions");
         }
         return count;
     }
