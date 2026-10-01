@@ -34,7 +34,7 @@ gog4j `0.5.0` is published to **GitHub Packages**
 authentication even for public packages, and jbang does not read repositories
 from `settings.xml` — so the labs are delivered with a **pre-seeded `~/.m2`**:
 download `devoxx-hol-2026-m2.zip` from the
-[releases page](https://github.com/jtaccuino/devoxx-hol-2026/releases) and
+[releases page](https://github.com/jtaccuino/devoxx-2026-hol/releases) and
 unpack it into `~/.m2/repository`. That is the supported way to run the
 notebooks; resolving gog4j live needs a GitHub token and is not part of the lab.
 

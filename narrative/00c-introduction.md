@@ -32,8 +32,8 @@ title: Getting set up
 <div class="grid two">
   <div class="card"><span class="n">JDK 26+</span><span class="l">any recent OpenJDK &mdash; verified on 27</span></div>
   <div class="card"><span class="n">JTaccuino</span><span class="l"><a href="https://jtaccuino.github.io">jtaccuino.github.io</a></span></div>
-  <div class="card"><span class="n">the lab</span><span class="l"><code>git clone https://github.com/jtaccuino/devoxx-hol-2026</code></span></div>
-  <div class="card"><span class="n">Maven deps</span><span class="l"><a href="https://github.com/jtaccuino/devoxx-hol-2026/releases">devoxx-hol-2026-m2.zip</a> &rarr; unpack into <code>~/.m2/repository</code></span></div>
+  <div class="card"><span class="n">the lab</span><span class="l"><code>git clone https://github.com/jtaccuino/devoxx-2026-hol</code></span></div>
+  <div class="card"><span class="n">Maven deps</span><span class="l"><a href="https://github.com/jtaccuino/devoxx-2026-hol/releases">devoxx-hol-2026-m2.zip</a> &rarr; unpack into <code>~/.m2/repository</code></span></div>
 </div>
 
 <p class="note">gog4j <code>@GOG4J@</code> lives on GitHub Packages, which needs a token even to download — so the bundle is not a convenience, it is <strong>how you run this lab</strong>. Unpack it and everything resolves <strong>offline</strong>.</p>
