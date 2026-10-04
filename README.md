@@ -333,6 +333,10 @@ library Zoran's stream uses; the JTaccuino app also bundles it, but having it in
 the repository means the `use("deepnetts")`/`addDependency` path resolves
 offline too.
 
+The source of the DeepNetts **Community Edition** (the open-core build) is on the
+`open_core` branch:
+<https://github.com/deepnetts/deepnetts-communityedition/tree/open_core>.
+
 The bundle is built and published automatically by
 `.github/workflows/offline-bundle.yml` on every push to `main`: it attaches
 `devoxx-hol-2026-m2.zip` to a rolling `offline-bundle` release, whose asset URL

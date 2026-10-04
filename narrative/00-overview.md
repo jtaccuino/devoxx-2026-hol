@@ -60,6 +60,8 @@ Sven Reimers · Zoran Sevarac
   </div>
 </div>
 
+<p class="note">DeepNetts <strong>Community Edition</strong> (the open-core build): <a href="https://github.com/deepnetts/deepnetts-communityedition/tree/open_core">source on the <code>open_core</code> branch</a>.</p>
+
 <p class="note">Everything after this slide is <strong>the tooling stream</strong>; the ML pipeline is Zoran's, on his own terms.</p>
 
 ---
