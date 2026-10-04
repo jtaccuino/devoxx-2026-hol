@@ -23,11 +23,11 @@ tools/        notebook generator, narrative renderer, verification harness
 
 | | |
 |---|---|
-| JDK | **26 or newer** — gog4j is compiled to class file 70. This material is verified on **JDK 27**. |
-| JTaccuino | the notebook kernel |
+| JTaccuino | **[27.0.0-RC2](https://github.com/jtaccuino/jtaccuino/releases/tag/27.0.0-RC2)** — the notebook kernel; it ships its own **Java 27** |
 | Maven | the **offline bundle** from the releases page, unpacked into `~/.m2/repository` |
 
-`dataset/*.java` run on **JDK 21**; the notebooks need 26+.
+The material is verified on **JDK 27** (gog4j is compiled to class file 70, so
+**26 or newer** is the floor). `dataset/*.java` run on **JDK 21**.
 
 gog4j `0.5.0` is published to **GitHub Packages**
 (`https://maven.pkg.github.com/jtaccuino/gog4j`). GitHub Packages requires
