@@ -327,7 +327,7 @@ zips the repository. Three things are deliberately left out:
 Together that takes the bundle from 107 MB to ~55 MB.
 
 The bundle carries the full closure of: hardwood, dflib (+ csv/parquet), Orekit,
-**DeepNetts** (`com.deepnetts:deepnetts-core:4.0.1`, plus `visrec-api` and
+**DeepNetts** (`com.deepnetts:deepnetts-core:4.0.4`, plus `visrec-api` and
 `org.json:json`) and the `org.jtaccuino:gog4j*` artifacts. DeepNetts is the ML
 library Zoran's stream uses; the JTaccuino app also bundles it, but having it in
 the repository means the `use("deepnetts")`/`addDependency` path resolves
