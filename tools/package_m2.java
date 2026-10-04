@@ -36,8 +36,10 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -74,6 +76,7 @@ public class package_m2 {
             "org.dflib:dflib-parquet:2.0.0-M7",
             "org.dflib:dflib-csv:2.0.0-M7",
             "org.orekit:orekit:13.0.3",
+            LabVersions.deepnettsCoreCoordinate(),
             LabVersions.gog4jCoordinate("gog4j"),
             LabVersions.gog4jCoordinate("gog4j-hardwood"),
             LabVersions.gog4jCoordinate("gog4j-dflib"),
@@ -92,11 +95,18 @@ public class package_m2 {
         return out;
     }
 
-    // JavaFX picks a classifier per OS at build time; a conference lab is not one
-    // OS, so pull every platform explicitly into the bundle
-    static final String JAVAFX_VERSION = "26";
-    static final List<String> JAVAFX_MODULES = List.of("javafx-base", "javafx-graphics", "javafx-controls");
-    static final List<String> JAVAFX_PLATFORMS = List.of("linux", "linux-aarch64", "mac", "mac-aarch64", "win");
+    // JavaFX is deliberately NOT packaged. The notebooks addDependency(...) only
+    // gog4j; gog4j depends on JavaFX at *runtime* scope, and students run the
+    // notebooks inside the JTaccuino release, which already brings JavaFX for
+    // their platform. Packaging five platform classifiers cost ~45 MB and was
+    // the single biggest thing in the zip.
+    //
+    // Maven's own plugin machinery ends up in the same local repository because
+    // dependency:resolve runs the plugin against it; none of it belongs in a
+    // repository that only has to satisfy the notebooks.
+    static final Pattern EXCLUDED_ARTIFACT_PATHS = Pattern.compile(
+            "^org/openjfx/.*|^org/apache/maven/.*|^org/codehaus/plexus/.*"
+            + "|^org/sonatype/plexus/.*|^org/apache/velocity/.*");
 
     // The gog4j 0.5.0 POMs declare some dependencies without a version, relying
     // on an imported BOM (they are published from Gradle with module metadata).
@@ -186,7 +196,10 @@ public class package_m2 {
         }
         System.out.println("offline  : BUILD SUCCESS");
 
-        long files = zip(REPO, ZIP);
+        Set<String> resolved = resolvedArtifactDirs(credentialArgs);
+        System.out.println("resolved : " + resolved.size() + " artifacts in the closure");
+
+        long files = zip(REPO, ZIP, resolved);
         System.out.printf("%nwrote    : %s%n", ZIP.toAbsolutePath());
         System.out.printf("size     : %s   (%d files)%n", human(Files.size(ZIP)), files);
 
@@ -202,7 +215,7 @@ public class package_m2 {
 
     static List<String> resolveArgs(List<String> credentials) {
         List<String> args = new ArrayList<>(List.of("-B", "-ntp", "-U", "-f", POM.toString(),
-                "-Dmaven.repo.local=" + REPO));
+                "-Dmaven.repo.local=" + REPO, "-DincludeScope=runtime"));
         args.addAll(credentials);
         args.add("dependency:resolve");
         return args;
@@ -210,10 +223,37 @@ public class package_m2 {
 
     static List<String> offlineArgs(List<String> credentials) {
         List<String> args = new ArrayList<>(List.of("-o", "-B", "-ntp", "-f", POM.toString(),
-                "-Dmaven.repo.local=" + REPO));
+                "-Dmaven.repo.local=" + REPO, "-DincludeScope=runtime"));
         args.addAll(credentials);
         args.add("dependency:resolve");
         return args;
+    }
+
+    // The repository holds every version Maven downloaded while mediating the
+    // graph; only one version of each artifact is actually resolved. dependency:list
+    // tells us which, so we can drop the losing versions (e.g. the extra zstd-jni).
+    static List<String> listArgs(List<String> credentials) {
+        List<String> args = new ArrayList<>(List.of("-o", "-B", "-ntp", "-f", POM.toString(),
+                "-Dmaven.repo.local=" + REPO, "-DincludeScope=runtime"));
+        args.addAll(credentials);
+        args.add("dependency:list");
+        return args;
+    }
+
+    static final Pattern RESOLVED_LINE =
+            Pattern.compile("([\\w.\\-]+):([\\w.\\-]+):jar:([\\w.\\-]+):(compile|runtime)");
+
+    static Set<String> resolvedArtifactDirs(List<String> credentials)
+            throws IOException, InterruptedException {
+        String out = mvn(listArgs(credentials).toArray(String[]::new));
+        Set<String> dirs = new HashSet<>();
+        for (String line : out.split("\\R")) {
+            Matcher m = RESOLVED_LINE.matcher(line);
+            if (m.find()) {
+                dirs.add(m.group(1).replace('.', '/') + "/" + m.group(2) + "/" + m.group(3));
+            }
+        }
+        return dirs;
     }
 
     // minimal settings.xml that authenticates the GitHub Packages repository
@@ -295,21 +335,18 @@ public class package_m2 {
             sb.append("    <dependency><groupId>").append(p[0])
               .append("</groupId><artifactId>").append(p[1])
               .append("</artifactId><version>").append(p[2])
-              .append("</version></dependency>\n");
-        }
-        for (String module : JAVAFX_MODULES) {
-            for (String platform : JAVAFX_PLATFORMS) {
-                sb.append("    <dependency><groupId>org.openjfx</groupId><artifactId>").append(module)
-                  .append("</artifactId><version>").append(JAVAFX_VERSION)
-                  .append("</version><classifier>").append(platform)
-                  .append("</classifier></dependency>\n");
-            }
+              .append("</version>")
+              // JavaFX comes from the JTaccuino runtime, never from this bundle
+              .append("<exclusions><exclusion>")
+              .append("<groupId>org.openjfx</groupId><artifactId>*</artifactId>")
+              .append("</exclusion></exclusions>")
+              .append("</dependency>\n");
         }
         sb.append("  </dependencies>\n</project>\n");
         return sb.toString();
     }
 
-    static long zip(Path source, Path target) throws IOException {
+    static long zip(Path source, Path target, Set<String> resolved) throws IOException {
         long count = 0;
         long skipped = 0;
         long repaired = 0;
@@ -327,7 +364,26 @@ public class package_m2 {
                         skipped++;
                         continue;
                     }
+                    // Anything the notebooks never need: JavaFX (provided by the
+                    // JTaccuino runtime) and Maven's own plugin machinery, which
+                    // dependency:resolve drags into the same local repository.
+                    String relative = source.relativize(file).toString().replace('\\', '/');
+                    if (EXCLUDED_ARTIFACT_PATHS.matcher(relative).find()) {
+                        skipped++;
+                        continue;
+                    }
                     String name = file.getFileName().toString();
+
+                    // Drop the losing versions: keep every artifact directory's
+                    // POM/metadata so resolution can still mediate, but only ship
+                    // the jar for the version dependency:list resolved.
+                    if (name.endsWith(".jar")) {
+                        String artifactDir = relative.substring(0, relative.lastIndexOf('/'));
+                        if (!resolved.contains(artifactDir)) {
+                            skipped++;
+                            continue;
+                        }
+                    }
 
                     // A repaired gog4j POM no longer matches its published .sha1,
                     // so ship the POM without the checksum rather than a wrong one.
@@ -339,7 +395,7 @@ public class package_m2 {
                         }
                     }
 
-                    String entry = source.relativize(file).toString().replace('\\', '/');
+                    String entry = relative;
                     zip.putNextEntry(new ZipEntry(entry));
                     if (name.endsWith(".pom")) {
                         String xml = Files.readString(file, StandardCharsets.UTF_8);

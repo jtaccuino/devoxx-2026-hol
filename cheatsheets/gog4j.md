@@ -1,20 +1,23 @@
 # gog4j cheat sheet
 
-A grammar of graphics on JavaFX. Dependencies:
-`org.jtaccuino:gog4j:0.5.0`, `org.jtaccuino:gog4j-hardwood:0.5.0`.
+A grammar of graphics on JavaFX. Dependencies: `org.jtaccuino:gog4j:0.5.0` plus a
+data provider — `org.jtaccuino:gog4j-dflib:0.5.0` (a dflib `DataFrame`) or
+`org.jtaccuino:gog4j-hardwood:0.5.0` (streamed from Parquet).
 
 Requires **JDK 26+**.
 
 ## Data
 
 ```java
-var table = HardwoodDataFrame.of(path);         // stream from Parquet
-var table = HardwoodDataFrame.ofColumns(Map.of(     // project to selected columns
-    "x", full.column("x"), "y", full.column("y")));
+var df = Parquet.loader().load(path);                    // dflib: whole frame
+var table = df.cols("x", "y", "orbit_class").select();   // project the columns
+
+var table = HardwoodDataFrame.of(path);                  // or stream with hardwood
 ```
 
-`HardwoodDataFrame` is not a dflib `DataFrame`, but `Ggplot` plots it directly
-through the gog4j-hardwood SPI.
+`Ggplot` plots either kind directly: `gog4j-dflib` and `gog4j-hardwood` are
+`DataExtractor` SPI providers, so the same `Ggplot.ggplot(data, aes)` works for
+a dflib `DataFrame` and for a `HardwoodDataFrame`.
 
 ## The grammar
 
@@ -63,6 +66,7 @@ theme_minimal()`. Facets: `Facets.wrap(col, n)` / `Facets.grid(row, col)`.
 ## Show, or export
 
 ```java
+plot.setPrefHeight(400);             // required: a Plot has no default height
 display(plot);                       // a Plot *is* a JavaFX Pane
 
 new SvgExporter()
@@ -72,8 +76,14 @@ new SvgExporter()
     .write(plot, path);
 ```
 
-`SvgExporter` and `Plot` construction must run on the **JavaFX Application
-Thread** — which is where JTaccuino runs notebooks, so nothing to do in class.
+A `Plot` is a plain `Node`, so building it off the JavaFX thread is fine and
+`display(plot)` marshals it onto the FX thread itself. `SvgExporter` is the
+exception: its snapshot needs the FX Application Thread, so an export must be
+marshalled (`Platform.runLater`) — the lab notebooks only `display(...)`.
+
+> **A `Plot` has no default size.** Without an explicit `setPrefHeight` it
+> displays as a sliver. Every notebook cell here sets `plot.setPrefHeight(400)`
+> before `display(...)`. See the repository README, "Known gog4j issues".
 
 ## Known issue
 

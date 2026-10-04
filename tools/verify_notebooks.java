@@ -11,9 +11,9 @@
 //   jbang tools/verify_notebooks.java 03-dataframes-with-dflib
 //
 // The JavaFX notebooks (04, the penguins worksheet, the 3-D bonus) cannot run
-// as bare JShell snippets: gog4j plot construction and SvgExporter both need the
-// JavaFX Application Thread. Those are reassembled into a jbang program whose
-// body runs inside Platform.runLater.
+// as bare JShell snippets: gog4j plot construction needs the JavaFX toolkit up.
+// They are reassembled into a jbang program that starts the toolkit, runs the
+// body on a worker thread (like JTaccuino) and stubs display(...).
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,7 +88,7 @@ public class verify_notebooks {
 
     static final String FX_TEMPLATE = """
             //JAVA 27
-            //JAVA_OPTIONS -Dprism.order=sw -Dprism.forceGPU=false -Djava.awt.headless=false
+            //JAVA_OPTIONS -Dglass.platform=headless -Dprism.order=sw --enable-native-access=ALL-UNNAMED
             {{DEPS}}
             {{IMPORTS}}
 
@@ -100,7 +100,10 @@ public class verify_notebooks {
                 static java.nio.file.Path cwd = {{CWD}};
                 static javafx.scene.layout.Pane __sink;
                 // faithful to JTaccuino: display() marshals to the FX thread and
-                // attaches the node to a live scene, so off-thread mutation fails
+                // attaches the node to a live scene, so off-thread mutation fails.
+                // Like GuiSinks.forOutputBox it ignores a node that is already a
+                // child - gog4j plots are mutable, so the same Plot is displayed
+                // again after each change.
                 static void display(Object node) {
                     javafx.application.Platform.runLater(() -> {
                         try {
@@ -109,7 +112,9 @@ public class verify_notebooks {
                                     __sink = new javafx.scene.layout.Pane();
                                     new javafx.scene.Scene(__sink);
                                 }
-                                __sink.getChildren().add(n);
+                                if (!__sink.getChildren().contains(n)) {
+                                    __sink.getChildren().add(n);
+                                }
                             }
                             System.out.println("[display] " + (node == null ? "null" : node.getClass().getSimpleName()));
                         } catch (Throwable t) { t.printStackTrace(); }
@@ -192,7 +197,7 @@ public class verify_notebooks {
                 "-J-Duser.language=en", "-J-Duser.country=US",
                 "-R-Duser.language=en", "-R-Duser.country=US",
                 // software rendering, so JavaFX works on a headless CI runner too
-                "-R-Dprism.order=sw", "-R-Dprism.forceGPU=false", "-R-Djava.awt.headless=false",
+                "-R-Dglass.platform=headless", "-R-Dprism.order=sw",
                 "-q", tmp.toString());
         Result r = exec(cmd);
         Files.deleteIfExists(tmp);
@@ -268,7 +273,7 @@ public class verify_notebooks {
         return switch (key) {
             case "04" -> List.of(
                     gog4j,
-                    hardwood,
+                    dflib,
                     "org.dflib:dflib:2.0.0-M7",
                     "org.dflib:dflib-parquet:2.0.0-M7");
             case "orbits" -> List.of(

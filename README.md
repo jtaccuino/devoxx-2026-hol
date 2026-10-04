@@ -37,6 +37,8 @@ download `devoxx-hol-2026-m2.zip` from the
 [releases page](https://github.com/jtaccuino/devoxx-2026-hol/releases) and
 unpack it into `~/.m2/repository`. That is the supported way to run the
 notebooks; resolving gog4j live needs a GitHub token and is not part of the lab.
+The bundle intentionally has **no JavaFX** — the JTaccuino release provides it —
+so run the notebooks in JTaccuino, not with a bare `jbang` run of the notebooks.
 
 ## Run order
 
@@ -149,8 +151,10 @@ Faceting materialises every column, and `gog4j-hardwood`'s
 `TimestampType`, ignoring `isAdjustedToUTC`. Fix: use `getLocalTimestamp` when
 the column is not UTC-adjusted.
 
-*Workaround used in the lab:* project to the columns being plotted with
-`HardwoodDataFrame.ofColumns(...)` before building the plot (see module 3).
+*Workaround:* project to the columns being plotted with
+`HardwoodDataFrame.ofColumns(...)`, or plot a dflib `DataFrame` through
+`gog4j-dflib` instead — which is what module 3 does now, so the bug does not
+reach the visualisation notebook.
 
 **2 · The same failure is masked by an NPE.**
 
@@ -208,6 +212,18 @@ straight-line helper and let the branchy caller carry only primitives.
 `tools/verify_jshell.java` replays a notebook against the real local engine to
 catch this before the IDE does.
 
+**5 · A `Plot` has no default size, so it displays collapsed.**
+
+gog4j does not set a default height on a `Plot` (nor does it preview-size it the
+way it does with `setPrefSize` in the desktop app). A plot built and handed to
+`display(...)` therefore renders as a thin sliver until the pane is resized.
+
+*Workaround used in the lab:* every plot cell sets an explicit height before
+displaying — `plot.setPrefHeight(400); display(plot);` — and the containers in
+notebook 01 and the live bonus use `setPrefSize(320, 400)` / `setPrefHeight(400)`.
+This is a per-cell workaround, not a gog4j feature; fix upstream would be a
+sensible default height on `Plot`.
+
 ## Maintainer notes
 
 Notebooks are generated, not hand-edited:
@@ -221,10 +237,15 @@ jbang tools/render_narrative.java        # regenerates narrative/web/index.html
 jbang tools/package_m2.java              # builds devoxx-hol-2026-m2.zip (offline Maven repo)
 ```
 
-### Bumping the gog4j version
+### Bumping a dependency version
 
 `tools/versions.properties` is the **single source of truth**. The tools read it
 via `tools/LabVersions.java`:
+
+| key | coordinate |
+|---|---|
+| `gog4j.version` | `org.jtaccuino:gog4j*:<version>` |
+| `deepnetts.version` | `com.deepnetts:deepnetts-core:<version>` (ML stream) |
 
 | tool | uses it for |
 |---|---|
@@ -232,10 +253,11 @@ via `tools/LabVersions.java`:
 | `verify_notebooks.java` | the classpaths of the generated FX programs, and the `//REPOS` URL |
 | `package_m2.java` | the dependency list of the offline bundle, and the default repo URL |
 | `render_narrative.java` | the version shown on the "Getting everything" slide |
+| `check_versions.java` | printing the resolved coordinates, and the drift guard below |
 
 `tools/cp/*.java` are the one exception: jbang parses those files directly, with
-no templating, so they carry the version **literally**. To publish a new gog4j
-release:
+no templating, so they carry the gog4j version **literally**. To publish a new
+gog4j release:
 
 ```bash
 # 1. edit tools/versions.properties  (gog4j.version=...)
@@ -250,24 +272,36 @@ jbang tools/verify_notebooks.java        # everything still runs
 non-zero listing any `tools/cp/*.java` line that disagrees with the properties
 file. CI runs it before building the bundle.
 
+`deepnetts.version` is read the same way (`LabVersions.deepnettsVersion()` /
+`deepnettsCoreCoordinate()`); only `package_m2.java` consumes it today, so
+bumping it is a one-line change to `versions.properties` — no `tools/cp` mirror
+to keep in sync.
+
 `tools/verify_notebooks.java` runs the solutions in JShell with the JTaccuino
 builtins stubbed. The JavaFX notebooks (04, the penguins worksheet and the two
 3-D bonus notebooks) are reassembled into a jbang program that starts the JavaFX
-toolkit, runs the notebook on a **worker** thread and has `display(...)` attach
-nodes to a live scene — exactly like JTaccuino — so FX-thread mistakes fail the
-build rather than surfacing only in the IDE.
+toolkit on the **headless Glass platform**
+(`-Dglass.platform=headless -Dprism.order=sw`, the same incantation JTaccuino's
+own CLI uses), so it renders with no display and CI needs no xvfb. It runs the
+notebook on a **worker** thread and has `display(...)` attach nodes to a live
+scene — exactly like JTaccuino — so FX-thread mistakes fail the build rather
+than surfacing only in the IDE.
 
-> **Threading rule for notebook code.** A cell runs on a worker thread, so any
-> JavaFX work must be marshalled: the Python-free notebooks define `onFx(...)`
-> and route `save(...)` through it, and call `onFx(plot::markDirty)` after
-> mutating a plot that is already displayed.
+> **Threading rule for notebook code.** A cell runs on a worker thread, but
+> `display(...)` marshals to the JavaFX Application Thread itself
+> (`DisplayExtension.display` ends in `Platform.runLater`), and gog4j builds a
+> plot as a plain node off-thread, so notebook code just calls `display(plot)` —
+> no manual `onFx(...)` helper. Re-displaying the same mutable `Plot` is safe:
+> the sink ignores a node it already holds. The live 3-D bonus drives an
+> `AnimationTimer`, whose `handle(...)` already runs on the FX thread.
 >
-> **Dependency note.** A cell is not a snippet: `ReactiveJShell.eval` loops over
-> `analyzeCompletion`, so **each statement becomes its own JShell snippet** and
-> `addDependency(...)` is already separate from the imports below it. The
-> generator keeps the `addDependency(...)` calls first and follows them with a
+> **Dependency note.** A notebook declares its jars in a **dedicated cell** of
+> `addDependency(...)` calls, followed by a second cell with the imports and a
 > one-line `Class.forName(...)` probe that names any jar which did not land —
 > that is what turns a mystery "cannot find symbol: TLE" into a clear warning.
+> (JShell would split them anyway — `ReactiveJShell.eval` loops over
+> `analyzeCompletion`, so every statement is its own snippet — but the separate
+> cell makes it explicit and matches the JTaccuino examples.)
 >
 > **Output rule.** Notebook code uses the notebook builtins, never
 > `System.out.println` (that writes to the JVM console and the notebook shows
@@ -279,8 +313,25 @@ build rather than surfacing only in the IDE.
 dependency closure — gog4j `0.5.0` from GitHub Packages when
 `GOG4J_REPO_PASSWORD` is set (which is what CI does), otherwise from a developer's
 local `~/.m2` — verifies the closure resolves again with `-o` (no network), and
-zips the whole repository. It pulls **every** JavaFX platform classifier so the
-bundle is not tied to one OS.
+zips the repository. Three things are deliberately left out:
+
+* **JavaFX** — the notebooks only `addDependency` gog4j, and gog4j needs JavaFX
+  at *runtime*; the JTaccuino release the students run already brings it for
+  their platform. Omitting the five platform classifiers saves ~45 MB.
+* **Maven's own plugin machinery** (plugins, doxia, plexus, …) — `dependency:resolve`
+  drops it in the same local repository, but no notebook ever needs it.
+* **The losing versions** of every artifact — the repository holds each version
+  Maven considered while mediating the graph; `dependency:list` says which one
+  won, and only that jar ships (plus all POMs, so resolution still works).
+
+Together that takes the bundle from 107 MB to ~55 MB.
+
+The bundle carries the full closure of: hardwood, dflib (+ csv/parquet), Orekit,
+**DeepNetts** (`com.deepnetts:deepnetts-core:4.0.1`, plus `visrec-api` and
+`org.json:json`) and the `org.jtaccuino:gog4j*` artifacts. DeepNetts is the ML
+library Zoran's stream uses; the JTaccuino app also bundles it, but having it in
+the repository means the `use("deepnetts")`/`addDependency` path resolves
+offline too.
 
 The bundle is built and published automatically by
 `.github/workflows/offline-bundle.yml` on every push to `main`: it attaches

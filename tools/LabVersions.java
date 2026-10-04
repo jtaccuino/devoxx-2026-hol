@@ -67,6 +67,15 @@ final class LabVersions {
         return "org.jtaccuino:" + artifact + ":" + gog4jVersion();
     }
 
+    static String deepnettsVersion() {
+        return get("deepnetts.version");
+    }
+
+    /** "com.deepnetts:deepnetts-core:<version>" */
+    static String deepnettsCoreCoordinate() {
+        return "com.deepnetts:deepnetts-core:" + deepnettsVersion();
+    }
+
     /**
      * Returns the mismatched lines in tools/cp/*.java, or an empty list when
      * they all agree with the properties file.

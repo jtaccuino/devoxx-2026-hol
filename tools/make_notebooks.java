@@ -151,7 +151,7 @@ display(earth);
 // ── given ─────────────────────────────────────────────────────────────
 // Everything above in one small picture: Earth, an orbit, a satellite.
 var scene = new Pane();
-scene.setPrefSize(320, 320);
+scene.setPrefSize(320, 400);
 
 var orbit = new Circle(160, 160, 120);
 orbit.setFill(Color.TRANSPARENT);
@@ -171,7 +171,7 @@ display(scene);
 // ── ★ BONUS ───────────────────────────────────────────────────────────
 // A small constellation: twelve satellites evenly spaced on the orbit ring.
 var fleet = new Pane();
-fleet.setPrefSize(320, 320);
+fleet.setPrefSize(320, 400);
 var ring = new Circle(160, 160, 120);
 ring.setFill(Color.TRANSPARENT);
 ring.setStroke(Color.web("#3a6ea5"));
@@ -578,22 +578,35 @@ Next: [`04-plotting-with-gog4j.ipynb`](04-plotting-with-gog4j.ipynb).
 Numbers became a table; now the table becomes a picture. **gog4j** is ggplot2
 for JavaFX. The grammar is three pieces:
 
-* **data** — here a `HardwoodDataFrame`, read straight from the Parquet
+* **data** — here a dflib `DataFrame`, read straight from the Parquet
 * **aes** — which columns drive x, y, colour, …
 * **geoms** — how to draw them (points, lines, bars, density, …)
 
 Build a plot with `Ggplot.ggplot(...)`, add layers with `.geoms(...)`, then
-either `display(...)` it or export it to SVG.
+`display(...)` it.
+
+> **Workaround: every plot needs an explicit height.** gog4j sets no default
+> height on a `Plot`, so a displayed plot would otherwise collapse to a sliver.
+> Each cell here sets `plot.setPrefHeight(400)` before `display(...)`.
 """),
             code("""
+addDependency("org.dflib:dflib:2.0.0-M7");
+addDependency("org.dflib:dflib-parquet:2.0.0-M7");
 addDependency("org.jtaccuino:gog4j:@GOG4J@");
-addDependency("org.jtaccuino:gog4j-hardwood:@GOG4J@");
-
+addDependency("org.jtaccuino:gog4j-dflib:@GOG4J@");
+"""),
+            code("""
+// the dflib extension gives us println(DataFrame) - a real table
+use("dflib");
+"""),
+            code("""
+import org.dflib.DataFrame;
+import org.dflib.parquet.Parquet;
+import static org.dflib.Exp.*;
 import org.jtaccuino.gog.*;
+import org.jtaccuino.gog.coord.Coord2D;
 import org.jtaccuino.gog.labs.Labs;
-import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
-import org.jtaccuino.gog.hardwood.HardwoodDataFrame;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -607,55 +620,12 @@ Path dataset() {
     throw new IllegalStateException("data/celestrak_gp_catalog.parquet not found above " + cwd);
 }
 
-var full = HardwoodDataFrame.of(dataset());
+var full = Parquet.loader().load(dataset());
 
-// Project to just the fields this module plots. Reading and keeping only the
-// columns you need is the columnar habit; here it also keeps the frame small.
-var table = HardwoodDataFrame.ofColumns(java.util.Map.of(
-        "inclination", full.column("inclination"),
-        "eccentricity", full.column("eccentricity"),
-        "period_min", full.column("period_min"),
-        "apogee_km", full.column("apogee_km"),
-        "orbit_class", full.column("orbit_class"),
-        "satcat_object_type", full.column("satcat_object_type")));
-
-// Everything that touches JavaFX — building the plot's canvas, exporting,
-// attaching a node — must run on the FX Application Thread. Notebook code runs
-// on JShell's worker thread, so marshal with onFx(...) and wait for it.
-void onFx(Runnable work) {
-    if (javafx.application.Platform.isFxApplicationThread()) {
-        work.run();
-        return;
-    }
-    var latch = new java.util.concurrent.CountDownLatch(1);
-    javafx.application.Platform.runLater(() -> {
-        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
-    });
-    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-}
-
-void save(GgFigure figure, String name) {
-    save(figure, 1200, 800, name);
-}
-
-void save(GgFigure figure, double width, double height, String name) {
-    var path = cwd.resolve(name);
-    var size = new long[]{-1};
-    var error = new String[]{null};
-    onFx(() -> {
-        try {
-            new SvgExporter().size(width, height).batchPoints(true).write(figure, path);
-            size[0] = Files.size(path);
-        } catch (Exception e) {
-            error[0] = String.valueOf(e);
-        }
-    });
-    if (error[0] != null) {
-        println("could not save %s: %s", name, error[0]);
-    } else {
-        println("saved %s (%s bytes)", name, String.format(java.util.Locale.ROOT, "%,d", size[0]));
-    }
-}
+// Project to just the fields this module plots - reading and keeping only the
+// columns you need is the columnar habit (and keeps the frame small).
+var table = full.cols("inclination", "eccentricity", "period_min",
+        "apogee_km", "orbit_class", "satcat_object_type").select();
 """),
             md("""
 ## 1 · Data + aes + geoms
@@ -674,15 +644,14 @@ That single `color(...)` is the whole point of a grammar of graphics.
 //       and add points?
 """,
                     """
-Plot<HardwoodDataFrame> p = Ggplot.ggplot(table,
+Plot<DataFrame> p = Ggplot.ggplot(table,
         Aes.aes().x("inclination").y("apogee_km").color("orbit_class"))
     .geoms(Geoms.point());
 """),
             code("""
-// ── given ── look at it, and save a copy
-onFx(p::markDirty);
+// ── given ── look at it
+p.setPrefHeight(400);
 display(p);
-save(p, "01-scatter.svg");
 """),
             md("""
 ## 2 · Labels
@@ -699,9 +668,8 @@ A plot without axis labels is a riddle. `Labs.labs(...)` answers it.
 p = p.labs(Labs.labs("Everything in orbit", "Inclination (deg)", "Apogee (km)"));
 """),
             code("""
-onFx(p::markDirty);
+p.setPrefHeight(400);
 display(p);
-save(p, "02-labelled.svg");
 """),
             md("""
 ## 3 · Theme
@@ -718,9 +686,8 @@ A theme changes every colour at once. On a projector, dark wins.
 p = p.theme(Theme.theme_dark());
 """),
             code("""
-onFx(p::markDirty);
+p.setPrefHeight(400);
 display(p);
-save(p, "03-dark.svg");
 """),
             md("""
 ## 4 · Facets
@@ -739,9 +706,8 @@ see that the classes are genuinely different populations.
 p = p.facets(Facets.wrap("orbit_class", 2));
 """),
             code("""
-onFx(p::markDirty);
+p.setPrefHeight(400);
 display(p);
-save(p, "04-facets.svg");
 """),
             md("""
 ## 5 · Reference lines
@@ -760,25 +726,8 @@ glance then explains the horizontal stripe of GEO objects.
 p = p.geoms(Geoms.point(), Geoms.hline(35786));
 """),
             code("""
-onFx(p::markDirty);
+p.setPrefHeight(400);
 display(p);
-save(p, "05-geobelt.svg");
-"""),
-            md("""
-## 6 · Export
-
-`display` is for you; `SvgExporter` is for the paper. Export the finished figure
-at print size, with the 21 000 points batched so the file stays editable.
-"""),
-            code("""
-// ── TODO 6 ────────────────────────────────────────────────────────────
-// Write the final plot to "celestrak-orbits.svg" at 1600 x 1000.
-//
-// hint: exporting is FX work; save(...) marshals it for you — pass the size you
-//       want.
-""",
-                    """
-save(p, 1600, 1000, "celestrak-orbits.svg");
 """),
             md("""
 ## The bridge to machine learning
@@ -793,27 +742,14 @@ for a model.
 """),
             code("""
 // ── given ── turn it into a supervised problem
-addDependency("org.dflib:dflib:2.0.0-M7");
-addDependency("org.dflib:dflib-parquet:2.0.0-M7");
-
-// the dflib extension gives us println(DataFrame) - a real table
-use("dflib");
-
-import org.dflib.DataFrame;
-import org.dflib.parquet.Parquet;
-import static org.dflib.Exp.*;
-
-var df = Parquet.loader().load(dataset());
-
-// keep only rows with a usable label
-var labelled = df.rows(
+var labelled = full.rows(
         $str("satcat_object_type").eq("PAY")
             .or($str("satcat_object_type").eq("DEB"))
             .or($str("satcat_object_type").eq("R/B")))
     .select();
 
 println("labelled %s of %s rows", String.format(java.util.Locale.ROOT, "%,d", labelled.height()),
-        String.format(java.util.Locale.ROOT, "%,d", df.height()));
+        String.format(java.util.Locale.ROOT, "%,d", full.height()));
 println(labelled.group("satcat_object_type").agg($col("satcat_object_type"), count()));
 """),
             code("""
@@ -843,8 +779,8 @@ Two dozen features at once, as a scatterplot matrix. `matrixPlot` does the grid;
 var pairs = Ggplot.matrixPlot(table,
     Aes.aes().color("orbit_class"),
     "inclination", "eccentricity", "period_min", "apogee_km");
+pairs.setPrefHeight(400);
 display(pairs);
-save(pairs, "bonus-pairs.svg");
 """),
             md("""
 ## ★ BONUS 2 — A three-dimensional orbit cloud
@@ -857,8 +793,8 @@ volume.
 var cloud = Ggplot.ggplot3d(table,
         Aes.aes().x("inclination").y("period_min").z("eccentricity").color("orbit_class"))
     .geoms(Geoms.point3d());
+cloud.setPrefHeight(400);
 display(cloud);
-save(cloud, "bonus-3d.svg");
 """),
             md("""
 ## ★ BONUS 3 — The wall chart
@@ -868,18 +804,21 @@ This is the figure that goes on the poster.
 """),
             code("""
 // ── ★ BONUS 3 ─────────────────────────────────────────────────────────
+// Apogee spans four orders of magnitude and the geostationary belt is a thin
+// ring, so zoom both axes onto it and tighten the bandwidth so the density
+// does not smear across the whole inclination range.
 var wall = Ggplot.ggplot(table,
-        Aes.aes().x("inclination").y("apogee_km").fill("orbit_class"))
-    .geoms(Geoms.density2dFilled(), Geoms.hline(35786))
+        Aes.aes().x("inclination").y("apogee_km"))
+    .coord(Coord2D.cartesian().xlim(0, 10).ylim(10000, 80000))
+    .geoms(Geoms.density2dFilled().adjust(0.5), Geoms.hline(35786))
     .labs(Labs.labs("Where satellites live", "Inclination (deg)", "Apogee (km)"))
     .theme(Theme.theme_dark());
+wall.setPrefHeight(400);
 display(wall);
-save(wall, "bonus-wallchart.svg");
 """),
             md("""
-That is the whole pipeline: **Hardwood** read it, **dflib** shaped it,
-**gog4j** drew it, and you left a labelled train/test split on the table for the
-model.
+That is the whole pipeline: **dflib** read and shaped it, **gog4j** drew it, and
+you left a labelled train/test split on the table for the model.
 
 Back to the [overview](../narrative/00-overview.md).
 """));
@@ -913,7 +852,6 @@ import org.dflib.DataFrame;
 import org.jtaccuino.gog.dflib.data.PenguinsDatasets;
 import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
-import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
 import java.nio.file.Files;
 import static org.dflib.Exp.*;
@@ -921,39 +859,6 @@ import static org.dflib.Exp.*;
 String num(long v) { return String.format(java.util.Locale.ROOT, "%,d", v); }
 String dec(double v, int p) { return String.format(java.util.Locale.ROOT, "%." + p + "f", v); }
 
-// Everything that touches JavaFX — building the plot's canvas, exporting,
-// attaching a node — must run on the FX Application Thread. Notebook code runs
-// on JShell's worker thread, so marshal with onFx(...) and wait for it.
-void onFx(Runnable work) {
-    if (javafx.application.Platform.isFxApplicationThread()) {
-        work.run();
-        return;
-    }
-    var latch = new java.util.concurrent.CountDownLatch(1);
-    javafx.application.Platform.runLater(() -> {
-        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
-    });
-    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-}
-
-void save(GgFigure figure, String name) {
-    var path = cwd.resolve(name);
-    var size = new long[]{-1};
-    var error = new String[]{null};
-    onFx(() -> {
-        try {
-            new SvgExporter().size(1200, 800).batchPoints(true).write(figure, path);
-            size[0] = Files.size(path);
-        } catch (Exception e) {
-            error[0] = String.valueOf(e);
-        }
-    });
-    if (error[0] != null) {
-        println("could not save %s: %s", name, error[0]);
-    } else {
-        println("saved %s (%s bytes)", name, num(size[0]));
-    }
-}
 """),
             md("""
 ## 1 · Load it
@@ -1035,10 +940,9 @@ plots through gog4j-hardwood.
             code("""
 // ── TODO 6 ────────────────────────────────────────────────────────────
 // Scatter bill_length_mm (x) against body_mass_g (y), coloured by species,
-// titled "Penguins", dark theme; then save it as "penguins.svg".
+// titled "Penguins", dark theme.
 //
-// hint: data + aesthetics + points, then labels and the dark theme; display it,
-//       then save it.
+// hint: data + aesthetics + points, then labels and the dark theme; display it.
 """,
                     """
 var p = Ggplot.ggplot(df,
@@ -1046,8 +950,8 @@ var p = Ggplot.ggplot(df,
     .geoms(Geoms.point())
     .labs(Labs.labs("Penguins", "Bill length (mm)", "Body mass (g)"))
     .theme(Theme.theme_dark());
+p.setPrefHeight(400);
 display(p);
-save(p, "penguins.svg");
 """),
             code("""
 // ── check ─────────────────────────────────────────────────────────────
@@ -1097,7 +1001,6 @@ import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.orekit.utils.PVCoordinates;
 import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
-import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
 import org.jtaccuino.gog.hardwood.HardwoodDataFrame;
 import java.time.Instant;
@@ -1125,39 +1028,6 @@ var df = Parquet.loader().load(dataset());
 var tai = DataContext.getDefault().getTimeScales().getTAI();
 var now = new AbsoluteDate(Instant.now(), tai);
 
-// Everything that touches JavaFX — building the plot's canvas, exporting,
-// attaching a node — must run on the FX Application Thread. Notebook code runs
-// on JShell's worker thread, so marshal with onFx(...) and wait for it.
-void onFx(Runnable work) {
-    if (javafx.application.Platform.isFxApplicationThread()) {
-        work.run();
-        return;
-    }
-    var latch = new java.util.concurrent.CountDownLatch(1);
-    javafx.application.Platform.runLater(() -> {
-        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
-    });
-    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-}
-
-void save(GgFigure figure, String name) {
-    var path = cwd.resolve(name);
-    var size = new long[]{-1};
-    var error = new String[]{null};
-    onFx(() -> {
-        try {
-            new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
-            size[0] = Files.size(path);
-        } catch (Exception e) {
-            error[0] = String.valueOf(e);
-        }
-    });
-    if (error[0] != null) {
-        println("could not save %s: %s", name, error[0]);
-    } else {
-        println("saved %s (%s bytes)", name, num(size[0]));
-    }
-}
 """),
             md("""
 ## 1 · Propagate every object to now
@@ -1262,8 +1132,8 @@ Plot<HardwoodDataFrame> p = Ggplot.ggplot3d(cloud,
 """),
             code("""
 // ── given ─────────────────────────────────────────────────────────────
+p.setPrefHeight(400);
 display(p);
-save(p, "orbits-now-3d.svg");
 """),
             md("""
 ## 3 · A flat view: payloads and debris
@@ -1283,8 +1153,8 @@ var top = Ggplot.ggplot(cloud,
     .geoms(Geoms.point())
     .labs(Labs.labs("Top-down: payload vs debris", "x (km)", "y (km)"))
     .theme(Theme.theme_dark());
+top.setPrefHeight(400);
 display(top);
-save(top, "orbits-now-topdown.svg");
 """),
             code("""
 // ── check ─────────────────────────────────────────────────────────────
@@ -1336,7 +1206,6 @@ import org.orekit.propagation.analytical.tle.TLE;
 import org.orekit.propagation.analytical.tle.TLEPropagator;
 import org.jtaccuino.gog.*;
 import org.jtaccuino.gog.labs.Labs;
-import org.jtaccuino.gog.render.SvgExporter;
 import org.jtaccuino.gog.theme.Theme;
 import org.jtaccuino.gog.hardwood.HardwoodDataFrame;
 import java.time.Instant;
@@ -1368,39 +1237,6 @@ var df = Parquet.loader().load(dataset());
 var tai = DataContext.getDefault().getTimeScales().getTAI();
 var now = new AbsoluteDate(Instant.now(), tai);
 
-// Everything that touches JavaFX — building the plot's canvas, exporting,
-// attaching a node — must run on the FX Application Thread. Notebook code runs
-// on JShell's worker thread, so marshal with onFx(...) and wait for it.
-void onFx(Runnable work) {
-    if (javafx.application.Platform.isFxApplicationThread()) {
-        work.run();
-        return;
-    }
-    var latch = new java.util.concurrent.CountDownLatch(1);
-    javafx.application.Platform.runLater(() -> {
-        try { work.run(); } catch (Throwable t) { t.printStackTrace(); } finally { latch.countDown(); }
-    });
-    try { latch.await(); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
-}
-
-void save(GgFigure figure, String name) {
-    var path = cwd.resolve(name);
-    var size = new long[]{-1};
-    var error = new String[]{null};
-    onFx(() -> {
-        try {
-            new SvgExporter().size(1200, 900).batchPoints(true).write(figure, path);
-            size[0] = Files.size(path);
-        } catch (Exception e) {
-            error[0] = String.valueOf(e);
-        }
-    });
-    if (error[0] != null) {
-        println("could not save %s: %s", name, error[0]);
-    } else {
-        println("saved %s (%s bytes)", name, num(size[0]));
-    }
-}
 """),
             md("""
 ## 1 · A fleet and its frames
@@ -1486,7 +1322,7 @@ java.util.function.IntFunction<Plot<HardwoodDataFrame>> plotFor = f -> {
         .geoms(Geoms.point3d())
         .labs(Labs.labs("LEO, live", "x (km)", "y (km)"))
         .theme(Theme.theme_dark());
-    plot.setPrefSize(780, 600);
+    plot.setPrefHeight(400);
     return plot;
 };
 println("plotFor is ready");
@@ -1494,31 +1330,23 @@ println("plotFor is ready");
             code("""
 // ── given ── display once, then swap the plot on every tick
 var stage = new StackPane();
-stage.setPrefSize(780, 600);
+stage.setPrefHeight(400);
 display(stage);
 
-// the swap touches the live scene graph, so it must happen on the FX thread —
-// and so must starting the timer. From then on every tick already runs there.
-onFx(() -> {
-    stage.getChildren().setAll(plotFor.apply(0));
-    var frameNo = new AtomicInteger();
-    var timer = new AnimationTimer() {
-        private long last;
-        @Override
-        public void handle(long nanos) {
-            if (nanos - last < 500_000_000L) return;   // ~ 2 frames per second
-            last = nanos;
-            int f = frameNo.getAndIncrement() % frames;
-            stage.getChildren().setAll(plotFor.apply(f));
-        }
-    };
-    timer.start();
-});
+// the timer's handle(...) runs on the FX thread, so swapping the plot there is safe
+var frameNo = new AtomicInteger();
+var timer = new AnimationTimer() {
+    private long last;
+    @Override
+    public void handle(long nanos) {
+        if (nanos - last < 500_000_000L) return;   // ~ 2 frames per second
+        last = nanos;
+        int f = frameNo.getAndIncrement() % frames;
+        stage.getChildren().setAll(plotFor.apply(f));
+    }
+};
+timer.start();
 println("redrawing the plot twice a second — %s points per frame", num(fleetL1.size()));
-"""),
-            code("""
-// ── given ── one frame as a file, for the record
-save(plotFor.apply(0), "orbits-live-frame.svg");
 """),
             code("""
 // ── check ─────────────────────────────────────────────────────────────
@@ -1552,9 +1380,9 @@ Back to the [overview](../narrative/00-overview.md).
     static final List<String> PROBE_PRIORITY =
             List.of("org.orekit.", "dev.hardwood.", "org.jtaccuino.gog.", "org.dflib.");
 
-    static Cell expand(Cell c) {
+    static List<Cell> expand(Cell c) {
         if (!c.kind().equals("code") || !c.text().equals(c.sol())) {
-            return c;
+            return List.of(c);
         }
         String[] lines = c.text().split("\n", -1);
         int first = -1;
@@ -1565,11 +1393,11 @@ Back to the [overview](../narrative/00-overview.md).
             }
             // only comments and blanks may precede the dependency block
             if (!lines[i].isBlank() && !lines[i].startsWith("//")) {
-                return c;
+                return List.of(c);
             }
         }
         if (first < 0) {
-            return c;
+            return List.of(c);
         }
         int last = first;
         for (int i = first; i < lines.length; i++) {
@@ -1583,17 +1411,24 @@ Back to the [overview](../narrative/00-overview.md).
                 java.util.Arrays.copyOfRange(lines, last + 1, lines.length)).strip();
         String probe = probeClass(rest);
         if (probe == null) {
-            return c;
+            return List.of(c);
         }
-        String text = String.join("\n", java.util.Arrays.copyOfRange(lines, 0, last + 1)) + "\n\n"
-                + "// the jars above are on the class path for the snippets that follow; name any\n"
-                + "// that did not land, rather than failing later with \"cannot find symbol\"\n"
-                + "try { Class.forName(\"" + probe + "\"); }\n"
-                + "catch (ClassNotFoundException notThere) {\n"
-                + "    println(\"warning: " + probe + " is not on the class path yet (%s)\",\n"
-                + "            notThere.getMessage());\n"
-                + "}\n\n" + rest;
-        return new Cell("code", text.strip(), text.strip());
+        // The dependencies live in their own cell (the JTaccuino idiom, and easy
+        // to run on its own); the imports and the rest follow in the next one,
+        // behind a probe that names a jar which did not land.
+        String deps = String.join("\n",
+                java.util.Arrays.copyOfRange(lines, 0, last + 1)).strip();
+        String tail = ("""
+                // the jars above are on the class path for the snippets that follow; name any
+                // that did not land, rather than failing later with "cannot find symbol"
+                try { Class.forName("%s"); }
+                catch (ClassNotFoundException notThere) {
+                    println("warning: %s is not on the class path yet (%%s)",
+                            notThere.getMessage());
+                }
+
+                %s""").formatted(probe, probe, rest).strip();
+        return List.of(new Cell("code", deps, deps), new Cell("code", tail, tail));
     }
 
     // the highest-priority lab import in the text that follows
@@ -1629,7 +1464,7 @@ Back to the [overview](../narrative/00-overview.md).
     static Map<String, Object> build(String seed, List<Cell> cells, boolean solution) {
         List<Object> cellArray = new ArrayList<>();
         List<Cell> expanded = new ArrayList<>();
-        for (Cell c : cells) expanded.add(expand(c));
+        for (Cell c : cells) expanded.addAll(expand(c));
         int index = 0;
         for (Cell c : expanded) {
             Map<String, Object> node = new LinkedHashMap<>();

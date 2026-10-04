@@ -65,16 +65,15 @@ jobs:
           echo "gog4j in the local repository:"
           ls ~/.m2/repository/org/jtaccuino/gog4j/
 
-      # The JavaFX notebooks need a display: Linux runs the GTK glass backend,
-      # which fails headless with "Unable to open DISPLAY". xvfb gives them a
-      # virtual one. (macOS uses a different backend and does not need this.)
-      - name: Install xvfb
-        run: sudo apt-get update && sudo apt-get install -y xvfb
-
+      # No xvfb needed: the verifier runs JavaFX on the headless Glass platform
+      # (-Dglass.platform=headless -Dprism.order=sw, the same incantation
+      # JTaccuino's own CLI uses), so it renders without any display. The bundle
+      # has no JavaFX (students get it from the JTaccuino release), so this step
+      # pulls the JavaFX jars from Maven Central — gog4j itself still comes from
+      # the bundle, which is what we are checking.
       - name: Verify the notebooks against the bundle
         run: |
-          xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" \
-            jbang tools/verify_notebooks.java
+          jbang tools/verify_notebooks.java
           find . -maxdepth 3 -name '*.svg' -delete
 
       - name: Upload the bundle as a workflow artifact

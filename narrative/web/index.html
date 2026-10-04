@@ -529,7 +529,6 @@ messy; the labs use the columns that are complete.</p>
   <div class="tile"><b>data + aes + geoms</b><span class="d">compose a plot layer by layer</span></div>
   <div class="tile"><b>a full geom set</b><span class="d">points, bars, boxes, densities, facets, 3-D, matrices</span></div>
   <div class="tile"><b>it is a Node</b><span class="d">a plot is a JavaFX <code>Pane</code> &mdash; <code>display(...)</code> it</span></div>
-  <div class="tile"><b>export</b><span class="d">write publication SVG straight from the plot</span></div>
 </div>
 <p><strong>Get it:</strong> <a href="https://github.com/svenreimers/gog4j">https://github.com/svenreimers/gog4j</a></p>
 </section>
@@ -545,7 +544,7 @@ messy; the labs use the columns that are complete.</p>
 <tbody>
 <tr>
 <td><strong>data</strong></td>
-<td>a <code>HardwoodDataFrame</code>, read straight from the Parquet</td>
+<td>a dflib <code>DataFrame</code>, read straight from the Parquet</td>
 </tr>
 <tr>
 <td><strong>aes</strong></td>
@@ -585,14 +584,11 @@ HEO  ↗ wildly elliptical
 </code></pre>
 <p>One <code>hline</code> at <strong>35,786 km</strong> makes the GEO belt obvious.</p>
 </section>
-<section class="slide"><h1>display, or export</h1>
+<section class="slide"><h1>Show it in the notebook</h1>
 <pre><code class="language-java">display(plot);                                   // live, in the notebook
 </code></pre>
-<pre><code class="language-java">new SvgExporter().size(1600, 1000).batchPoints(true)
-    .write(plot, cwd.resolve(&quot;celestrak-orbits.svg&quot;));
-</code></pre>
-<p><code>batchPoints</code> keeps 21,000 points editable in the SVG.
-SVG → PDF is one external command away.</p>
+<p>A <code>Plot</code> is a JavaFX node, so <code>display(...)</code> draws it inline — there is no file
+to write. Refine it, <code>display(...)</code> it again.</p>
 </section>
 <section class="slide"><h1>Meet the tool · Orekit</h1>
 <p><em>The space-flight dynamics library — the one the bonus notebook leans on.</em></p>

@@ -71,29 +71,27 @@ var plot = Ggplot.ggplot(table, Aes.aes().x("a").y("b")).geoms(Geoms.point());
 display(plot);
 ```
 
-## Threading: JavaFX work belongs on the FX thread
+## Threading: display() does it for you
 
 A cell runs on JShell's **worker** thread, *not* on the JavaFX Application
-Thread. Anything that touches JavaFX — building a plot's canvas, `SvgExporter`,
-adding a node to a live scene — must be marshalled there:
+Thread — but in normal notebook code you do not have to care:
 
-```java
-void onFx(Runnable work) {
-    if (javafx.application.Platform.isFxApplicationThread()) { work.run(); return; }
-    var latch = new java.util.concurrent.CountDownLatch(1);
-    javafx.application.Platform.runLater(() -> {
-        try { work.run(); } finally { latch.countDown(); }
-    });
-    latch.await();
-}
-```
-
-- `display(...)` already marshals for you.
-- **Exporting** must go through `onFx(...)` — `SvgExporter` throws *"TextMeasurer...
-  must be called on the FX Application Thread"* otherwise.
-- After mutating a plot that is **already displayed**, call `onFx(plot::markDirty)`
-  — gog4j's fluent setters do not repaint on their own, so the change would never
-  reach the screen.
+- `display(...)` **marshals for you**: `DisplayExtension.display` resolves the
+  node on the worker thread and then attaches it with `Platform.runLater`.
+  Building a gog4j plot (a plain `Node`) on the worker thread is fine, so just
+  `display(plot)`.
+- **Re-display is safe.** gog4j's fluent setters mutate the same `Plot` and
+  return `this`, so a later cell often calls `display(plot)` on a node that is
+  already shown. The sink ignores a node it already holds (as
+  `GuiSinks.forOutputBox` does), so there is no "duplicate children" error.
+- The one place the FX thread matters is code that touches a **live scene
+  graph** yourself. The live 3-D bonus uses an `AnimationTimer`: its
+  `handle(...)` already runs on the FX thread, so swapping the plot there is
+  safe.
+- **Exporting an SVG** (`SvgExporter`) is the other exception — it throws
+  *"TextMeasurer ... must be called on the FX Application Thread"* unless it runs
+  on the FX thread. The lab notebooks only `display(plot)`; if you add an export,
+  marshal it yourself.
 
 ## addDependency is a snippet like everything else
 

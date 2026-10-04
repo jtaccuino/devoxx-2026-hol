@@ -25,7 +25,6 @@ title: Module 3 · gog4j
   <div class="tile"><b>data + aes + geoms</b><span class="d">compose a plot layer by layer</span></div>
   <div class="tile"><b>a full geom set</b><span class="d">points, bars, boxes, densities, facets, 3-D, matrices</span></div>
   <div class="tile"><b>it is a Node</b><span class="d">a plot is a JavaFX <code>Pane</code> &mdash; <code>display(...)</code> it</span></div>
-  <div class="tile"><b>export</b><span class="d">write publication SVG straight from the plot</span></div>
 </div>
 
 **Get it:** <https://github.com/svenreimers/gog4j>
@@ -38,7 +37,7 @@ A plot is three pieces, composed:
 
 | | |
 |---|---|
-| **data** | a `HardwoodDataFrame`, read straight from the Parquet |
+| **data** | a dflib `DataFrame`, read straight from the Parquet |
 | **aes** | which columns drive x, y, colour, … |
 | **geoms** | how to draw them |
 
@@ -86,19 +85,14 @@ One `hline` at **35,786 km** makes the GEO belt obvious.
 
 ---
 
-# display, or export
+# Show it in the notebook
 
 ```java
 display(plot);                                   // live, in the notebook
 ```
 
-```java
-new SvgExporter().size(1600, 1000).batchPoints(true)
-    .write(plot, cwd.resolve("celestrak-orbits.svg"));
-```
-
-`batchPoints` keeps 21,000 points editable in the SVG.
-SVG → PDF is one external command away.
+A `Plot` is a JavaFX node, so `display(...)` draws it inline — there is no file
+to write. Refine it, `display(...)` it again.
 
 ---
 

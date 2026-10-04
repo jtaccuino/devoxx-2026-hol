@@ -19,6 +19,7 @@ public class check_versions {
         System.out.println("versions.properties : gog4j " + version);
         System.out.println("                      " + LabVersions.gog4jRepoUrl());
         System.out.println("                      " + LabVersions.gog4jCoordinate("gog4j"));
+        System.out.println("                      " + LabVersions.deepnettsCoreCoordinate());
 
         List<String> problems = LabVersions.mismatchedClasspathHolders();
         if (problems.isEmpty()) {
