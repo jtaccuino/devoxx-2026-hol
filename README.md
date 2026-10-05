@@ -23,7 +23,7 @@ tools/        notebook generator, narrative renderer, verification harness
 
 | | |
 |---|---|
-| JTaccuino | **[27.0.0-RC2](https://github.com/jtaccuino/jtaccuino/releases/tag/27.0.0-RC2)** — the notebook kernel; it ships its own **Java 27** |
+| JTaccuino | **[27.0.0](https://github.com/jtaccuino/jtaccuino/releases/latest)** — the notebook kernel; it ships its own **Java 27** |
 | Maven | the **offline bundle** from the releases page, unpacked into `~/.m2/repository` |
 
 The material is verified on **JDK 27** (gog4j is compiled to class file 70, so

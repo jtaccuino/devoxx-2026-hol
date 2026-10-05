@@ -28,7 +28,7 @@ title: Module 1 · JTaccuino
   <div class="tile"><b>built for teaching</b><span class="d">and interactive experimentation</span></div>
 </div>
 
-**Get it:** [JTaccuino 27.0.0-RC2](https://github.com/jtaccuino/jtaccuino/releases/tag/27.0.0-RC2) (runs on Java 27) · **Source:** <https://github.com/jtaccuino/jtaccuino>
+**Get it:** [JTaccuino 27.0.0](https://github.com/jtaccuino/jtaccuino/releases/latest) (runs on Java 27) · **Source:** <https://github.com/jtaccuino/jtaccuino>
 
 ---
 

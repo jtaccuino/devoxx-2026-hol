@@ -30,12 +30,12 @@ title: Getting set up
 # Getting everything
 
 <div class="grid three">
-  <div class="card"><span class="n">JTaccuino 27.0.0-RC2</span><span class="l"><a href="https://github.com/jtaccuino/jtaccuino/releases/tag/27.0.0-RC2">download the release</a> &mdash; it runs on Java 27</span></div>
+  <div class="card"><span class="n">JTaccuino 27.0.0</span><span class="l"><a href="https://github.com/jtaccuino/jtaccuino/releases/latest">download the latest release</a> &mdash; it runs on Java 27</span></div>
   <div class="card"><span class="n">the lab</span><span class="l"><code>git clone https://github.com/jtaccuino/devoxx-2026-hol</code></span></div>
   <div class="card"><span class="n">Maven deps</span><span class="l"><a href="https://github.com/jtaccuino/devoxx-2026-hol/releases">devoxx-hol-2026-m2.zip</a> &rarr; unpack into <code>~/.m2/repository</code></span></div>
 </div>
 
-<p class="note">JTaccuino <strong>27.0.0-RC2</strong> ships its own Java 27, so there is nothing else to install. gog4j <code>@GOG4J@</code> lives on GitHub Packages, which needs a token even to download — so the bundle is not a convenience, it is <strong>how you run this lab</strong>. Unpack it and everything resolves <strong>offline</strong>.</p>
+<p class="note">JTaccuino <strong>27.0.0</strong> ships its own Java 27, so there is nothing else to install. gog4j <code>@GOG4J@</code> lives on GitHub Packages, which needs a token even to download — so the bundle is not a convenience, it is <strong>how you run this lab</strong>. Unpack it and everything resolves <strong>offline</strong>.</p>
 
 ---
 
