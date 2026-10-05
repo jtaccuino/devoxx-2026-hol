@@ -1,0 +1,200 @@
+{
+    "cells": [
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "32d0fbf9-4063-4bc5-837c-db267485dc10",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "addDependency(\"com.deepnetts:deepnetts-core::4.0.4\")"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "67f23d1b-5864-4bdf-a31d-ad217e0d82a6",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "import deepnetts.net.FeedForwardNetwork;\nimport deepnetts.net.layers.activation.ActivationType;\nimport deepnetts.net.loss.LossType;\nimport deepnetts.data.DataSets;\nimport deepnetts.data.MLDataItem;\nimport deepnetts.data.TabularDataSet;\nimport deepnetts.data.norm.MaxScaler;\nimport javax.visrec.ml.eval.EvaluationMetrics;"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "f5118b37-77d1-435e-b283-c92d9dc4cee4",
+            "metadata": {
+            },
+            "source": "#Load transactions from a csv file into a dat set object"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "6ddfd9c5-fd0a-4fbb-84b9-3e840309d559",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "TabularDataSet<MLDataItem> dataSet = DataSets.readCsv(\"/home/zoran/credit_card_fraud_imbalanced.csv\", 7, 1, true);"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "5752e22c-24bd-4db7-9fac-bcad16d7ee1b",
+            "metadata": {
+            },
+            "source": "#Scale all values into a range [0, 1]"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "74bdd7ff-725f-4e09-a304-0ea43ecef610",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "MaxScaler scaler = DataSets.scaleToMax(dataSet);"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "516d0cab-bac8-4c7b-989e-164f06f6bf90",
+            "metadata": {
+            },
+            "source": "#Create an arhitecture of a model / neural network"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "3710c195-fef7-4201-9654-5188ebea2682",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "FeedForwardNetwork neuralNet = FeedForwardNetwork.builder()\n                .addInputLayer(7)\n                .addFullyConnectedLayer(32, ActivationType.RELU)\n                .addFullyConnectedLayer(16, ActivationType.RELU)\n                .addOutputLayer(1, ActivationType.SIGMOID)\n                .lossFunction(LossType.CROSS_ENTROPY)\n                .build();"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "9721ccf0-0db6-4413-8166-3fec88f2b016",
+            "metadata": {
+            },
+            "source": "#Configure a training parameters"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "e702df9d-b96d-4cc8-80ef-029912dcd993",
+            "metadata": {
+            },
+            "outputs": [
+                {
+                    "data": {
+                        "text/plain": "deepnetts.net.train.BackpropagationTrainer: deepnetts.net.train.BackpropagationTrainer@529c57a3"
+                    },
+                    "metadata": {
+                    },
+                    "output_type": "display_data"
+                }
+            ],
+            "source": "neuralNet.getTrainer()\n         .setLearningRate(0.01f)\n         .setStopError(0.13f)\n         .setStopEpochs(5)\n         .setShuffle(true);"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "07ed3f27-2af7-4041-bfb6-87efc4067fe8",
+            "metadata": {
+            },
+            "source": "#Hack to make Deep Netts log into notebook"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "d76cef93-fb16-4de7-ac11-ee32a69b5082",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "class InternalLogHandler extends java.util.logging.Handler {\n    public void close() {}\n\n    public void flush() {}\n\n    public void publish(java.util.logging.LogRecord logRecord) {\n        println(logRecord.getMessage());\n    }\n\n}\n\nvar dnLogger = deepnetts.core.DeepNetts.LOGGER;\n\ndnLogger.addHandler(new InternalLogHandler());"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "51f54d8e-2bf0-41af-b0f3-4093e7428793",
+            "metadata": {
+            },
+            "source": "#Train the model using dataset"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "dde57e29-9491-4520-aa71-6e7fc9a34351",
+            "metadata": {
+            },
+            "outputs": [
+                {
+                    "name": "stdout",
+                    "output_type": "stream",
+                    "text": "------------------------------------------------------------------------\nTRAINING NEURAL NETWORK\n------------------------------------------------------------------------\nInitial Train Error:0.42877722\nEpoch:1, Time:41726ms, TrainError:0.16882128, TrainErrorChange:-0.25995594, TrainAccuracy:0.946752\nEpoch:2, Time:40934ms, TrainError:0.11534937, TrainErrorChange:-0.053471908, TrainAccuracy:0.950306\n\nTRAINING COMPLETED\nTotal Training Time: 133935ms\n------------------------------------------------------------------------\n"
+                }
+            ],
+            "source": "neuralNet.train(dataSet);"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "2c49aef5-d8c2-4656-a81d-a91c6455d0db",
+            "metadata": {
+            },
+            "source": "Calculate classification metrics for the trained model"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "dc0cce10-a043-4887-9b41-9e90ee0a7cf4",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "EvaluationMetrics evaluation = neuralNet.test(dataSet);"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "19f73c46-1dec-4557-b111-49dd10c1ec54",
+            "metadata": {
+            },
+            "outputs": [
+                {
+                    "name": "stdout",
+                    "output_type": "stream",
+                    "text": "Class: fraud\nTotal items: 1000000\nTrue positive:37866.0 Number of examples correctly classified as positive\nTrue negative:912440.0 Number of examples correctly classified as negative\nFalse positive:157.0 Number of examples incorrectly classified as positive\nFalse negative:49537.0 Number of examples incorrectly classified as negative\nAccuracy (ACC): 0.950306 How often is a classifier correct in total (percent of correct classifications)\nPrecision (PPV): 0.99587095 How often is a classifier correct when it gives positive prediction\nRecall: 0.43323454 When it is actually positive class, how often does it give positive prediction\nF1 Score: 0.6037982 Harmonic average (balance) of precision and recall\nSpecificity (TNR): 0.999828 When it is actually negative class, how often does it give negative prediction\nFall-out (FPR): 1.7203651E-4 How often it gives false positive prediction in total (percent of false positive predictions)\nFalse negative rate (FNR): 0.5667654 How often it gives false negative prediction in total (percent of false negative predictions)\n\n"
+                }
+            ],
+            "source": "println(evaluation)"
+        },
+        {
+            "cell_type": "markdown",
+            "id": "56206a02-fce6-4fd6-b18c-b5bc2b42c014",
+            "metadata": {
+            },
+            "source": "# Save trained model"
+        },
+        {
+            "cell_type": "code",
+            "execution_count": 0,
+            "id": "81ae93ea-02dd-4f75-9173-e27e62db0d73",
+            "metadata": {
+            },
+            "outputs": [
+            ],
+            "source": "neuralNet.save(\"/home/zoran/fraudDetectionNet.dnet\");"
+        }
+    ],
+    "metadata": {
+        "kernel_info": {
+            "name": "JTaccuino",
+            "version": "0.1"
+        },
+        "language_info": {
+            "name": "Java",
+            "version": "27"
+        }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 5
+}
