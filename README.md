@@ -21,10 +21,10 @@ tools/        notebook generator, narrative renderer, verification harness
 
 ## Requirements
 
-| | |
+| Component | What you need |
 |---|---|
 | JTaccuino | **[27.0.0](https://github.com/jtaccuino/jtaccuino/releases/latest)** — the notebook kernel; it ships its own **Java 27** |
-| Maven | the **offline bundle** from the releases page, unpacked into `~/.m2/repository` |
+| Maven | the **[offline bundle](https://github.com/jtaccuino/devoxx-2026-hol/releases/latest/download/devoxx-hol-2026-m2.zip)** (`devoxx-hol-2026-m2.zip`), unpacked into `~/.m2/repository` |
 
 The material is verified on **JDK 27** (gog4j is compiled to class file 70, so
 **26 or newer** is the floor). `dataset/*.java` run on **JDK 21**.
@@ -33,9 +33,9 @@ gog4j `0.5.0` is published to **GitHub Packages**
 (`https://maven.pkg.github.com/jtaccuino/gog4j`). GitHub Packages requires
 authentication even for public packages, and jbang does not read repositories
 from `settings.xml` — so the labs are delivered with a **pre-seeded `~/.m2`**:
-download `devoxx-hol-2026-m2.zip` from the
-[releases page](https://github.com/jtaccuino/devoxx-2026-hol/releases) and
-unpack it into `~/.m2/repository`. That is the supported way to run the
+download
+[`devoxx-hol-2026-m2.zip`](https://github.com/jtaccuino/devoxx-2026-hol/releases/latest/download/devoxx-hol-2026-m2.zip)
+and unpack it into `~/.m2/repository`. That is the supported way to run the
 notebooks; resolving gog4j live needs a GitHub token and is not part of the lab.
 The bundle intentionally has **no JavaFX** — the JTaccuino release provides it —
 so run the notebooks in JTaccuino, not with a bare `jbang` run of the notebooks.
